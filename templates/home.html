@@ -4,14 +4,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>easyRubik</title>
-</head>
-<body>
+    <title>easyRubik 🧊</title>
 
 ```
-<h1>¡Bienvenido a easyRubik! 🧩</h1>
-<p>La aplicación está funcionando correctamente.</p>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background: #111827;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    header {
+        text-align: center;
+        padding: 30px 20px 10px;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 2.5rem;
+    }
+
+    header p {
+        color: #cbd5e1;
+    }
+
+    .cube-container {
+        width: 330px;
+        height: 330px;
+        perspective: 800px;
+        margin: 30px auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .cube {
+        width: 180px;
+        height: 180px;
+        position: relative;
+        transform-style: preserve-3d;
+        transform: rotateX(-25deg) rotateY(-35deg);
+        transition: transform 0.1s linear;
+    }
+
+    .face {
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        padding: 6px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 5px;
+        background: #111;
+        border-radius: 8px;
+    }
+
+    .sticker {
+        border-radius: 5px;
+        border: 2px solid #111;
+    }
+
+    .front {
+        transform: translateZ(90px);
+    }
+
+    .back {
+        transform: rotateY(180deg) translateZ(90px);
+    }
+
+    .right {
+        transform: rotateY(90deg) translateZ(90px);
+    }
+
+    .left {
+        transform: rotateY(-90deg) translateZ(90px);
+    }
+
+    .top {
+        transform: rotateX(90deg) translateZ(90px);
+    }
+
+    .bottom {
+        transform: rotateX(-90deg) translateZ(90px);
+    }
+
+    .white {
+        background: #f8fafc;
+    }
+
+    .yellow {
+        background: #facc15;
+    }
+
+    .green {
+        background: #22c55e;
+    }
+
+    .blue {
+        background: #3b82f6;
+    }
+
+    .red {
+        background: #ef4444;
+    }
+
+    .orange {
+        background: #f97316;
+    }
+
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        max-width: 500px;
+        padding: 20px;
+    }
+
+    button {
+        border: none;
+        border-radius: 8px;
+        padding: 12px 18px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        background: #374151;
+        color: white;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        background: #4b5563;
+    }
+
+    .moves {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .moves h2 {
+        margin-bottom: 15px;
+    }
+
+    .move-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        max-width: 400px;
+    }
+
+    .move-buttons button {
+        min-width: 55px;
+    }
+
+    .info {
+        margin: 25px;
+        max-width: 600px;
+        text-align: center;
+        color: #cbd5e1;
+    }
+</style>
 ```
+
+</head>
+
+<body>
+
+<header>
+    <h1>easyRubik</h1>
+    <p>Aprende a resolver un cubo Rubik 3×3×3</p>
+</header>
+
+<div class="cube-container">
+    <div class="cube" id="cube">
+
+```
+    <div class="face front">
+        <div class="sticker green"></div>
+        <div class="sticker green"></div>
+        <div class="sticker green"></div>
+        <div class="sticker green"></div>
+        <div class="sticker green"></div>
+        <div class="sticker green"></div>
+        <div class="sticker green"></div>
+        <div class="sticker green"></div>
+        <div class="sticker green"></div>
+    </div>
+
+    <div class="face back">
+        <div class="sticker blue"></div>
+        <div class="sticker blue"></div>
+        <div class="sticker blue"></div>
+        <div class="sticker blue"></div>
+        <div class="sticker blue"></div>
+        <div class="sticker blue"></div>
+        <div class="sticker blue"></div>
+        <div class="sticker blue"></div>
+        <div class="sticker blue"></div>
+    </div>
+
+    <div class="face right">
+        <div class="sticker red"></div>
+        <div class="sticker red"></div>
+        <div class="sticker red"></div>
+        <div class="sticker red"></div>
+        <div class="sticker red"></div>
+        <div class="sticker red"></div>
+        <div class="sticker red"></div>
+        <div class="sticker red"></div>
+        <div class="sticker red"></div>
+    </div>
+
+    <div class="face left">
+        <div class="sticker orange"></div>
+        <div class="sticker orange"></div>
+        <div class="sticker orange"></div>
+        <div class="sticker orange"></div>
+        <div class="sticker orange"></div>
+        <div class="sticker orange"></div>
+        <div class="sticker orange"></div>
+        <div class="sticker orange"></div>
+        <div class="sticker orange"></div>
+    </div>
+
+    <div class="face top">
+        <div class="sticker white"></div>
+        <div class="sticker white"></div>
+        <div class="sticker white"></div>
+        <div class="sticker white"></div>
+        <div class="sticker white"></div>
+        <div class="sticker white"></div>
+        <div class="sticker white"></div>
+        <div class="sticker white"></div>
+        <div class="sticker white"></div>
+    </div>
+
+    <div class="face bottom">
+        <div class="sticker yellow"></div>
+        <div class="sticker yellow"></div>
+        <div class="sticker yellow"></div>
+        <div class="sticker yellow"></div>
+        <div class="sticker yellow"></div>
+        <div class="sticker yellow"></div>
+        <div class="sticker yellow"></div>
+        <div class="sticker yellow"></div>
+        <div class="sticker yellow"></div>
+    </div>
+
+</div>
+```
+
+</div>
+
+<div class="moves">
+    <h2>Movimientos</h2>
+
+```
+<div class="move-buttons">
+    <button onclick="move('U')">U</button>
+    <button onclick="move('D')">D</button>
+    <button onclick="move('L')">L</button>
+    <button onclick="move('R')">R</button>
+    <button onclick="move('F')">F</button>
+    <button onclick="move('B')">B</button>
+</div>
+```
+
+</div>
+
+<div class="controls">
+    <button onclick="scramble()"> Mezclar</button>
+    <button onclick="resetCube()"> Reiniciar</button>
+</div>
+
+<div class="info">
+    <p>
+        Esta es nuestra primera versión del cubo.
+        Próximamente podremos hacer que los movimientos sean reales
+        y crear un sistema para aprender a resolverlo paso a paso.
+    </p>
+</div>
+
+<script>
+    const cube = document.getElementById("cube");
+
+    let rotationX = -25;
+    let rotationY = -35;
+
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    cube.addEventListener("mousedown", (event) => {
+        dragging = true;
+        lastX = event.clientX;
+        lastY = event.clientY;
+    });
+
+    document.addEventListener("mouseup", () => {
+        dragging = false;
+    });
+
+    document.addEventListener("mousemove", (event) => {
+        if (!dragging) return;
+
+        const deltaX = event.clientX - lastX;
+        const deltaY = event.clientY - lastY;
+
+        rotationY += deltaX * 0.5;
+        rotationX -= deltaY * 0.5;
+
+        cube.style.transform =
+            `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+
+        lastX = event.clientX;
+        lastY = event.clientY;
+    });
+
+   function move(letter) {
+    if (letter === "R") {
+        rotationY += 90;
+
+        cube.style.transform =
+            `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+    }
+}
+
+    function scramble() {
+        alert("Aquí posteriormente generaremos una mezcla real del cubo.");
+    }
+
+    function resetCube() {
+        rotationX = -25;
+        rotationY = -35;
+
+        cube.style.transform =
+            `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+    }
+</script>
 
 </body>
 </html>
