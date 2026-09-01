@@ -2,6 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-path("", views.home, name="home"),
-path("simulador/", views.simulador, name="simulador"),
+
+    path("", views.home, name="home"),
+    path("selector/", views.selector, name="selector"),
+    path("simulador/", views.simulador, name="simulador"),
+    path("simulador/4x4/", views.cuatro_por_cuatro, name="cuatro_por_cuatro"),
+    path("desafio/", views.desafio, name="desafio")
 ]
