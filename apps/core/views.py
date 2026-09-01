@@ -2,6 +2,8 @@ from django.shortcuts import render
 
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, "homeEasyRubik.html")
 
-# Create your views here.
+
+def simulador(request):
+    return render(request, "home.html")

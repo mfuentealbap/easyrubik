@@ -1,359 +1,2222 @@
+```html
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>easyRubik 🧊</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
+<title>EasyRubik</title>
+
 <style>
-    * {
-        box-sizing: border-box;
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #0f1117;
+    --panel: #181b24;
+    --panel-light: #20242f;
+    --line: #2b303d;
+    --text: #f8fafc;
+    --muted: #9ca3af;
+    --accent: #facc15;
+    --green: #22c55e;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(59,130,246,0.08),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(250,204,21,0.06),
+            transparent 30%
+        ),
+        var(--bg);
+
+    color: var(--text);
+}
+
+/* =====================================================
+   CONTENEDOR PRINCIPAL
+===================================================== */
+
+.page {
+    width: 100%;
+    max-width: 1250px;
+    min-height: 100vh;
+
+    margin: auto;
+
+    padding: 35px 40px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.8rem;
+    letter-spacing: -1px;
+}
+
+header p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 1.05rem;
+}
+
+/* =====================================================
+   ZONA DEL SIMULADOR
+===================================================== */
+
+.simulator-layout {
+
+    display: grid;
+
+    /*
+       CUBO A LA IZQUIERDA
+       CONTROLES A LA DERECHA
+    */
+
+    grid-template-columns:
+        minmax(500px, 1fr)
+        380px;
+
+    gap: 45px;
+
+    align-items: center;
+}
+
+/* =====================================================
+   CUBO
+===================================================== */
+
+.cube-section {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.cube-card {
+
+    width: 100%;
+
+    min-height: 560px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,0.045),
+            transparent 55%
+        ),
+        rgba(255,255,255,0.015);
+
+    border: 1px solid var(--line);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.cube-container {
+
+    width: 100%;
+
+    max-width: 500px;
+
+    aspect-ratio: 1 / 1;
+
+    cursor: grab;
+
+    touch-action: none;
+}
+
+.cube-container:active {
+    cursor: grabbing;
+}
+
+.cube-container canvas {
+
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+}
+
+.cube-help {
+
+    margin-top: 18px;
+
+    text-align: center;
+
+    color: var(--muted);
+
+    line-height: 1.5;
+}
+
+.cube-help strong {
+    color: var(--text);
+}
+
+/* =====================================================
+   PANEL DERECHO
+===================================================== */
+
+.controls-panel {
+
+    background: var(--panel);
+
+    border: 1px solid var(--line);
+
+    border-radius: 22px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.025);
+}
+
+.panel-title {
+    margin-bottom: 22px;
+}
+
+.panel-title h2 {
+
+    margin: 0;
+
+    font-size: 1.5rem;
+}
+
+.panel-title p {
+
+    margin: 7px 0 0;
+
+    color: var(--muted);
+
+    font-size: 0.9rem;
+}
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+button {
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 12px 15px;
+
+    font-size: 0.95rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    background: var(--panel-light);
+
+    color: white;
+
+    border: 1px solid var(--line);
+
+    transition:
+        transform 0.15s,
+        background 0.15s,
+        border-color 0.15s;
+}
+
+button:hover {
+
+    background: #292e3a;
+
+    border-color: #414858;
+
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+button:disabled {
+
+    opacity: 0.4;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+/* =====================================================
+   BOTÓN MOSTRAR CONTROLES
+===================================================== */
+
+.toggle-buttons {
+
+    margin-bottom: 18px;
+}
+
+.toggle-buttons button {
+
+    width: 100%;
+
+    background: #242936;
+}
+
+/* =====================================================
+   MOVIMIENTOS
+===================================================== */
+
+.hidden {
+    display: none;
+}
+
+#backupControls {
+
+    margin-bottom: 22px;
+}
+
+#backupControls h2 {
+
+    font-size: 1rem;
+
+    margin: 0 0 12px;
+
+    color: var(--muted);
+}
+
+.move-buttons {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 8px;
+}
+
+.move-buttons button {
+
+    min-width: 0;
+
+    padding: 12px 5px;
+}
+
+/* =====================================================
+   BOTONES ESPECIALES
+===================================================== */
+
+.special-buttons {
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+}
+
+.special-buttons button {
+
+    padding: 14px;
+
+    font-size: 1rem;
+}
+
+#scrambleBtn {
+
+    background: #252a35;
+}
+
+#solveBtn {
+
+    background: #263b2c;
+
+    border-color: #315f3d;
+}
+
+#resetBtn {
+
+    background: #292d38;
+}
+
+/* =====================================================
+   ESTADO
+===================================================== */
+
+#status {
+
+    margin-top: 20px;
+
+    padding: 13px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(34,197,94,0.08);
+
+    border:
+        1px solid rgba(34,197,94,0.18);
+
+    color: #86efac;
+
+    text-align: center;
+
+    font-weight: bold;
+
+    font-size: 0.9rem;
+}
+
+/* =====================================================
+   PIE
+===================================================== */
+
+.footer {
+
+    text-align: center;
+
+    margin-top: 30px;
+
+    color: #6b7280;
+
+    font-size: 0.85rem;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 900px) {
+
+    .page {
+
+        padding: 25px 20px;
     }
 
-    body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: Arial, sans-serif;
-        background: #111827;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    .simulator-layout {
+
+        grid-template-columns: 1fr;
+
+        gap: 25px;
     }
 
-    header {
-        text-align: center;
-        padding: 30px 20px 10px;
+    .cube-card {
+
+        min-height: 450px;
     }
 
-    h1 {
-        margin: 0;
-        font-size: 2.5rem;
+    .controls-panel {
+
+        width: 100%;
+
+        max-width: 600px;
+
+        margin: auto;
+    }
+}
+
+@media (max-width: 500px) {
+
+    header h1 {
+
+        font-size: 2.2rem;
     }
 
-    header p {
-        color: #cbd5e1;
-    }
+    .cube-card {
 
-    .cube-container {
-        width: 330px;
-        height: 330px;
-        perspective: 800px;
-        margin: 30px auto;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+        min-height: 350px;
 
-    .cube {
-        width: 180px;
-        height: 180px;
-        position: relative;
-        transform-style: preserve-3d;
-        transform: rotateX(-25deg) rotateY(-35deg);
-        transition: transform 0.1s linear;
-    }
-
-    .face {
-        position: absolute;
-        width: 180px;
-        height: 180px;
-        padding: 6px;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        gap: 5px;
-        background: #111;
-        border-radius: 8px;
-    }
-
-    .sticker {
-        border-radius: 5px;
-        border: 2px solid #111;
-    }
-
-    .front {
-        transform: translateZ(90px);
-    }
-
-    .back {
-        transform: rotateY(180deg) translateZ(90px);
-    }
-
-    .right {
-        transform: rotateY(90deg) translateZ(90px);
-    }
-
-    .left {
-        transform: rotateY(-90deg) translateZ(90px);
-    }
-
-    .top {
-        transform: rotateX(90deg) translateZ(90px);
-    }
-
-    .bottom {
-        transform: rotateX(-90deg) translateZ(90px);
-    }
-
-    .white {
-        background: #f8fafc;
-    }
-
-    .yellow {
-        background: #facc15;
-    }
-
-    .green {
-        background: #22c55e;
-    }
-
-    .blue {
-        background: #3b82f6;
-    }
-
-    .red {
-        background: #ef4444;
-    }
-
-    .orange {
-        background: #f97316;
-    }
-
-    .controls {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        max-width: 500px;
-        padding: 20px;
-    }
-
-    button {
-        border: none;
-        border-radius: 8px;
-        padding: 12px 18px;
-        font-size: 1rem;
-        font-weight: bold;
-        cursor: pointer;
-        background: #374151;
-        color: white;
-        transition: 0.2s;
-    }
-
-    button:hover {
-        transform: translateY(-2px);
-        background: #4b5563;
-    }
-
-    .moves {
-        text-align: center;
-        margin-top: 10px;
-    }
-
-    .moves h2 {
-        margin-bottom: 15px;
+        border-radius: 18px;
     }
 
     .move-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
-        max-width: 400px;
+
+        grid-template-columns:
+            repeat(3, 1fr);
     }
 
-    .move-buttons button {
-        min-width: 55px;
-    }
+    .page {
 
-    .info {
-        margin: 25px;
-        max-width: 600px;
-        text-align: center;
-        color: #cbd5e1;
+        padding: 20px 12px;
     }
+}
+
 </style>
-```
-
 </head>
 
 <body>
 
+<div class="page">
+
 <header>
-    <h1>easyRubik</h1>
-    <p>Aprende a resolver un cubo Rubik 3×3×3</p>
+
+    <h1>easyRubik 🧊</h1>
+
+    <p>
+        Aprende a resolver un cubo Rubik 3×3×3
+    </p>
+
 </header>
 
-<div class="cube-container">
-    <div class="cube" id="cube">
 
-```
-    <div class="face front">
-        <div class="sticker green"></div>
-        <div class="sticker green"></div>
-        <div class="sticker green"></div>
-        <div class="sticker green"></div>
-        <div class="sticker green"></div>
-        <div class="sticker green"></div>
-        <div class="sticker green"></div>
-        <div class="sticker green"></div>
-        <div class="sticker green"></div>
+<div class="simulator-layout">
+
+
+<!-- =====================================================
+     IZQUIERDA: CUBO
+====================================================== -->
+
+<section class="cube-section">
+
+    <div class="cube-card">
+
+        <div
+            class="cube-container"
+            id="cubeContainer">
+        </div>
+
     </div>
 
-    <div class="face back">
-        <div class="sticker blue"></div>
-        <div class="sticker blue"></div>
-        <div class="sticker blue"></div>
-        <div class="sticker blue"></div>
-        <div class="sticker blue"></div>
-        <div class="sticker blue"></div>
-        <div class="sticker blue"></div>
-        <div class="sticker blue"></div>
-        <div class="sticker blue"></div>
+    <div class="cube-help">
+
+        <strong>
+            🖱️ Arrastra una cara
+        </strong>
+
+        para moverla.
+
+        <br>
+
+        Arrastra el espacio alrededor
+        para girar la vista.
+
     </div>
 
-    <div class="face right">
-        <div class="sticker red"></div>
-        <div class="sticker red"></div>
-        <div class="sticker red"></div>
-        <div class="sticker red"></div>
-        <div class="sticker red"></div>
-        <div class="sticker red"></div>
-        <div class="sticker red"></div>
-        <div class="sticker red"></div>
-        <div class="sticker red"></div>
+</section>
+
+
+
+<!-- =====================================================
+     DERECHA: CONTROLES
+====================================================== -->
+
+<section class="controls-panel">
+
+    <div class="panel-title">
+
+        <h2>
+            🎛️ Controles
+        </h2>
+
+        <p>
+            Controla el cubo y practica tus movimientos.
+        </p>
+
     </div>
 
-    <div class="face left">
-        <div class="sticker orange"></div>
-        <div class="sticker orange"></div>
-        <div class="sticker orange"></div>
-        <div class="sticker orange"></div>
-        <div class="sticker orange"></div>
-        <div class="sticker orange"></div>
-        <div class="sticker orange"></div>
-        <div class="sticker orange"></div>
-        <div class="sticker orange"></div>
+
+    <div class="moves">
+
+
+        <div class="toggle-buttons">
+
+            <button
+                onclick="toggleButtons()"
+                id="toggleBtn">
+
+                🎛️ Mostrar botones de respaldo
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="backupControls"
+            class="hidden">
+
+            <h2>
+                Movimientos
+            </h2>
+
+
+            <div
+                class="move-buttons"
+                id="moveButtons">
+
+                <button data-move="R">
+                    R
+                </button>
+
+                <button data-move="Rprime">
+                    R'
+                </button>
+
+                <button data-move="L">
+                    L
+                </button>
+
+                <button data-move="Lprime">
+                    L'
+                </button>
+
+                <button data-move="U">
+                    U
+                </button>
+
+                <button data-move="Uprime">
+                    U'
+                </button>
+
+                <button data-move="D">
+                    D
+                </button>
+
+                <button data-move="Dprime">
+                    D'
+                </button>
+
+                <button data-move="F">
+                    F
+                </button>
+
+                <button data-move="Fprime">
+                    F'
+                </button>
+
+                <button data-move="B">
+                    B
+                </button>
+
+                <button data-move="Bprime">
+                    B'
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="special-buttons">
+
+            <button id="scrambleBtn">
+
+                🔀 Mezclar
+
+            </button>
+
+
+            <button id="solveBtn">
+
+                🧠 Resolver
+
+            </button>
+
+
+            <button id="resetBtn">
+
+                🏠 Reiniciar
+
+            </button>
+
+        </div>
+
+
+        <div id="status">
+
+            ✅ Cubo resuelto
+
+        </div>
+
     </div>
 
-    <div class="face top">
-        <div class="sticker white"></div>
-        <div class="sticker white"></div>
-        <div class="sticker white"></div>
-        <div class="sticker white"></div>
-        <div class="sticker white"></div>
-        <div class="sticker white"></div>
-        <div class="sticker white"></div>
-        <div class="sticker white"></div>
-        <div class="sticker white"></div>
-    </div>
+</section>
 
-    <div class="face bottom">
-        <div class="sticker yellow"></div>
-        <div class="sticker yellow"></div>
-        <div class="sticker yellow"></div>
-        <div class="sticker yellow"></div>
-        <div class="sticker yellow"></div>
-        <div class="sticker yellow"></div>
-        <div class="sticker yellow"></div>
-        <div class="sticker yellow"></div>
-        <div class="sticker yellow"></div>
-    </div>
-
-</div>
-```
 
 </div>
 
-<div class="moves">
-    <h2>Movimientos</h2>
 
-```
-<div class="move-buttons">
-    <button onclick="move('U')">U</button>
-    <button onclick="move('D')">D</button>
-    <button onclick="move('L')">L</button>
-    <button onclick="move('R')">R</button>
-    <button onclick="move('F')">F</button>
-    <button onclick="move('B')">B</button>
-</div>
-```
+<div class="footer">
+
+    easyRubik · Aprende jugando 🧩
 
 </div>
 
-<div class="controls">
-    <button onclick="scramble()"> Mezclar</button>
-    <button onclick="resetCube()"> Reiniciar</button>
 </div>
 
-<div class="info">
-    <p>
-        Esta es nuestra primera versión del cubo.
-        Próximamente podremos hacer que los movimientos sean reales
-        y crear un sistema para aprender a resolverlo paso a paso.
-    </p>
-</div>
+
+
+<!-- ============================================================
+     THREE.JS
+============================================================ -->
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
 
 <script>
-    const cube = document.getElementById("cube");
 
-    let rotationX = -25;
-    let rotationY = -35;
+/* =========================================================
+   CHEQUEO DE SEGURIDAD
+========================================================= */
 
-    let dragging = false;
-    let lastX = 0;
-    let lastY = 0;
+if (
 
-    cube.addEventListener("mousedown", (event) => {
-        dragging = true;
-        lastX = event.clientX;
-        lastY = event.clientY;
-    });
+    typeof THREE === "undefined" ||
 
-    document.addEventListener("mouseup", () => {
-        dragging = false;
-    });
+    typeof THREE.OrbitControls === "undefined"
 
-    document.addEventListener("mousemove", (event) => {
-        if (!dragging) return;
+) {
 
-        const deltaX = event.clientX - lastX;
-        const deltaY = event.clientY - lastY;
+    document.getElementById(
+        "cubeContainer"
+    ).innerHTML =
 
-        rotationY += deltaX * 0.5;
-        rotationX -= deltaY * 0.5;
+        '<p style="color:#f87171;padding:20px;text-align:center;">' +
 
-        cube.style.transform =
-            `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+        '⚠️ No se pudo cargar Three.js.' +
 
-        lastX = event.clientX;
-        lastY = event.clientY;
-    });
+        '</p>';
 
-   function move(letter) {
-    if (letter === "R") {
-        rotationY += 90;
-
-        cube.style.transform =
-            `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
-    }
+    throw new Error(
+        "Three.js no se cargó correctamente."
+    );
 }
 
-    function scramble() {
-        alert("Aquí posteriormente generaremos una mezcla real del cubo.");
+
+
+/* =========================================================
+   ESCENA
+========================================================= */
+
+const container =
+    document.getElementById(
+        "cubeContainer"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+
+const scene =
+    new THREE.Scene();
+
+
+const camera =
+    new THREE.PerspectiveCamera(
+        45,
+        1,
+        0.1,
+        100
+    );
+
+
+camera.position.set(
+    4.2,
+    4,
+    6
+);
+
+
+const renderer =
+    new THREE.WebGLRenderer({
+
+        antialias: true,
+
+        alpha: true
+
+    });
+
+
+container.appendChild(
+    renderer.domElement
+);
+
+
+function resizeRenderer() {
+
+    const size =
+        container.clientWidth;
+
+    renderer.setSize(
+        size,
+        size
+    );
+
+    camera.aspect = 1;
+
+    camera.updateProjectionMatrix();
+}
+
+
+resizeRenderer();
+
+
+window.addEventListener(
+    "resize",
+    resizeRenderer
+);
+
+
+
+/* =========================================================
+   ORBIT CONTROLS
+========================================================= */
+
+const controls =
+    new THREE.OrbitControls(
+        camera,
+        renderer.domElement
+    );
+
+
+controls.enablePan = false;
+
+controls.minDistance = 5;
+
+controls.maxDistance = 11;
+
+
+
+/* =========================================================
+   LUCES
+========================================================= */
+
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        0.75
+    )
+);
+
+
+const dirLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        0.55
+    );
+
+
+dirLight.position.set(
+    6,
+    9,
+    6
+);
+
+
+scene.add(
+    dirLight
+);
+
+
+
+/* =========================================================
+   COLORES
+========================================================= */
+
+const COLOR_HEX = {
+
+    U: 0xf8fafc,
+
+    D: 0xfacc15,
+
+    F: 0x22c55e,
+
+    B: 0x3b82f6,
+
+    R: 0xef4444,
+
+    L: 0xf97316
+
+};
+
+
+const BLACK = 0x0a0a0a;
+
+
+
+/* =========================================================
+   CUBITOS
+========================================================= */
+
+const SPACING = 1.05;
+
+const SIZE = 0.95;
+
+let cubies = [];
+
+let cubeGroupObjects = [];
+
+
+function buildCube() {
+
+    cubeGroupObjects.forEach(
+        obj => scene.remove(obj)
+    );
+
+    cubeGroupObjects = [];
+
+    cubies = [];
+
+
+    for (
+        let x = -1;
+        x <= 1;
+        x++
+    ) {
+
+        for (
+            let y = -1;
+            y <= 1;
+            y++
+        ) {
+
+            for (
+                let z = -1;
+                z <= 1;
+                z++
+            ) {
+
+                const materials = [
+
+                    new THREE.MeshLambertMaterial({
+
+                        color:
+                            x === 1
+                                ? COLOR_HEX.R
+                                : BLACK
+
+                    }),
+
+                    new THREE.MeshLambertMaterial({
+
+                        color:
+                            x === -1
+                                ? COLOR_HEX.L
+                                : BLACK
+
+                    }),
+
+                    new THREE.MeshLambertMaterial({
+
+                        color:
+                            y === 1
+                                ? COLOR_HEX.U
+                                : BLACK
+
+                    }),
+
+                    new THREE.MeshLambertMaterial({
+
+                        color:
+                            y === -1
+                                ? COLOR_HEX.D
+                                : BLACK
+
+                    }),
+
+                    new THREE.MeshLambertMaterial({
+
+                        color:
+                            z === 1
+                                ? COLOR_HEX.F
+                                : BLACK
+
+                    }),
+
+                    new THREE.MeshLambertMaterial({
+
+                        color:
+                            z === -1
+                                ? COLOR_HEX.B
+                                : BLACK
+
+                    })
+
+                ];
+
+
+                const geometry =
+                    new THREE.BoxGeometry(
+                        SIZE,
+                        SIZE,
+                        SIZE
+                    );
+
+
+                const edges =
+                    new THREE.EdgesGeometry(
+                        geometry
+                    );
+
+
+                const line =
+                    new THREE.LineSegments(
+
+                        edges,
+
+                        new THREE.LineBasicMaterial({
+
+                            color: 0x000000
+
+                        })
+
+                    );
+
+
+                const mesh =
+                    new THREE.Mesh(
+                        geometry,
+                        materials
+                    );
+
+
+                mesh.position.set(
+
+                    x * SPACING,
+
+                    y * SPACING,
+
+                    z * SPACING
+
+                );
+
+
+                mesh.add(line);
+
+                scene.add(mesh);
+
+                cubeGroupObjects.push(mesh);
+
+                cubies.push({
+
+                    x,
+                    y,
+                    z,
+                    mesh
+
+                });
+
+            }
+
+        }
+
     }
 
-    function resetCube() {
-        rotationX = -25;
-        rotationY = -35;
+}
 
-        cube.style.transform =
-            `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+
+
+/* =========================================================
+   MOVIMIENTOS
+========================================================= */
+
+const MOVES = {
+
+    R:
+        {
+            axis:"x",
+            layer:1,
+            direction:1
+        },
+
+    Rprime:
+        {
+            axis:"x",
+            layer:1,
+            direction:-1
+        },
+
+    L:
+        {
+            axis:"x",
+            layer:-1,
+            direction:-1
+        },
+
+    Lprime:
+        {
+            axis:"x",
+            layer:-1,
+            direction:1
+        },
+
+    U:
+        {
+            axis:"y",
+            layer:1,
+            direction:1
+        },
+
+    Uprime:
+        {
+            axis:"y",
+            layer:1,
+            direction:-1
+        },
+
+    D:
+        {
+            axis:"y",
+            layer:-1,
+            direction:-1
+        },
+
+    Dprime:
+        {
+            axis:"y",
+            layer:-1,
+            direction:1
+        },
+
+    F:
+        {
+            axis:"z",
+            layer:1,
+            direction:-1
+        },
+
+    Fprime:
+        {
+            axis:"z",
+            layer:1,
+            direction:1
+        },
+
+    B:
+        {
+            axis:"z",
+            layer:-1,
+            direction:1
+        },
+
+    Bprime:
+        {
+            axis:"z",
+            layer:-1,
+            direction:-1
+        }
+
+};
+
+
+
+const INVERSE = {
+
+    R:"Rprime",
+
+    Rprime:"R",
+
+    L:"Lprime",
+
+    Lprime:"L",
+
+    U:"Uprime",
+
+    Uprime:"U",
+
+    D:"Dprime",
+
+    Dprime:"D",
+
+    F:"Fprime",
+
+    Fprime:"F",
+
+    B:"Bprime",
+
+    Bprime:"B"
+
+};
+
+
+
+const AXIS_VECTORS = {
+
+    x:
+        new THREE.Vector3(
+            1,
+            0,
+            0
+        ),
+
+    y:
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+
+    z:
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        )
+
+};
+
+
+
+function formatMove(move) {
+
+    return move.replace(
+        "prime",
+        "'"
+    );
+
+}
+
+
+
+/* =========================================================
+   GIRAR CAPA
+========================================================= */
+
+function rotateLayer(
+    axis,
+    layer,
+    direction
+) {
+
+    return new Promise(resolve => {
+
+        const group =
+            new THREE.Group();
+
+        scene.add(group);
+
+
+        const selected =
+            cubies.filter(
+                c => c[axis] === layer
+            );
+
+
+        selected.forEach(
+            c => group.attach(c.mesh)
+        );
+
+
+        const axisVec =
+            AXIS_VECTORS[axis];
+
+
+        const targetAngle =
+            direction * (Math.PI / 2);
+
+
+        const duration = 220;
+
+        const start =
+            performance.now();
+
+
+        function step() {
+
+            const now =
+                performance.now();
+
+
+            const t =
+                Math.min(
+                    1,
+                    (now - start) / duration
+                );
+
+
+            group.quaternion.setFromAxisAngle(
+
+                axisVec,
+
+                targetAngle * t
+
+            );
+
+
+            if (t < 1) {
+
+                requestAnimationFrame(
+                    step
+                );
+
+            } else {
+
+                selected.forEach(c => {
+
+                    scene.attach(
+                        c.mesh
+                    );
+
+
+                    c.mesh.position.set(
+
+                        Math.round(
+                            c.mesh.position.x /
+                            SPACING
+                        ) * SPACING,
+
+                        Math.round(
+                            c.mesh.position.y /
+                            SPACING
+                        ) * SPACING,
+
+                        Math.round(
+                            c.mesh.position.z /
+                            SPACING
+                        ) * SPACING
+
+                    );
+
+
+                    c.x =
+                        Math.round(
+                            c.mesh.position.x /
+                            SPACING
+                        );
+
+
+                    c.y =
+                        Math.round(
+                            c.mesh.position.y /
+                            SPACING
+                        );
+
+
+                    c.z =
+                        Math.round(
+                            c.mesh.position.z /
+                            SPACING
+                        );
+
+                });
+
+
+                scene.remove(group);
+
+                resolve();
+
+            }
+
+        }
+
+
+        requestAnimationFrame(
+            step
+        );
+
+    });
+
+}
+
+
+
+/* =========================================================
+   HISTORIAL
+========================================================= */
+
+let moveHistory = [];
+
+let isBusy = false;
+
+
+
+async function performMove(
+    moveName,
+    recordHistory = true
+) {
+
+    const move =
+        MOVES[moveName];
+
+    if (!move) return;
+
+
+    status.textContent =
+        "Movimiento: " +
+        formatMove(moveName);
+
+
+    await rotateLayer(
+
+        move.axis,
+
+        move.layer,
+
+        move.direction
+
+    );
+
+
+    if (recordHistory) {
+
+        moveHistory.push(
+            moveName
+        );
+
     }
+
+}
+
+
+
+async function makeMove(
+    moveName,
+    recordHistory = true
+) {
+
+    if (isBusy) return;
+
+
+    isBusy = true;
+
+    setBusy(true);
+
+
+    await performMove(
+
+        moveName,
+
+        recordHistory
+
+    );
+
+
+    isBusy = false;
+
+    setBusy(false);
+
+}
+
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+const scrambleBtn =
+    document.getElementById(
+        "scrambleBtn"
+    );
+
+
+const solveBtn =
+    document.getElementById(
+        "solveBtn"
+    );
+
+
+const resetBtn =
+    document.getElementById(
+        "resetBtn"
+    );
+
+
+const moveButtons =
+    document.getElementById(
+        "moveButtons"
+    );
+
+
+const backupControls =
+    document.getElementById(
+        "backupControls"
+    );
+
+
+const toggleBtn =
+    document.getElementById(
+        "toggleBtn"
+    );
+
+
+
+function setBusy(busy) {
+
+    scrambleBtn.disabled =
+        busy;
+
+    solveBtn.disabled =
+        busy;
+
+    resetBtn.disabled =
+        busy;
+
+
+    moveButtons
+        .querySelectorAll("button")
+        .forEach(
+            b => b.disabled = busy
+        );
+
+}
+
+
+
+moveButtons.addEventListener(
+    "click",
+    event => {
+
+        const btn =
+            event.target.closest(
+                "button"
+            );
+
+
+        if (!btn || isBusy) return;
+
+
+        makeMove(
+
+            btn.dataset.move,
+
+            true
+
+        );
+
+    }
+);
+
+
+
+function toggleButtons() {
+
+    backupControls.classList.toggle(
+        "hidden"
+    );
+
+
+    toggleBtn.textContent =
+
+        backupControls.classList.contains(
+            "hidden"
+        )
+
+            ? "🎛️ Mostrar botones de respaldo"
+
+            : "🎛️ Ocultar botones de respaldo";
+
+}
+
+
+
+/* =========================================================
+   MEZCLAR
+========================================================= */
+
+async function scramble() {
+
+    if (isBusy) return;
+
+
+    isBusy = true;
+
+    setBusy(true);
+
+
+    status.textContent =
+        "🔀 Mezclando...";
+
+
+    const possibleMoves =
+        Object.keys(MOVES);
+
+
+    for (
+        let i = 0;
+        i < 20;
+        i++
+    ) {
+
+        const randomMove =
+            possibleMoves[
+                Math.floor(
+                    Math.random() *
+                    possibleMoves.length
+                )
+            ];
+
+
+        await performMove(
+
+            randomMove,
+
+            true
+
+        );
+
+    }
+
+
+    status.textContent =
+        "🌀 Cubo mezclado — probá 🧠 Resolver";
+
+
+    isBusy = false;
+
+    setBusy(false);
+
+}
+
+
+
+/* =========================================================
+   RESOLVER
+========================================================= */
+
+async function solveCube() {
+
+    if (isBusy) return;
+
+
+    if (
+        moveHistory.length === 0
+    ) {
+
+        status.textContent =
+            "El cubo ya está resuelto";
+
+        return;
+
+    }
+
+
+    isBusy = true;
+
+    setBusy(true);
+
+
+    status.textContent =
+        "🧠 Resolviendo...";
+
+
+    while (
+        moveHistory.length > 0
+    ) {
+
+        const last =
+            moveHistory.pop();
+
+
+        await performMove(
+
+            INVERSE[last],
+
+            false
+
+        );
+
+    }
+
+
+    status.textContent =
+        "✅ Cubo resuelto";
+
+
+    isBusy = false;
+
+    setBusy(false);
+
+}
+
+
+
+/* =========================================================
+   REINICIAR
+========================================================= */
+
+function resetCube() {
+
+    if (isBusy) return;
+
+
+    buildCube();
+
+    moveHistory = [];
+
+
+    status.textContent =
+        "✅ Cubo resuelto";
+
+}
+
+
+
+scrambleBtn.addEventListener(
+    "click",
+    scramble
+);
+
+
+solveBtn.addEventListener(
+    "click",
+    solveCube
+);
+
+
+resetBtn.addEventListener(
+    "click",
+    resetCube
+);
+
+
+
+/* =========================================================
+   GESTOS
+========================================================= */
+
+const raycaster =
+    new THREE.Raycaster();
+
+
+const pointer =
+    new THREE.Vector2();
+
+
+const worldAxes = {
+
+    x:
+        new THREE.Vector3(
+            1,
+            0,
+            0
+        ),
+
+    y:
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+
+    z:
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        )
+
+};
+
+
+
+let gestureActive = false;
+
+let gestureHit = null;
+
+let gestureStartX = 0;
+
+let gestureStartY = 0;
+
+
+
+function getFaceHit(event) {
+
+    const rect =
+        renderer.domElement
+        .getBoundingClientRect();
+
+
+    pointer.x =
+
+        (
+            (event.clientX - rect.left)
+            /
+            rect.width
+        ) * 2 - 1;
+
+
+    pointer.y =
+
+        -(
+            (event.clientY - rect.top)
+            /
+            rect.height
+        ) * 2 + 1;
+
+
+    raycaster.setFromCamera(
+
+        pointer,
+
+        camera
+
+    );
+
+
+    const meshes =
+        cubies.map(
+            c => c.mesh
+        );
+
+
+    const hits =
+        raycaster.intersectObjects(
+            meshes
+        );
+
+
+    return hits.length
+        ? hits[0]
+        : null;
+
+}
+
+
+
+function toScreenPx(
+    worldPoint
+) {
+
+    const rect =
+        renderer.domElement
+        .getBoundingClientRect();
+
+
+    const v =
+        worldPoint
+        .clone()
+        .project(camera);
+
+
+    return new THREE.Vector2(
+
+        (v.x * 0.5 + 0.5)
+        * rect.width,
+
+        (-(v.y * 0.5) + 0.5)
+        * rect.height
+
+    );
+
+}
+
+
+
+function determineMove(
+    hit,
+    dx,
+    dy
+) {
+
+    const worldNormal =
+        hit.face.normal
+            .clone()
+            .transformDirection(
+                hit.object.matrixWorld
+            )
+            .normalize();
+
+
+    let normalAxisKey = "x";
+
+
+    let maxComp =
+        Math.abs(
+            worldNormal.x
+        );
+
+
+    if (
+        Math.abs(worldNormal.y)
+        > maxComp
+    ) {
+
+        normalAxisKey = "y";
+
+        maxComp =
+            Math.abs(
+                worldNormal.y
+            );
+
+    }
+
+
+    if (
+        Math.abs(worldNormal.z)
+        > maxComp
+    ) {
+
+        normalAxisKey = "z";
+
+        maxComp =
+            Math.abs(
+                worldNormal.z
+            );
+
+    }
+
+
+    const candidateAxes =
+        ["x","y","z"]
+        .filter(
+            k =>
+                k !== normalAxisKey
+        );
+
+
+    const cubieObj =
+        cubies.find(
+            c =>
+                c.mesh === hit.object
+        );
+
+
+    if (!cubieObj)
+        return null;
+
+
+    const origin =
+        hit.point.clone();
+
+
+    const originPx =
+        toScreenPx(
+            origin
+        );
+
+
+    const dragVec =
+        new THREE.Vector2(
+            dx,
+            dy
+        );
+
+
+    if (
+        dragVec.lengthSq()
+        < 1e-6
+    )
+        return null;
+
+
+    dragVec.normalize();
+
+
+    const TEST_ANGLE = 0.2;
+
+
+    let best = null;
+
+
+    candidateAxes.forEach(
+
+        axisKey => {
+
+            const layer =
+                cubieObj[axisKey];
+
+
+            if (layer === 0)
+                return;
+
+
+            [1,-1].forEach(
+
+                direction => {
+
+                    const q =
+                        new THREE.Quaternion()
+                        .setFromAxisAngle(
+
+                            worldAxes[
+                                axisKey
+                            ],
+
+                            TEST_ANGLE *
+                            direction
+
+                        );
+
+
+                    const testPoint =
+                        origin.clone()
+                        .applyQuaternion(q);
+
+
+                    const testPx =
+                        toScreenPx(
+                            testPoint
+                        );
+
+
+                    const screenDelta =
+                        new THREE.Vector2(
+
+                            testPx.x -
+                            originPx.x,
+
+                            testPx.y -
+                            originPx.y
+
+                        );
+
+
+                    if (
+                        screenDelta.lengthSq()
+                        < 1e-6
+                    )
+                        return;
+
+
+                    screenDelta.normalize();
+
+
+                    const score =
+                        dragVec.dot(
+                            screenDelta
+                        );
+
+
+                    if (
+                        !best ||
+                        score > best.score
+                    ) {
+
+                        best = {
+
+                            score,
+
+                            axisKey,
+
+                            layer,
+
+                            direction
+
+                        };
+
+                    }
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+    if (
+        !best ||
+        best.score < 0.35
+    ) {
+
+        return null;
+
+    }
+
+
+    return Object.keys(
+        MOVES
+    ).find(name => {
+
+        const m =
+            MOVES[name];
+
+
+        return (
+
+            m.axis ===
+            best.axisKey &&
+
+            m.layer ===
+            best.layer &&
+
+            m.direction ===
+            best.direction
+
+        );
+
+    });
+
+}
+
+
+
+renderer.domElement.addEventListener(
+    "pointerdown",
+    event => {
+
+        if (isBusy) return;
+
+
+        const hit =
+            getFaceHit(event);
+
+
+        if (
+            hit &&
+            hit.face
+        ) {
+
+            gestureHit = hit;
+
+
+            gestureStartX =
+                event.clientX;
+
+
+            gestureStartY =
+                event.clientY;
+
+
+            gestureActive = true;
+
+
+            controls.enabled =
+                false;
+
+        }
+
+    }
+);
+
+
+
+window.addEventListener(
+    "pointerup",
+    event => {
+
+        if (!gestureActive)
+            return;
+
+
+        gestureActive = false;
+
+
+        controls.enabled = true;
+
+
+        const dx =
+            event.clientX -
+            gestureStartX;
+
+
+        const dy =
+            event.clientY -
+            gestureStartY;
+
+
+        const distance =
+            Math.hypot(
+                dx,
+                dy
+            );
+
+
+        if (
+            distance < 20 ||
+            isBusy
+        ) {
+
+            gestureHit = null;
+
+            return;
+
+        }
+
+
+        const move =
+            determineMove(
+
+                gestureHit,
+
+                dx,
+
+                dy
+
+            );
+
+
+        if (move) {
+
+            makeMove(
+
+                move,
+
+                true
+
+            );
+
+        } else {
+
+            status.textContent =
+                "🤔 No reconocí ese movimiento, probá de nuevo";
+
+        }
+
+
+        gestureHit = null;
+
+    }
+);
+
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    controls.update();
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+
+/* =========================================================
+   INICIO
+========================================================= */
+
+buildCube();
+
+animate();
+
 </script>
 
 </body>
 </html>
+```

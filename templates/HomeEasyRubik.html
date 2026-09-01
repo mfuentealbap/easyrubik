@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>easyRubik — aprendé a resolver el cubo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+
+        :root {
+            --bg: #121319;
+            --bg-soft: #191b23;
+            --ink: #f4f5f7;
+            --ink-dim: #9a9db0;
+            --line: #2a2d3a;
+
+            --c-white: #f8fafc;
+            --c-yellow: #facc15;
+            --c-green: #22c55e;
+            --c-blue: #3b82f6;
+            --c-red: #ef4444;
+            --c-orange: #f97316;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: "Inter", sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+        }
+
+        .stage {
+            width: 100%;
+            max-width: 980px;
+
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+
+            align-items: center;
+            gap: 64px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            font-family: "Sora", sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+
+            letter-spacing: -0.01em;
+            color: var(--ink-dim);
+
+            margin-bottom: 48px;
+        }
+
+        .brand .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 2px;
+            background: var(--c-red);
+        }
+
+        h1 {
+            font-family: "Sora", sans-serif;
+            font-weight: 800;
+
+            font-size: clamp(2.4rem, 4.2vw, 3.4rem);
+            line-height: 1.08;
+
+            letter-spacing: -0.02em;
+
+            margin: 0 0 22px;
+
+            max-width: 11ch;
+        }
+
+        p.lede {
+            font-size: 1.08rem;
+            line-height: 1.65;
+
+            color: var(--ink-dim);
+
+            max-width: 46ch;
+
+            margin: 0 0 36px;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .cta {
+            display: inline-block;
+
+            background: var(--ink);
+            color: #14151b;
+
+            font-family: "Sora", sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+
+            text-decoration: none;
+
+            padding: 15px 28px;
+
+            border-radius: 10px;
+
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease;
+        }
+
+        .cta:hover {
+            background: var(--c-yellow);
+            transform: translateY(-2px);
+        }
+
+        .cta:active {
+            transform: translateY(0);
+        }
+
+        .hint {
+            color: var(--ink-dim);
+            font-size: 0.92rem;
+        }
+
+        /* Mosaico animado */
+
+        .facepiece {
+            display: flex;
+            justify-content: center;
+        }
+
+        .grid3 {
+            --gap: 8px;
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 64px);
+            grid-template-rows: repeat(3, 64px);
+
+            gap: var(--gap);
+
+            transform: rotate(-3deg);
+        }
+
+        .grid3 span {
+            border-radius: 9px;
+
+            box-shadow:
+                inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+
+            animation:
+                settle 1.1s cubic-bezier(.2, .9, .25, 1) both;
+        }
+
+        @keyframes settle {
+
+            0% {
+                transform:
+                    translate(var(--fx, 0), var(--fy, 0))
+                    rotate(var(--fr, 0deg));
+
+                opacity: 0;
+            }
+
+            100% {
+                transform:
+                    translate(0, 0)
+                    rotate(0deg);
+
+                opacity: 1;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .grid3 span {
+                animation: none;
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 760px) {
+
+            .stage {
+                grid-template-columns: 1fr;
+                gap: 44px;
+                text-align: left;
+            }
+
+            .facepiece {
+                order: -1;
+            }
+
+            .grid3 {
+                transform: none;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <div class="stage">
+
+        <div>
+
+            <div class="brand">
+                <span class="dot"></span>
+                easyRubik
+            </div>
+
+            <h1>
+                Resuelve el cubo, un movimiento a la vez
+            </h1>
+
+            <p class="lede">
+                Practica con un cubo 3×3×3 en 3D directamente
+                en el navegador: arrastra una cara para girarla,
+                mezcla y deshace cada movimiento para ver
+                exactamente cómo se resuelve.
+            </p>
+
+            <div class="actions">
+
+                <!-- BOTÓN AL SIMULADOR -->
+                <a class="cta" href="{% url 'simulador' %}">
+                    Abrir el simulador
+                </a>
+
+                <span class="hint">
+                    No necesitas instalar nada
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="facepiece">
+
+            <div class="grid3" id="grid3"></div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // Colores del mosaico
+
+        const colors = [
+            "var(--c-white)",
+            "var(--c-red)",
+            "var(--c-green)",
+
+            "var(--c-yellow)",
+            "var(--c-blue)",
+            "var(--c-white)",
+
+            "var(--c-orange)",
+            "var(--c-green)",
+            "var(--c-red)"
+        ];
+
+
+        const grid = document.getElementById("grid3");
+
+
+        colors.forEach((color, i) => {
+
+            const cell = document.createElement("span");
+
+            cell.style.background = color;
+
+            cell.style.setProperty(
+                "--fx",
+                (Math.random() * 60 - 30) + "px"
+            );
+
+            cell.style.setProperty(
+                "--fy",
+                (Math.random() * -50 - 20) + "px"
+            );
+
+            cell.style.setProperty(
+                "--fr",
+                (Math.random() * 60 - 30) + "deg"
+            );
+
+            cell.style.animationDelay =
+                (i * 55) + "ms";
+
+            grid.appendChild(cell);
+
+        });
+
+    </script>
+
+</body>
+
+</html>
