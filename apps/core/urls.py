@@ -7,5 +7,7 @@ urlpatterns = [
     path("selector/", views.selector, name="selector"),
     path("simulador/", views.simulador, name="simulador"),
     path("simulador/4x4/", views.cuatro_por_cuatro, name="cuatro_por_cuatro"),
-    path("desafio/", views.desafio, name="desafio")
+    path("desafio/", views.desafio, name="desafio"),
+   path("5x5x5/", views.cinco_por_cinco, name="cinco_por_cinco"),
+   path("megaminx/", views.megaminx, name="megaminx"),
 ]

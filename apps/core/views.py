@@ -1,3 +1,4 @@
+from django.core.serializers import python
 from django.shortcuts import render
 
 
@@ -17,3 +18,9 @@ def cuatro_por_cuatro(request):
 
 def desafio(request):
     return render(request, "desafio.html")
+
+def cinco_por_cinco(request):
+    return render(request, "CincoPorCinco.html")
+
+def megaminx(request):
+    return render(request, "Megaminx.html")
