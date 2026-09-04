@@ -1,0 +1,704 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>easyRubik - Megaminx</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0f1117;
+            color: white;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            background: #181b24;
+            border-bottom: 1px solid #2b303d;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: #6c8cff;
+        }
+
+        /* =========================
+           CONTENEDOR PRINCIPAL
+        ========================= */
+
+        .container {
+            width: 100%;
+            min-height: calc(100vh - 70px);
+
+            padding: 30px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 1350px;
+
+            display: grid;
+            grid-template-columns: minmax(650px, 1fr) 350px;
+
+            gap: 25px;
+        }
+
+        /* =========================
+           VISOR
+        ========================= */
+
+        .viewer {
+            height: 720px;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #202531 0%,
+                    #181b24 55%,
+                    #141720 100%
+                );
+
+            border: 1px solid #2b303d;
+            border-radius: 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+
+            position: relative;
+        }
+
+        /*
+            Contenedor del Megaminx.
+            Lo hacemos grande para que cubing.js
+            tenga espacio suficiente.
+        */
+
+        #cube-container {
+            width: 680px;
+            height: 680px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+        }
+
+        #cube-container twisty-player {
+            display: block;
+
+            width: 680px;
+            height: 680px;
+
+            min-width: 680px;
+            min-height: 680px;
+        }
+
+        /* =========================
+           PANEL DERECHO
+        ========================= */
+
+        .panel {
+            align-self: start;
+
+            background: #181b24;
+
+            border: 1px solid #2b303d;
+            border-radius: 20px;
+
+            padding: 25px;
+        }
+
+        .panel h1 {
+            margin: 0 0 8px 0;
+
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #6c8cff;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            margin-bottom: 20px;
+        }
+
+        .panel p {
+            color: #aeb4c2;
+
+            line-height: 1.6;
+
+            font-size: 15px;
+        }
+
+        /* =========================
+           BOTONES
+        ========================= */
+
+        .buttons {
+            margin-top: 25px;
+        }
+
+        button {
+            width: 100%;
+
+            padding: 15px;
+
+            margin-top: 12px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #2a3040;
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                transform 0.15s ease;
+        }
+
+        button:hover {
+            background: #384158;
+
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: #526cff;
+        }
+
+        .btn-primary:hover {
+            background: #657cff;
+        }
+
+        /* =========================
+           ESTADO
+        ========================= */
+
+        .status {
+            margin-top: 20px;
+
+            padding: 15px;
+
+            background: #10131a;
+
+            border: 1px solid #242936;
+
+            border-radius: 10px;
+
+            color: #9da6b8;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        /* =========================
+           INFO
+        ========================= */
+
+        .info-box {
+            margin-top: 20px;
+
+            padding: 15px;
+
+            background: #10131a;
+
+            border-radius: 10px;
+
+            border: 1px solid #242936;
+        }
+
+        .info-title {
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+            color: white;
+        }
+
+        .info-text {
+            color: #8f98aa;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .viewer {
+                height: 680px;
+            }
+
+            .panel {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 750px) {
+
+            .container {
+                padding: 10px;
+            }
+
+            .viewer {
+                height: 520px;
+            }
+
+            #cube-container {
+                width: 500px;
+                height: 500px;
+            }
+
+            #cube-container twisty-player {
+                width: 500px;
+                height: 500px;
+
+                min-width: 500px;
+                min-height: 500px;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .header {
+                padding: 0 18px;
+            }
+
+            .container {
+                padding: 8px;
+            }
+
+            .viewer {
+                height: 430px;
+
+                border-radius: 14px;
+            }
+
+            #cube-container {
+                width: 410px;
+                height: 410px;
+            }
+
+            #cube-container twisty-player {
+                width: 410px;
+                height: 410px;
+
+                min-width: 410px;
+                min-height: 410px;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="header">
+
+        <div class="logo">
+            easy<span>Rubik</span>
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         CONTENIDO
+    ========================= -->
+
+    <main class="container">
+
+        <div class="content">
+
+
+            <!-- =========================
+                 MEGAMINX
+            ========================= -->
+
+            <section class="viewer">
+
+                <div id="cube-container"></div>
+
+            </section>
+
+
+            <!-- =========================
+                 PANEL
+            ========================= -->
+
+            <aside class="panel">
+
+                <h1>Megaminx</h1>
+
+                <div class="subtitle">
+                    SIMULADOR 3D
+                </div>
+
+
+                <p>
+                    Aprende a resolver el Megaminx utilizando
+                    un simulador 3D interactivo.
+                </p>
+
+                <p>
+                    🖱️ <strong>Arrastra</strong> el Megaminx
+                    para cambiar la vista.
+                </p>
+
+                <p>
+                    🧩 También puedes interactuar directamente
+                    con las caras del puzzle.
+                </p>
+
+
+                <!-- BOTONES -->
+
+                <div class="buttons">
+
+                    <button
+                        id="scramble"
+                        class="btn-primary">
+
+                        🔀 Mezclar Megaminx
+
+                    </button>
+
+
+                    <button id="reset">
+
+                        🔄 Reiniciar
+
+                    </button>
+
+                </div>
+
+
+                <!-- ESTADO -->
+
+                <div
+                    class="status"
+                    id="status">
+
+                    ⏳ Cargando Megaminx...
+
+                </div>
+
+
+                <!-- INFORMACIÓN -->
+
+                <div class="info-box">
+
+                    <div class="info-title">
+                        💡 ¿Cómo jugar?
+                    </div>
+
+                    <div class="info-text">
+
+                        Arrastra el Megaminx para
+                        observarlo desde diferentes
+                        ángulos.
+
+                        <br><br>
+
+                        También puedes utilizar
+                        los controles del puzzle
+                        para realizar movimientos.
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script type="module">
+
+        /*
+         * Cargamos cubing.js directamente.
+         */
+
+        const { TwistyPlayer } = await import(
+            "https://cdn.cubing.net/v0/js/cubing/twisty"
+        );
+
+
+        /*
+         * Elementos HTML
+         */
+
+        const container =
+            document.getElementById("cube-container");
+
+        const scrambleButton =
+            document.getElementById("scramble");
+
+        const resetButton =
+            document.getElementById("reset");
+
+        const status =
+            document.getElementById("status");
+
+
+        /*
+         * Variable que almacenará
+         * nuestro Megaminx.
+         */
+
+        let player = null;
+
+
+        /* =========================
+           CREAR MEGAMINX
+        ========================= */
+
+        try {
+
+            player = new TwistyPlayer({
+    puzzle: "megaminx",
+    visualization: "3D",
+
+    // Permite manipular las caras
+    experimentalMovePressInput: "auto",
+
+    // Permite controlar la vista
+    experimentalDragInput: "auto"
+});
+
+            /*
+             * Tamaño del visor
+             */
+
+            player.style.width = "680px";
+
+            player.style.height = "680px";
+
+            player.style.display = "block";
+
+
+            /*
+             * Lo agregamos al contenedor
+             */
+
+            container.appendChild(player);
+
+
+            /*
+             * Esperamos a que el componente
+             * esté completamente definido.
+             */
+
+            await customElements.whenDefined(
+                "twisty-player"
+            );
+
+
+            console.log(
+                "easyRubik: Megaminx creado correctamente"
+            );
+
+
+            status.textContent =
+                "✅ Megaminx cargado correctamente";
+
+
+        } catch (error) {
+
+            console.error(
+                "Error creando Megaminx:",
+                error
+            );
+
+
+            status.textContent =
+                "❌ No se pudo cargar el Megaminx";
+
+        }
+
+
+        /* =========================
+           MEZCLAR
+        ========================= */
+
+        scrambleButton.addEventListener(
+            "click",
+            async () => {
+
+                if (!player) {
+                    return;
+                }
+
+
+                status.textContent =
+                    "🔀 Generando mezcla...";
+
+
+                scrambleButton.disabled = true;
+
+
+                try {
+
+                    /*
+                     * Importamos el generador
+                     * de scrambles.
+                     */
+
+                    const {
+                        randomScrambleForEvent
+                    } = await import(
+                        "https://cdn.cubing.net/v0/js/cubing/scramble"
+                    );
+
+
+                    /*
+                     * "minx" es el código utilizado
+                     * por cubing.js para Megaminx.
+                     */
+
+                    const scramble =
+                        await randomScrambleForEvent(
+                            "minx"
+                        );
+
+
+                    const algoritmo =
+                        scramble.toString();
+
+
+                    console.log(
+                        "Scramble generado:",
+                        algoritmo
+                    );
+
+
+                    /*
+                     * Aplicamos el scramble.
+                     */
+
+                    player.alg = algoritmo;
+
+
+                    status.textContent =
+                        "🔀 Megaminx mezclado";
+
+                } catch (error) {
+
+                    console.error(
+                        "Error generando scramble:",
+                        error
+                    );
+
+
+                    status.textContent =
+                        "❌ Error al generar la mezcla";
+
+                }
+
+
+                scrambleButton.disabled = false;
+
+            }
+        );
+
+
+        /* =========================
+           REINICIAR
+        ========================= */
+
+        resetButton.addEventListener(
+            "click",
+            () => {
+
+                if (!player) {
+                    return;
+                }
+
+
+                /*
+                 * Algoritmo vacío =
+                 * puzzle resuelto.
+                 */
+
+                player.alg = "";
+
+
+                status.textContent =
+                    "🔄 Megaminx reiniciado";
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
+```

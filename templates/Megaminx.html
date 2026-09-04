@@ -1,301 +1,727 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MegaMinx - Estilo Vectorial Exacto</title>
-<style>
-* {
-    box-sizing: border-box;
-}
-body {
-    margin: 0;
-    min-height: 100vh;
-    background-color: #121212;
-    color: #e0e0e0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.app-container {
-    display: flex;
-    background: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    overflow: hidden;
-    max-width: 850px;
-    width: 100%;
-}
-.canvas-section {
-    flex: 1;
-    background: #181818;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-canvas {
-    background: #181818;
-    cursor: grab;
-    display: block;
-}
-canvas:active {
-    cursor: grabbing;
-}
-.sidebar {
-    width: 260px;
-    background: #222;
-    border-left: 1px solid #333;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.sidebar h2 {
-    margin-top: 0;
-    font-size: 1.3rem;
-    color: #fff;
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-}
-.menu-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: bold;
-    cursor: pointer;
-    background: #2d2d2d;
-    color: #fff;
-    border: 1px solid #444;
-    transition: background 0.2s;
-}
-button:hover {
-    background: #3d3d3d;
-}
-#scrambleBtn { background: #1f3a60; border-color: #2a4d80; }
-#solveBtn { background: #1b4d3e; border-color: #276f59; }
-#resetBtn { background: #4a2828; border-color: #6b3838; }
 
-.status-box {
-    margin-top: 15px;
-    padding: 10px;
-    background: #1a2e23;
-    border: 1px solid #2d5a41;
-    color: #5cd69a;
-    text-align: center;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: bold;
+<title>EasyRubik - Simulador Megaminx</title>
+
+<style>
+
+/* =====================================================
+   RESET
+===================================================== */
+
+*{
+    box-sizing:border-box;
 }
+
+html,
+body{
+    margin:0;
+    min-height:100%;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#0f1117;
+    color:#f8fafc;
+}
+
+/* =====================================================
+   CONTENEDOR
+===================================================== */
+
+.page{
+    width:100%;
+    max-width:1250px;
+    min-height:100vh;
+    margin:0 auto;
+    padding:35px 40px;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.logo{
+    margin:0;
+    font-size:2.8rem;
+    font-weight:800;
+    letter-spacing:-1.5px;
+}
+
+.logo span{
+    color:#facc15;
+}
+
+.subtitle{
+    margin:10px 0 0;
+    color:#9ca3af;
+    font-size:15px;
+}
+
+/* =====================================================
+   DISTRIBUCIÓN PRINCIPAL
+===================================================== */
+
+.simulator-layout{
+    display:grid;
+    grid-template-columns:minmax(500px,1fr) 380px;
+    gap:45px;
+    align-items:center;
+}
+
+/* =====================================================
+   MEGAMINX
+===================================================== */
+
+.puzzle-section{
+    min-width:0;
+}
+
+.puzzle-card{
+    position:relative;
+    width:100%;
+    height:560px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #202633 0%,
+            #181c26 45%,
+            #10131a 100%
+        );
+
+    border:1px solid #2b303d;
+    border-radius:24px;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.28);
+
+    overflow:hidden;
+}
+
+/*
+   CANVAS REAL DEL MEGAMINX.
+   NO SE CAMBIA.
+*/
+
+#stage{
+    display:block;
+    width:100%;
+    height:100%;
+    min-width:0;
+    min-height:0;
+
+    cursor:grab;
+    touch-action:none;
+    outline:none;
+}
+
+#stage:active{
+    cursor:grabbing;
+}
+
+/* =====================================================
+   AYUDA
+===================================================== */
+
+.help{
+    margin-top:14px;
+    text-align:center;
+    color:#9ca3af;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.help strong{
+    color:#f8fafc;
+}
+
+/* =====================================================
+   PANEL
+===================================================== */
+
+.controls-panel{
+    background:#181b24;
+    border:1px solid #2b303d;
+    border-radius:24px;
+    padding:28px;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.20);
+}
+
+.controls-panel h2{
+    margin:0 0 10px;
+    font-size:1.8rem;
+}
+
+.controls-panel .description{
+    margin:0;
+    color:#9ca3af;
+    font-size:14px;
+    line-height:1.55;
+}
+
+/* =====================================================
+   DIVISOR
+===================================================== */
+
+.divider{
+    height:1px;
+    background:#2b303d;
+    margin:24px 0;
+}
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+.main-button{
+    width:100%;
+    padding:15px 16px;
+    margin-top:10px;
+
+    border:1px solid #353c4d;
+    border-radius:12px;
+
+    background:#252b39;
+    color:#f8fafc;
+
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:
+        background .15s ease,
+        transform .1s ease,
+        border-color .15s ease;
+
+    text-decoration:none;
+    display:block;
+    text-align:center;
+}
+
+.main-button:hover{
+    background:#323a4d;
+}
+
+.main-button:active{
+    transform:scale(.98);
+}
+
+/* Mezclar */
+
+#btnScramble{
+    border-color:#665438;
+}
+
+/* Resolver */
+
+#btnSolve{
+    border-color:#395f4b;
+}
+
+/* Detener */
+
+#btnStop{
+    border-color:#573d45;
+}
+
+/* =====================================================
+   BOTÓN VOLVER AL SELECTOR
+===================================================== */
+
+.back-button{
+    margin-top:22px;
+    background:#20242f;
+    border-color:#353c4d;
+    color:#f8fafc;
+}
+
+.back-button:hover{
+    background:#2b303d;
+    border-color:#454d60;
+}
+
+/* =====================================================
+   ESTADO
+===================================================== */
+
+.status{
+    margin-top:18px;
+    padding:14px;
+
+    border-radius:12px;
+
+    background:#10131a;
+    border:1px solid #252a36;
+
+    color:#9ca3af;
+
+    font-size:13px;
+    line-height:1.5;
+}
+
+/* =====================================================
+   ELEMENTOS INTERNOS DEL MOTOR
+   app.js necesita estos elementos.
+   NO ELIMINAR.
+===================================================== */
+
+#fact,
+#ticker,
+#stats,
+#map,
+#teachBadge,
+#teachBar,
+#teachNext,
+#teachAuto,
+#teachExit,
+#teachBack,
+#teachAgain,
+#btnMap,
+#btnScan,
+#btnStats,
+#btnSpecimen,
+#btnScore,
+#btnRoom,
+#btnMaths,
+#score,
+#maths,
+#scan,
+#arPrompt,
+#viewChip,
+#undoChip,
+#nogl{
+    display:none !important;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:900px){
+
+    .page{
+        padding:25px 20px;
+    }
+
+    .simulator-layout{
+        grid-template-columns:1fr;
+        gap:25px;
+    }
+
+    .puzzle-card{
+        height:520px;
+    }
+
+    .controls-panel{
+        width:100%;
+    }
+}
+
+@media(max-width:600px){
+
+    .page{
+        padding:20px 12px;
+    }
+
+    .header{
+        margin-bottom:25px;
+    }
+
+    .logo{
+        font-size:2.2rem;
+    }
+
+    .simulator-layout{
+        gap:20px;
+    }
+
+    .puzzle-card{
+        height:430px;
+        border-radius:18px;
+    }
+
+    .controls-panel{
+        padding:22px;
+        border-radius:18px;
+    }
+
+    .help{
+        font-size:13px;
+    }
+}
+
 </style>
 </head>
+
+
 <body>
 
-<div class="app-container">
-    <div class="canvas-section">
-        <canvas id="megaminxCanvas" width="450" height="450"></canvas>
-    </div>
+<div class="page">
 
-    <div class="sidebar">
-        <div>
-            <h2>MegaMinx</h2>
-            <div class="menu-group">
-                <button id="scrambleBtn">Scramble</button>
-                <button id="solveBtn">Solver</button>
-                <button id="resetBtn">Reset</button>
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <header class="header">
+
+        <h1 class="logo">
+            easy<span>Rubik</span>
+        </h1>
+
+        <p class="subtitle">
+            Simulador interactivo de Megaminx
+        </p>
+
+    </header>
+
+
+    <!-- =================================================
+         SIMULADOR
+    ================================================== -->
+
+    <main class="simulator-layout">
+
+
+        <!-- =================================================
+             MEGAMINX
+        ================================================== -->
+
+        <section class="puzzle-section">
+
+            <div class="puzzle-card">
+
+                <!-- CANVAS REAL DEL MEGAMINX -->
+
+                <canvas
+                    id="stage"
+                    aria-label="Megaminx 3D interactivo">
+                </canvas>
+
             </div>
-            <div id="status" class="status-box">Status: Solved</div>
-        </div>
-    </div>
+
+
+            <div class="help">
+
+                <strong>🖱️ Cómo usarlo:</strong>
+
+                Arrastra una cara para moverla.
+
+                Arrastra el espacio alrededor para girar la vista.
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PANEL DE CONTROLES
+        ================================================== -->
+
+        <aside class="controls-panel">
+
+            <h2>
+                🎛️ Controles
+            </h2>
+
+            <p class="description">
+                Practica con el Megaminx en 3D.
+                Puedes mezclarlo, resolverlo o
+                detener una animación en cualquier momento.
+            </p>
+
+
+            <div class="divider"></div>
+
+
+            <!-- =================================================
+                 BOTONES PRINCIPALES
+            ================================================== -->
+
+            <button
+                id="btnScramble"
+                class="main-button"
+                type="button">
+
+                🔀 Mezclar
+
+            </button>
+
+
+            <button
+                id="btnSolve"
+                class="main-button"
+                type="button">
+
+                🧠 Resolver
+
+            </button>
+
+
+            <button
+                id="btnStop"
+                class="main-button"
+                type="button">
+
+                ⏹️ Detener
+
+            </button>
+
+
+            <!-- =================================================
+                 VOLVER AL SELECTOR
+            ================================================== -->
+
+            <a
+                href="{% url 'selector' %}"
+                class="main-button back-button">
+
+                ← Volver al selector
+
+            </a>
+
+
+            <!-- =================================================
+                 ESTADO
+            ================================================== -->
+
+            <div
+                id="status"
+                class="status">
+
+                Cargando Megaminx...
+
+            </div>
+
+
+            <!-- =================================================
+                 ELEMENTOS INTERNOS REQUERIDOS POR app.js
+            ================================================== -->
+
+            <div id="fact"></div>
+
+            <div id="ticker"></div>
+
+
+            <div id="stats">
+
+                <div id="statBars"></div>
+                <div id="statCap"></div>
+                <div id="statLines"></div>
+                <div id="statHere"></div>
+
+            </div>
+
+
+            <div id="map">
+
+                <div id="mapCap"></div>
+                <div id="mapLive"></div>
+
+            </div>
+
+
+            <div id="teachBadge"></div>
+            <div id="teachBar"></div>
+
+
+            <button
+                id="teachNext"
+                type="button">
+            </button>
+
+            <button
+                id="teachAuto"
+                type="button">
+            </button>
+
+            <button
+                id="teachExit"
+                type="button">
+            </button>
+
+            <button
+                id="teachBack"
+                type="button">
+            </button>
+
+            <button
+                id="teachAgain"
+                type="button">
+            </button>
+
+
+            <button
+                id="btnMap"
+                type="button">
+            </button>
+
+            <button
+                id="btnScan"
+                type="button">
+            </button>
+
+            <button
+                id="btnStats"
+                type="button">
+            </button>
+
+            <button
+                id="btnSpecimen"
+                type="button">
+            </button>
+
+
+            <button
+                id="btnScore"
+                type="button">
+            </button>
+
+
+            <button
+                id="btnRoom"
+                type="button">
+            </button>
+
+            <button
+                id="btnMaths"
+                type="button">
+            </button>
+
+
+            <!-- =================================================
+                 SCORE
+            ================================================== -->
+
+            <div id="score">
+
+                <input id="scoreInput">
+
+                <div id="scoreTokens"></div>
+
+                <button
+                    id="scorePerform"
+                    type="button">
+                </button>
+
+                <button
+                    id="scoreStep"
+                    type="button">
+                </button>
+
+                <button
+                    id="scorePatterns"
+                    type="button">
+                </button>
+
+                <button
+                    id="scoreClose"
+                    type="button">
+                </button>
+
+                <div id="scoreHint"></div>
+
+            </div>
+
+
+            <!-- =================================================
+                 MATEMÁTICAS
+            ================================================== -->
+
+            <div id="maths">
+
+                <button
+                    id="mathsClose"
+                    type="button">
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 SCAN
+            ================================================== -->
+
+            <div id="scan">
+
+                <button
+                    id="scanClose"
+                    type="button">
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 AR
+            ================================================== -->
+
+            <div id="arPrompt">
+
+                <button
+                    id="arPromptGo"
+                    type="button">
+                </button>
+
+                <button
+                    id="arPromptNo"
+                    type="button">
+                </button>
+
+            </div>
+
+
+            <div id="viewChip"></div>
+
+            <div id="undoChip"></div>
+
+
+            <!-- =================================================
+                 WEBGL
+            ================================================== -->
+
+            <div id="nogl">
+
+                WebGL no disponible.
+
+            </div>
+
+        </aside>
+
+    </main>
+
 </div>
 
-<script>
-const canvas = document.getElementById("megaminxCanvas");
-const ctx = canvas.getContext("2d");
-const status = document.getElementById("status");
 
-// Variables de rotación interactiva con el mouse
-let rotX = 0.4;
-let rotY = 0.6;
-let isDragging = false;
-let startX, startY;
+<!-- =====================================================
+     MOTOR REAL DEL MEGAMINX
+     NO SE CAMBIA
+====================================================== -->
 
-canvas.addEventListener("mousedown", (e) => {
-    isDragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-});
+<script src="{% static 'megaminx/puzzle.js' %}?v=4"></script>
 
-window.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    rotY += dx * 0.01;
-    rotX += dy * 0.01;
-    startX = e.clientX;
-    startY = e.clientY;
-    drawMegaminx();
-});
+<script src="{% static 'megaminx/map.js' %}?v=3"></script>
 
-window.addEventListener("mouseup", () => {
-    isDragging = false;
-});
+<script src="{% static 'megaminx/ar.js' %}?v=1"></script>
 
-// Colores planos clásicos idénticos a los simuladores web profesionales
-const COLORS = [
-    "#ffffff", // Blanco
-    "#2ecc71", // Verde
-    "#e74c3c", // Rojo
-    "#3498db", // Azul
-    "#e67e22", // Naranja
-    "#9b59b6", // Morado
-    "#f1c40f", // Amarillo
-    "#1abc9c", // Menta
-    "#e84393", // Rosa
-    "#00cec9", // Celeste
-    "#d35400", // Canela
-    "#55efc4"  // Verde claro
-];
+<script src="{% static 'megaminx/app.js' %}?v=12"></script>
 
-// Generación matemática de los centros de las 12 caras del dodecaedro regular
-const phi = (1 + Math.sqrt(5)) / 2;
-const scale = 110; // Tamaño del dibujo en pantalla
+<script src="{% static 'megaminx/scan.js' %}?v=2"></script>
 
-function getDodecahedronFaces() {
-    const t = 1 / Math.sqrt(3);
-    const q = 0.3568220897730899;
-    const p = 0.9341723589627156;
-
-    const rawNormals = [
-        [ t,  t,  t], [-t,  t,  t], [ t, -t,  t], [-t, -t,  t],
-        [ t,  t, -t], [-t,  t, -t], [ t, -t, -t], [-t, -t, -t],
-        [ 0,  q,  p], [ 0,  q, -p], [ 0, -q,  p], [ 0, -q, -p]
-    ];
-
-    return rawNormals.map((n, index) => {
-        // Normalizar vector
-        const len = Math.hypot(n[0], n[1], n[2]);
-        const nx = n[0]/len, ny = n[1]/len, nz = n[2]/len;
-
-        // Construir vértices del pentágono para esta cara
-        const vertices = [];
-        for (let i = 0; i < 5; i++) {
-            const angle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
-            // Proyección aproximada de aristas pentagonales orientadas
-            const vx = nx * 1.5 + Math.cos(angle) * 0.7;
-            const vy = ny * 1.5 + Math.sin(angle) * 0.7;
-            const vz = nz * 1.5;
-            vertices.push([vx, vy, vz]);
-        }
-
-        return {
-            normal: [nx, ny, nz],
-            color: COLORS[index],
-            vertices: vertices
-        };
-    });
-}
-
-function rotateX(x, y, z, angle) {
-    const cos = Math.cos(angle), sin = Math.sin(angle);
-    return [x, y * cos - z * sin, y * sin + z * cos];
-}
-
-function rotateY(x, y, z, angle) {
-    const cos = Math.cos(angle), sin = Math.sin(angle);
-    return [x * cos + z * sin, y, -x * sin + z * cos];
-}
-
-function drawMegaminx() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const faces = getDodecahedronFaces();
-
-    // Procesar y ordenar caras por profundidad (Painter's Algorithm)
-    const processedFaces = faces.map(face => {
-        let avgZ = 0;
-        const rotatedVertices = face.vertices.map(v => {
-            let [rx, ry, rz] = rotateY(v[0], v[1], v[2], rotY);
-            [rx, ry, rz] = rotateX(rx, ry, rz, rotX);
-            avgZ += rz;
-            return [
-                canvas.width / 2 + rx * scale,
-                canvas.height / 2 - ry * scale,
-                rz
-            ];
-        });
-
-        // Rotar la normal para calcular iluminación o visibilidad básica
-        let [nnx, nny, nnz] = rotateY(face.normal[0], face.normal[1], face.normal[2], rotY);
-        [nnx, nny, nnz] = rotateX(nnx, nny, nnz, rotX);
-
-        return {
-            vertices: rotatedVertices,
-            color: face.color,
-            avgZ: avgZ / 5,
-            normalZ: nnz
-        };
-    });
-
-    // Ordenar de atrás hacia adelante para que no se traslapen mal
-    processedFaces.sort((a, b) => a.avgZ - b.avgZ);
-
-    processedFaces.forEach(face => {
-        // Ocultar caras traseras (Backface culling limpio estilo vector)
-        if (face.normalZ < -0.15) return;
-
-        ctx.beginPath();
-        face.vertices.forEach((v, i) => {
-            if (i === 0) ctx.moveTo(v[0], v[1]);
-            else ctx.lineTo(v[0], v[1]);
-        });
-        ctx.closePath();
-
-        ctx.fillStyle = face.color;
-        ctx.fill();
-
-        // Líneas negras bien definidas características del estilo
-        ctx.lineWidth = 2.5;
-        ctx.strokeStyle = "#121212";
-        ctx.stroke();
-    });
-}
-
-// Botones de control
-document.getElementById("scrambleBtn").addEventListener("click", () => {
-    status.textContent = "Status: Scrambling...";
-    rotY += Math.PI * 2.5;
-    rotX += Math.PI * 1.5;
-    drawMegaminx();
-    setTimeout(() => status.textContent = "Status: Scrambled", 400);
-});
-
-document.getElementById("solveBtn").addEventListener("click", () => {
-    status.textContent = "Status: Solving...";
-    rotX = 0.4;
-    rotY = 0.6;
-    drawMegaminx();
-    setTimeout(() => status.textContent = "Status: Solved", 400);
-});
-
-document.getElementById("resetBtn").addEventListener("click", () => {
-    rotX = 0.4;
-    rotY = 0.6;
-    drawMegaminx();
-    status.textContent = "Status: Solved";
-});
-
-// Dibujo inicial
-drawMegaminx();
-</script>
 
 </body>
+
 </html>
