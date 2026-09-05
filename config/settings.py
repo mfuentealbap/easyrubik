@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'easyrubik',
+        'USER': 'postgres',
+        'PASSWORD': 'Saturno2020',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -132,3 +136,6 @@ MAILERS = {
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Sesión: cerrar sesión al cerrar el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

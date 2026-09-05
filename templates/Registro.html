@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>easyRubik - Crear cuenta</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: #f8fafc;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 430px;
+            padding: 20px;
+        }
+
+        .card {
+            background: #181b24;
+            border: 1px solid #2b303d;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .logo span {
+            color: #60a5fa;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #9ca3af;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            color: #d1d5db;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+
+            border: 1px solid #343947;
+            border-radius: 10px;
+
+            background: #20242f;
+            color: white;
+
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #60a5fa;
+        }
+
+        .error {
+            background: #3a1d24;
+            border: 1px solid #7f2939;
+            color: #fca5a5;
+
+            padding: 12px;
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #2563eb;
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .login {
+            text-align: center;
+            margin-top: 22px;
+
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .login a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login a:hover {
+            text-decoration: underline;
+        }
+
+        .home {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .home a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .home a:hover {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="logo">
+            easy<span>Rubik</span>
+        </div>
+
+        <div class="subtitle">
+            Crea tu cuenta
+        </div>
+
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    placeholder="Tu nombre"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="apellido">Apellido</label>
+
+                <input
+                    type="text"
+                    id="apellido"
+                    name="apellido"
+                    placeholder="Tu apellido"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="correo@ejemplo.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="username">Nombre de usuario</label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Tu usuario"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Tu contraseña"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password2">Confirmar contraseña</label>
+
+                <input
+                    type="password"
+                    id="password2"
+                    name="password2"
+                    placeholder="Repite tu contraseña"
+                    required
+                >
+            </div>
+
+            <button type="submit">
+                Crear cuenta
+            </button>
+
+        </form>
+
+        <div class="login">
+            ¿Ya tienes una cuenta?
+            <a href="{% url 'login' %}">
+                Iniciar sesión
+            </a>
+        </div>
+
+        <div class="home">
+            <a href="{% url 'home' %}">
+                ← Volver al inicio
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
