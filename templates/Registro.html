@@ -4,275 +4,1082 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>easyRubik - Crear cuenta</title>
+    <title>easyRubik — Crear cuenta</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
+
+
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        :root {
+
+            --bg: #0b0d12;
+            --bg-2: #10131a;
+
+            --card: rgba(24, 27, 36, 0.88);
+            --card-light: #20242f;
+
+            --border: #2b303d;
+            --border-light: #3a4150;
+
+            --text: #f8fafc;
+            --muted: #9ca3af;
+            --muted-2: #6b7280;
+
+            --blue: #60a5fa;
+            --blue-dark: #2563eb;
+
+            --red: #ef4444;
+            --yellow: #facc15;
+            --green: #22c55e;
+            --orange: #f97316;
+
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
 
         body {
-            margin: 0;
+
             min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: #0f1117;
-            color: #f8fafc;
+
+            font-family: "Inter", sans-serif;
+
+            color: var(--text);
+
+            background:
+
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(96, 165, 250, 0.12),
+                    transparent 28%
+                ),
+
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(250, 204, 21, 0.08),
+                    transparent 28%
+                ),
+
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(239, 68, 68, 0.06),
+                    transparent 30%
+                ),
+
+                var(--bg);
 
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+
+            padding: 35px 20px;
+
+            overflow-x: hidden;
+
+            position: relative;
         }
+
+
+        /* =====================================================
+           DECORACIÓN DE FONDO
+        ===================================================== */
+
+        .background-cube {
+
+            position: fixed;
+
+            width: 180px;
+            height: 180px;
+
+            border-radius: 30px;
+
+            opacity: 0.035;
+
+            pointer-events: none;
+
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .cube-one {
+
+            top: 8%;
+            left: 7%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--red),
+                    var(--yellow)
+                );
+
+            transform: rotate(18deg);
+        }
+
+        .cube-two {
+
+            bottom: 7%;
+            right: 6%;
+
+            width: 140px;
+            height: 140px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--blue),
+                    var(--green)
+                );
+
+            transform: rotate(-20deg);
+
+            animation-delay: -3s;
+        }
+
+
+        @keyframes float {
+
+            0%, 100% {
+                transform: translateY(0) rotate(18deg);
+            }
+
+            50% {
+                transform: translateY(-18px) rotate(25deg);
+            }
+        }
+
+
+        /* =====================================================
+           CONTENEDOR
+        ===================================================== */
 
         .container {
+
             width: 100%;
-            max-width: 430px;
-            padding: 20px;
+            max-width: 470px;
+
+            position: relative;
+
+            z-index: 2;
         }
+
+
+        /* =====================================================
+           MARCA
+        ===================================================== */
+
+        .brand {
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 18px;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: 1.05rem;
+
+            font-weight: 700;
+
+            color: var(--muted);
+        }
+
+
+        .brand-dot {
+
+            width: 9px;
+            height: 9px;
+
+            border-radius: 3px;
+
+            background: var(--red);
+
+            box-shadow:
+                0 0 15px rgba(239, 68, 68, 0.5);
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
 
         .card {
-            background: #181b24;
-            border: 1px solid #2b303d;
-            border-radius: 18px;
-            padding: 35px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 24px;
+
+            padding: 36px;
+
+            box-shadow:
+
+                0 30px 80px rgba(0, 0, 0, 0.45),
+
+                inset 0 1px 0 rgba(255,255,255,0.04);
+
+            backdrop-filter: blur(18px);
+
+            animation: cardAppear 0.55s ease both;
         }
+
+
+        @keyframes cardAppear {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(20px)
+                    scale(0.97);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+
+        /* =====================================================
+           LOGO
+        ===================================================== */
 
         .logo {
+
             text-align: center;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 8px;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: 2.25rem;
+
+            font-weight: 800;
+
+            letter-spacing: -0.05em;
+
+            margin-bottom: 7px;
         }
+
 
         .logo span {
-            color: #60a5fa;
+
+            color: var(--blue);
+
         }
+
+
+        /* =====================================================
+           SUBTÍTULO
+        ===================================================== */
 
         .subtitle {
+
             text-align: center;
-            color: #9ca3af;
+
+            color: var(--muted);
+
+            font-size: 0.92rem;
+
             margin-bottom: 30px;
+
+            line-height: 1.5;
         }
 
-        .form-group {
-            margin-bottom: 18px;
+
+        /* =====================================================
+           MINI INDICADOR
+        ===================================================== */
+
+        .progress {
+
+            display: flex;
+
+            gap: 5px;
+
+            justify-content: center;
+
+            margin-bottom: 27px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 14px;
-            color: #d1d5db;
-        }
 
-        input {
-            width: 100%;
-            padding: 13px 14px;
+        .progress span {
 
-            border: 1px solid #343947;
+            width: 30px;
+            height: 4px;
+
             border-radius: 10px;
 
-            background: #20242f;
-            color: white;
-
-            font-size: 15px;
-            outline: none;
+            background: var(--border);
         }
 
-        input:focus {
-            border-color: #60a5fa;
+
+        .progress span:nth-child(1) {
+            background: var(--red);
         }
+
+        .progress span:nth-child(2) {
+            background: var(--yellow);
+        }
+
+        .progress span:nth-child(3) {
+            background: var(--green);
+        }
+
+        .progress span:nth-child(4) {
+            background: var(--blue);
+        }
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
 
         .error {
-            background: #3a1d24;
-            border: 1px solid #7f2939;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            background: rgba(239, 68, 68, 0.10);
+
+            border: 1px solid rgba(239, 68, 68, 0.28);
+
             color: #fca5a5;
 
-            padding: 12px;
-            border-radius: 10px;
+            padding: 13px 15px;
 
-            margin-bottom: 20px;
+            border-radius: 12px;
 
-            font-size: 14px;
-            text-align: center;
+            margin-bottom: 21px;
+
+            font-size: 0.86rem;
+
+            line-height: 1.4;
         }
 
-        button {
+
+        .error-icon {
+
+            flex-shrink: 0;
+
+            width: 25px;
+            height: 25px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: rgba(239,68,68,0.15);
+
+            font-size: 0.8rem;
+        }
+
+
+        /* =====================================================
+           FORMULARIO
+        ===================================================== */
+
+        .form-group {
+
+            margin-bottom: 17px;
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #d7dce5;
+
+            font-size: 0.82rem;
+
+            font-weight: 600;
+        }
+
+
+        .input-wrapper {
+
+            position: relative;
+        }
+
+
+        .input-icon {
+
+            position: absolute;
+
+            left: 14px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            font-size: 0.95rem;
+
+            opacity: 0.55;
+
+            pointer-events: none;
+        }
+
+
+        input {
+
             width: 100%;
-            padding: 14px;
 
-            border: none;
-            border-radius: 10px;
+            height: 48px;
 
-            background: #2563eb;
+            padding: 0 15px 0 42px;
+
+            background: rgba(32, 36, 47, 0.9);
+
+            border: 1px solid var(--border);
+
+            border-radius: 11px;
+
             color: white;
 
-            font-size: 16px;
-            font-weight: bold;
+            font-family: "Inter", sans-serif;
+
+            font-size: 0.88rem;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+
+        input::placeholder {
+
+            color: #626a78;
+        }
+
+
+        input:hover {
+
+            border-color: var(--border-light);
+
+        }
+
+
+        input:focus {
+
+            background: #222631;
+
+            border-color: var(--blue);
+
+            box-shadow:
+                0 0 0 3px rgba(96,165,250,0.10);
+        }
+
+
+        /* =====================================================
+           BOTÓN
+        ===================================================== */
+
+        button {
+
+            width: 100%;
+
+            height: 50px;
+
+            margin-top: 8px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #60a5fa,
+                    #3b82f6
+                );
+
+            color: #07111f;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: 0.92rem;
+
+            font-weight: 700;
 
             cursor: pointer;
+
+            box-shadow:
+                0 8px 25px rgba(59,130,246,0.18);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                filter 0.2s ease;
+        }
+
+
+        button:hover {
+
+            transform: translateY(-2px);
+
+            filter: brightness(1.08);
+
+            box-shadow:
+                0 12px 30px rgba(59,130,246,0.28);
+        }
+
+
+        button:active {
+
+            transform: translateY(0);
+
+        }
+
+
+        /* =====================================================
+           SEPARADOR
+        ===================================================== */
+
+        .divider {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin: 25px 0 20px;
+
+            color: var(--muted-2);
+
+            font-size: 0.72rem;
+        }
+
+
+        .divider::before,
+        .divider::after {
+
+            content: "";
+
+            flex: 1;
+
+            height: 1px;
+
+            background: var(--border);
+        }
+
+
+        /* =====================================================
+           LOGIN
+        ===================================================== */
+
+        .login {
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 0.84rem;
+
+            line-height: 1.6;
+        }
+
+
+        .login a {
+
+            color: var(--blue);
+
+            text-decoration: none;
+
+            font-weight: 600;
 
             transition: 0.2s;
         }
 
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        .login {
-            text-align: center;
-            margin-top: 22px;
-
-            color: #9ca3af;
-            font-size: 14px;
-        }
-
-        .login a {
-            color: #60a5fa;
-            text-decoration: none;
-            font-weight: bold;
-        }
 
         .login a:hover {
+
+            color: #93c5fd;
+
             text-decoration: underline;
         }
 
+
+        /* =====================================================
+           VOLVER
+        ===================================================== */
+
         .home {
+
             text-align: center;
-            margin-top: 15px;
+
+            margin-top: 18px;
         }
+
 
         .home a {
-            color: #9ca3af;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: var(--muted-2);
+
             text-decoration: none;
-            font-size: 14px;
+
+            font-size: 0.8rem;
+
+            transition: 0.2s;
         }
 
+
         .home a:hover {
+
             color: white;
+
+            transform: translateX(-3px);
         }
+
+
+        /* =====================================================
+           DECORACIÓN INFERIOR
+        ===================================================== */
+
+        .cube-colors {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 6px;
+
+            margin-top: 23px;
+        }
+
+
+        .cube-colors span {
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 2px;
+
+            opacity: 0.8;
+        }
+
+
+        .c-red {
+            background: var(--red);
+        }
+
+        .c-yellow {
+            background: var(--yellow);
+        }
+
+        .c-green {
+            background: var(--green);
+        }
+
+        .c-blue {
+            background: var(--blue);
+        }
+
+        .c-orange {
+            background: var(--orange);
+        }
+
+        .c-white {
+            background: var(--text);
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 520px) {
+
+            body {
+
+                padding: 20px 14px;
+
+            }
+
+            .card {
+
+                padding: 28px 21px;
+
+                border-radius: 20px;
+
+            }
+
+            .logo {
+
+                font-size: 2rem;
+
+            }
+
+            .background-cube {
+
+                display: none;
+
+            }
+
+        }
+
     </style>
 </head>
 
+
 <body>
+
+
+<!-- DECORACIÓN -->
+
+<div class="background-cube cube-one"></div>
+<div class="background-cube cube-two"></div>
+
 
 <div class="container">
 
+
+    <!-- MARCA -->
+
+    <div class="brand">
+
+        <span class="brand-dot"></span>
+
+        easyRubik
+
+    </div>
+
+
+    <!-- CARD -->
+
     <div class="card">
 
+
+        <!-- LOGO -->
+
         <div class="logo">
+
             easy<span>Rubik</span>
+
         </div>
+
 
         <div class="subtitle">
-            Crea tu cuenta
+
+            Crea tu cuenta y empieza a resolver 🧩
+
         </div>
 
+
+        <!-- COLORES DEL CUBO -->
+
+        <div class="progress">
+
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+
+        <!-- ERROR -->
+
         {% if error %}
+
             <div class="error">
-                {{ error }}
+
+                <div class="error-icon">
+                    !
+                </div>
+
+                <div>
+                    {{ error }}
+                </div>
+
             </div>
+
         {% endif %}
+
+
+        <!-- FORMULARIO -->
 
         <form method="POST">
 
             {% csrf_token %}
 
-            <div class="form-group">
-                <label for="nombre">Nombre</label>
 
-                <input
-                    type="text"
-                    id="nombre"
-                    name="nombre"
-                    placeholder="Tu nombre"
-                    required
-                >
-            </div>
+            <!-- NOMBRE -->
 
             <div class="form-group">
-                <label for="apellido">Apellido</label>
 
-                <input
-                    type="text"
-                    id="apellido"
-                    name="apellido"
-                    placeholder="Tu apellido"
-                    required
-                >
+                <label for="nombre">
+                    Nombre
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        
+                    </span>
+
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        placeholder="Tu nombre"
+                        required
+                    >
+
+                </div>
+
             </div>
+
+
+            <!-- APELLIDO -->
 
             <div class="form-group">
-                <label for="email">Correo electrónico</label>
 
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="correo@ejemplo.com"
-                    required
-                >
+                <label for="apellido">
+                    Apellido
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        
+                    </span>
+
+                    <input
+                        type="text"
+                        id="apellido"
+                        name="apellido"
+                        placeholder="Tu apellido"
+                        required
+                    >
+
+                </div>
+
             </div>
+
+
+            <!-- EMAIL -->
 
             <div class="form-group">
-                <label for="username">Nombre de usuario</label>
 
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    placeholder="Tu usuario"
-                    required
-                >
+                <label for="email">
+                    Correo electrónico
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        
+                    </span>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="correo@ejemplo.com"
+                        required
+                    >
+
+                </div>
+
             </div>
+
+
+            <!-- USUARIO -->
 
             <div class="form-group">
-                <label for="password">Contraseña</label>
 
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Tu contraseña"
-                    required
-                >
+                <label for="username">
+                    Nombre de usuario
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        
+                    </span>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Tu usuario"
+                        required
+                    >
+
+                </div>
+
             </div>
+
+
+            <!-- CONTRASEÑA -->
 
             <div class="form-group">
-                <label for="password2">Confirmar contraseña</label>
 
-                <input
-                    type="password"
-                    id="password2"
-                    name="password2"
-                    placeholder="Repite tu contraseña"
-                    required
-                >
+                <label for="password">
+                    Contraseña
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        
+                    </span>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Crea una contraseña"
+                        required
+                    >
+
+                </div>
+
             </div>
+
+
+            <!-- CONFIRMAR -->
+
+            <div class="form-group">
+
+                <label for="password2">
+                    Confirmar contraseña
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        
+                    </span>
+
+                    <input
+                        type="password"
+                        id="password2"
+                        name="password2"
+                        placeholder="Repite tu contraseña"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- BOTÓN -->
 
             <button type="submit">
-                Crear cuenta
+
+                Crear mi cuenta →
+
             </button>
+
 
         </form>
 
+
+        <!-- SEPARADOR -->
+
+        <div class="divider">
+
+            ¿Ya tienes cuenta?
+
+        </div>
+
+
+        <!-- LOGIN -->
+
         <div class="login">
+
             ¿Ya tienes una cuenta?
+
             <a href="{% url 'login' %}">
                 Iniciar sesión
             </a>
+
         </div>
 
+
+        <!-- HOME -->
+
         <div class="home">
+
             <a href="{% url 'home' %}">
+
                 ← Volver al inicio
+
             </a>
+
         </div>
+
+
+        <!-- COLORES -->
+
+        <div class="cube-colors">
+
+            <span class="c-red"></span>
+            <span class="c-yellow"></span>
+            <span class="c-green"></span>
+            <span class="c-blue"></span>
+            <span class="c-orange"></span>
+            <span class="c-white"></span>
+
+        </div>
+
 
     </div>
 
 </div>
 
+
 </body>
 </html>
-

@@ -1,0 +1,1777 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>easyRubik - Pyraminx</title>
+
+    <style>
+        /* =====================================================
+           EASYRUBIK · PYRAMINX
+           ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #07090e;
+            --panel: #0d1119;
+            --panel-2: #111722;
+            --panel-3: #151c28;
+
+            --border: rgba(255, 255, 255, .075);
+            --border-hover: rgba(255, 255, 255, .14);
+
+            --text: #f5f7fb;
+            --muted: #8993a5;
+            --muted-2: #606b7d;
+
+            --yellow: #ffc83d;
+            --yellow-light: #ffe28a;
+            --green: #35d07f;
+            --red: #ff5364;
+            --blue: #4da3ff;
+
+            --radius-xl: 30px;
+            --radius-lg: 22px;
+            --radius-md: 15px;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 50% -15%,
+                    rgba(255, 200, 61, .10),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 10% 75%,
+                    rgba(77, 163, 255, .05),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 90% 80%,
+                    rgba(53, 208, 127, .04),
+                    transparent 30%
+                ),
+                var(--bg);
+
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(255, 255, 255, .012) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, .012) 1px,
+                    transparent 1px
+                );
+
+            background-size: 44px 44px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent 90%
+                );
+        }
+
+
+        /* =====================================================
+           PAGE
+           ===================================================== */
+
+        .page {
+            position: relative;
+            z-index: 1;
+
+            width: min(1440px, calc(100% - 48px));
+
+            margin: auto;
+
+            padding:
+                28px
+                0
+                48px;
+        }
+
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .topbar {
+            min-height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 25px;
+
+            margin-bottom: 24px;
+        }
+
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+
+            gap: 42px;
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            flex-shrink: 0;
+        }
+
+
+        .brand-logo {
+            width: 43px;
+            height: 43px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #ffe783,
+                    var(--yellow)
+                );
+
+            color: #090b0e;
+
+            font-size: 18px;
+            font-weight: 900;
+
+            box-shadow:
+                0 0 0 5px rgba(255, 200, 61, .06),
+                0 12px 32px rgba(255, 200, 61, .16);
+        }
+
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 800;
+
+            letter-spacing: -.7px;
+        }
+
+
+        .brand-name span {
+            color: var(--yellow);
+        }
+
+
+        .page-heading {
+            padding-left: 35px;
+
+            border-left:
+                1px solid
+                var(--border);
+        }
+
+
+        .page-eyebrow {
+            margin-bottom: 4px;
+
+            color: var(--yellow);
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 1.4px;
+
+            text-transform: uppercase;
+        }
+
+
+        .page-heading h1 {
+            margin: 0;
+
+            font-size: 22px;
+            font-weight: 750;
+
+            letter-spacing: -.65px;
+        }
+
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .engine-chip {
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            min-height: 36px;
+
+            padding:
+                0
+                13px;
+
+            border:
+                1px solid
+                rgba(53, 208, 127, .15);
+
+            border-radius: 11px;
+
+            background:
+                rgba(53, 208, 127, .045);
+
+            color: #7ce9ad;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: .25px;
+        }
+
+
+        .engine-dot {
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+
+            box-shadow:
+                0 0 10px
+                rgba(53, 208, 127, .8);
+        }
+
+
+        .back-button {
+            height: 36px;
+
+            display: inline-flex;
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                0
+                15px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 11px;
+
+            background:
+                rgba(255, 255, 255, .025);
+
+            color: #a4adbc;
+
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            transition: .18s ease;
+        }
+
+
+        .back-button:hover {
+            color: white;
+
+            background:
+                rgba(255, 255, 255, .06);
+
+            border-color:
+                var(--border-hover);
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* =====================================================
+           MAIN
+           ===================================================== */
+
+        .workspace {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                330px;
+
+            gap: 18px;
+
+            align-items: stretch;
+        }
+
+
+        /* =====================================================
+           VIEWER
+           ===================================================== */
+
+        .viewer-card {
+            position: relative;
+
+            height: 690px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                var(--radius-xl);
+
+            background:
+                radial-gradient(
+                    circle at 50% 45%,
+                    rgba(255, 200, 61, .055),
+                    transparent 24%
+                ),
+                radial-gradient(
+                    circle at 50% 55%,
+                    rgba(77, 163, 255, .025),
+                    transparent 42%
+                ),
+                linear-gradient(
+                    145deg,
+                    #101620,
+                    #090d13 72%
+                );
+
+            box-shadow:
+                0 35px 90px rgba(0, 0, 0, .34),
+                inset 0 1px 0 rgba(255, 255, 255, .03);
+        }
+
+
+        .viewer-card::before {
+            content: "";
+
+            position: absolute;
+
+            width: 560px;
+            height: 560px;
+
+            left: 50%;
+            top: 49%;
+
+            transform:
+                translate(-50%, -50%);
+
+            border-radius: 50%;
+
+            background:
+                rgba(255, 200, 61, .045);
+
+            filter:
+                blur(100px);
+
+            pointer-events: none;
+        }
+
+
+        .viewer-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 430px;
+            height: 90px;
+
+            left: 50%;
+            bottom: 90px;
+
+            transform:
+                translateX(-50%);
+
+            border-radius: 50%;
+
+            background:
+                rgba(0, 0, 0, .45);
+
+            filter:
+                blur(35px);
+
+            pointer-events: none;
+        }
+
+
+        .viewer-toolbar {
+            position: absolute;
+
+            top: 20px;
+            left: 20px;
+            right: 20px;
+
+            z-index: 10;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            pointer-events: none;
+        }
+
+
+        .viewer-chip {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                8px
+                12px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                10px;
+
+            background:
+                rgba(7, 9, 14, .65);
+
+            backdrop-filter:
+                blur(12px);
+
+            color: #aab2c0;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+
+        .viewer-chip-dot {
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background:
+                var(--yellow);
+
+            box-shadow:
+                0 0 10px
+                rgba(255, 200, 61, .65);
+        }
+
+
+        .viewer-mode {
+            padding:
+                8px
+                11px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(7, 9, 14, .55);
+
+            color:
+                var(--muted-2);
+
+            font-size: 9px;
+            font-weight: 700;
+
+            letter-spacing: .5px;
+        }
+
+
+        /* =====================================================
+           CANVAS
+           ===================================================== */
+
+        #stage {
+            position: absolute;
+
+            inset: 0;
+
+            z-index: 3;
+
+            display: block;
+
+            width: 100%;
+            height: 100%;
+
+            outline: none;
+
+            touch-action: none;
+
+            user-select: none;
+            -webkit-user-select: none;
+
+            cursor: grab;
+        }
+
+
+        #stage:active {
+            cursor: grabbing;
+        }
+
+
+        /* =====================================================
+           VIEWER BOTTOM
+           ===================================================== */
+
+        .viewer-bottom {
+            position: absolute;
+
+            z-index: 12;
+
+            left: 50%;
+            bottom: 19px;
+
+            transform:
+                translateX(-50%);
+
+            display: flex;
+            align-items: center;
+
+            gap: 4px;
+
+            padding: 5px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 14px;
+
+            background:
+                rgba(7, 9, 14, .72);
+
+            backdrop-filter:
+                blur(14px);
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, .22);
+
+            white-space: nowrap;
+        }
+
+
+        .hint-item {
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            padding:
+                7px
+                10px;
+
+            color:
+                var(--muted-2);
+
+            font-size: 9.5px;
+        }
+
+
+        .hint-item strong {
+            color: #c7cdd7;
+
+            font-weight: 700;
+        }
+
+
+        .hint-icon {
+            width: 20px;
+            height: 20px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 6px;
+
+            background:
+                rgba(255, 255, 255, .045);
+
+            color: #bec5d0;
+
+            font-size: 10px;
+        }
+
+
+        /* =====================================================
+           CONTROL PANEL
+           ===================================================== */
+
+        .control-panel {
+            min-height: 690px;
+
+            padding: 21px;
+
+            display: flex;
+            flex-direction: column;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                var(--radius-xl);
+
+            background:
+                linear-gradient(
+                    155deg,
+                    rgba(17, 23, 34, .97),
+                    rgba(9, 13, 20, .97)
+                );
+
+            box-shadow:
+                0 35px 90px rgba(0, 0, 0, .27),
+                inset 0 1px 0 rgba(255, 255, 255, .03);
+        }
+
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding-bottom: 18px;
+
+            border-bottom:
+                1px solid
+                var(--border);
+        }
+
+
+        .panel-eyebrow {
+            margin-bottom: 5px;
+
+            color: var(--yellow);
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 1.2px;
+        }
+
+
+        .panel-header h2 {
+            margin: 0;
+
+            font-size: 19px;
+            font-weight: 750;
+
+            letter-spacing: -.5px;
+        }
+
+
+        .panel-header p {
+            max-width: 220px;
+
+            margin:
+                7px
+                0
+                0;
+
+            color:
+                var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+
+        .pyramid-icon {
+            width: 39px;
+            height: 39px;
+
+            flex: none;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(255, 200, 61, .18);
+
+            border-radius:
+                12px;
+
+            background:
+                rgba(255, 200, 61, .07);
+
+            color:
+                var(--yellow);
+
+            font-size: 17px;
+        }
+
+
+        /* =====================================================
+           STATUS
+           ===================================================== */
+
+        .status-card {
+            margin-top: 17px;
+
+            padding:
+                13px
+                14px;
+
+            border:
+                1px solid
+                rgba(53, 208, 127, .13);
+
+            border-radius:
+                13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(53, 208, 127, .065),
+                    rgba(53, 208, 127, .025)
+                );
+        }
+
+
+        .status-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .status-label {
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            color:
+                var(--muted-2);
+
+            font-size: 8.5px;
+            font-weight: 800;
+
+            letter-spacing: .8px;
+
+            text-transform: uppercase;
+        }
+
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background:
+                var(--green);
+
+            box-shadow:
+                0 0 10px
+                rgba(53, 208, 127, .75);
+        }
+
+
+        .move-count {
+            color:
+                var(--muted-2);
+
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+
+        .move-count span {
+            color:
+                #dce2eb;
+        }
+
+
+        #status {
+            margin: 0;
+
+            color:
+                #dce2eb;
+
+            font-size: 11.5px;
+            font-weight: 650;
+
+            line-height: 1.45;
+
+            overflow-wrap: anywhere;
+        }
+
+
+        /* =====================================================
+           SECTIONS
+           ===================================================== */
+
+        .panel-section {
+            margin-top: 18px;
+        }
+
+
+        .section-label {
+            margin-bottom: 9px;
+
+            color:
+                var(--muted-2);
+
+            font-size: 8.5px;
+            font-weight: 800;
+
+            letter-spacing: .9px;
+
+            text-transform: uppercase;
+        }
+
+
+        /* =====================================================
+           MOVES
+           ===================================================== */
+
+        .move-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 7px;
+        }
+
+
+        .move-button {
+            height: 40px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                11px;
+
+            background:
+                #151c27;
+
+            color:
+                #e5e9ef;
+
+            font-family: inherit;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition:
+                transform .16s ease,
+                background .16s ease,
+                border-color .16s ease,
+                color .16s ease;
+        }
+
+
+        .move-button:hover {
+            transform:
+                translateY(-2px);
+
+            background:
+                #1a2230;
+
+            border-color:
+                rgba(255, 200, 61, .22);
+
+            color:
+                var(--yellow-light);
+        }
+
+
+        .move-button:active {
+            transform:
+                scale(.96);
+        }
+
+
+        /* =====================================================
+           ACTIONS
+           ===================================================== */
+
+        .action-grid {
+            display: grid;
+
+            gap: 8px;
+        }
+
+
+        .action-button {
+            width: 100%;
+            height: 45px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding:
+                0
+                14px;
+
+            border-radius:
+                12px;
+
+            border:
+                1px solid
+                var(--border);
+
+            background:
+                #151c27;
+
+            color:
+                #e4e8ee;
+
+            font-family: inherit;
+
+            font-size: 11px;
+            font-weight: 750;
+
+            cursor: pointer;
+
+            transition:
+                transform .17s ease,
+                border-color .17s ease,
+                background .17s ease,
+                box-shadow .17s ease;
+        }
+
+
+        .action-button:hover {
+            transform:
+                translateY(-2px);
+        }
+
+
+        .action-icon {
+            width: 25px;
+            height: 25px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 8px;
+
+            background:
+                rgba(255, 255, 255, .045);
+
+            font-size: 12px;
+        }
+
+
+        #btnScramble {
+            border-color:
+                rgba(255, 200, 61, .18);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 200, 61, .13),
+                    rgba(255, 200, 61, .035)
+                );
+
+            color:
+                var(--yellow-light);
+        }
+
+
+        #btnScramble:hover {
+            border-color:
+                rgba(255, 200, 61, .34);
+
+            box-shadow:
+                0 10px 30px
+                rgba(255, 200, 61, .07);
+        }
+
+
+        #btnSolve {
+            border-color:
+                rgba(53, 208, 127, .17);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(53, 208, 127, .11),
+                    rgba(53, 208, 127, .025)
+                );
+
+            color:
+                #79e6aa;
+        }
+
+
+        #btnSolve:hover {
+            border-color:
+                rgba(53, 208, 127, .31);
+
+            box-shadow:
+                0 10px 30px
+                rgba(53, 208, 127, .06);
+        }
+
+
+        #btnReset:hover {
+            border-color:
+                rgba(255, 255, 255, .15);
+
+            background:
+                #1a2230;
+        }
+
+
+        #btnStop {
+            border-color:
+                rgba(255, 83, 100, .17);
+
+            background:
+                rgba(255, 83, 100, .055);
+
+            color:
+                #ff8793;
+        }
+
+
+        /* =====================================================
+           HELP
+           ===================================================== */
+
+        .help-list {
+            margin-top: auto;
+
+            padding-top: 18px;
+        }
+
+
+        .help-item {
+            display: flex;
+
+            gap: 10px;
+
+            padding:
+                10px
+                0;
+
+            border-top:
+                1px solid
+                var(--border);
+        }
+
+
+        .help-icon {
+            width: 29px;
+            height: 29px;
+
+            flex: none;
+
+            display: grid;
+            place-items: center;
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(255, 255, 255, .04);
+
+            color:
+                #aeb6c4;
+
+            font-size: 11px;
+        }
+
+
+        .help-copy strong {
+            display: block;
+
+            margin-bottom: 3px;
+
+            color:
+                #d9dee7;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+
+        .help-copy span {
+            display: block;
+
+            color:
+                var(--muted-2);
+
+            font-size: 9px;
+
+            line-height: 1.45;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 1050px) {
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .viewer-card {
+                height: 620px;
+            }
+
+            .control-panel {
+                min-height: auto;
+            }
+
+            .help-list {
+                margin-top: 20px;
+            }
+        }
+
+
+        @media (max-width: 760px) {
+
+            .page {
+                width:
+                    min(
+                        100% - 22px,
+                        1440px
+                    );
+
+                padding-top: 14px;
+            }
+
+            .topbar {
+                min-height: 60px;
+            }
+
+            .brand-area {
+                gap: 15px;
+            }
+
+            .page-heading {
+                display: none;
+            }
+
+            .engine-chip {
+                display: none;
+            }
+
+            .viewer-card {
+                height: 520px;
+
+                border-radius: 23px;
+            }
+
+            .control-panel {
+                border-radius: 23px;
+            }
+
+            .viewer-bottom {
+                max-width:
+                    calc(100% - 24px);
+
+                overflow-x: auto;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .brand-name {
+                font-size: 17px;
+            }
+
+            .brand-logo {
+                width: 38px;
+                height: 38px;
+            }
+
+            .back-button {
+                padding:
+                    0
+                    11px;
+            }
+
+            .viewer-card {
+                height: 440px;
+            }
+
+            .move-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .viewer-mode {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <div class="page">
+
+        <!-- ==================================================
+             HEADER
+             ================================================== -->
+
+        <header class="topbar">
+
+            <div class="brand-area">
+
+                <div class="brand">
+
+                    <div class="brand-logo">
+                        e
+                    </div>
+
+                    <div class="brand-name">
+                        easy<span>Rubik</span>
+                    </div>
+
+                </div>
+
+
+                <div class="page-heading">
+
+                    <div class="page-eyebrow">
+                        Sala de resolución
+                    </div>
+
+                    <h1>
+                        Pyraminx
+                    </h1>
+
+                </div>
+
+            </div>
+
+
+            <div class="top-actions">
+
+                <div class="engine-chip">
+
+                    <span class="engine-dot"></span>
+
+                    PYRAMINX · 3D
+
+                </div>
+
+
+                <a
+                    href="{% url 'selector' %}"
+                    class="back-button"
+                >
+                    ← Volver
+                </a>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- ==================================================
+             WORKSPACE
+             ================================================== -->
+
+        <main class="workspace">
+
+
+            <!-- ==============================================
+                 VIEWER
+                 ============================================== -->
+
+            <section class="viewer-card">
+
+                <div class="viewer-toolbar">
+
+                    <div class="viewer-chip">
+
+                        <span class="viewer-chip-dot"></span>
+
+                        Pyraminx interactivo
+
+                    </div>
+
+
+                    <div class="viewer-mode">
+                        WEBGL · 3D
+                    </div>
+
+                </div>
+
+
+                <!--
+                    IMPORTANTE:
+                    El nuevo pyraminx.js dibujará todo aquí.
+                -->
+
+                <canvas
+                    id="stage"
+                    aria-label="Pyraminx 3D interactivo"
+                ></canvas>
+
+
+                <div class="viewer-bottom">
+
+                    <div class="hint-item">
+
+                        <span class="hint-icon">
+                            ↖
+                        </span>
+
+                        <strong>Arrastrar pieza</strong>
+
+                        girar
+
+                    </div>
+
+
+                    <div class="hint-item">
+
+                        <span class="hint-icon">
+                            ✥
+                        </span>
+
+                        <strong>Arrastrar fondo</strong>
+
+                        cámara
+
+                    </div>
+
+
+                    <div class="hint-item">
+
+                        <span class="hint-icon">
+                            ◉
+                        </span>
+
+                        <strong>Rueda</strong>
+
+                        zoom
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ==============================================
+                 PANEL
+                 ============================================== -->
+
+            <aside class="control-panel">
+
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-eyebrow">
+                            PYRAMINX
+                        </div>
+
+                        <h2>
+                            Panel de control
+                        </h2>
+
+                        <p>
+                            Practica movimientos, mezcla el puzzle
+                            y controla directamente el Pyraminx.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="pyramid-icon"
+                        aria-hidden="true"
+                    >
+                        △
+                    </div>
+
+                </div>
+
+
+
+                <!-- ==========================================
+                     STATUS
+                     ========================================== -->
+
+                <div class="status-card">
+
+                    <div class="status-top">
+
+                        <div class="status-label">
+
+                            <span class="status-dot"></span>
+
+                            Estado
+
+                        </div>
+
+
+                        <div class="move-count">
+
+                            Movimientos
+
+                            <span id="moveCounter">
+                                0
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <p id="status">
+                        Preparando Pyraminx...
+                    </p>
+
+                </div>
+
+
+
+                <!-- ==========================================
+                     MOVEMENTS
+                     ========================================== -->
+
+                <div class="panel-section">
+
+                    <div class="section-label">
+                        Movimientos
+                    </div>
+
+
+                    <div class="move-grid">
+
+                        <button
+                            class="move-button"
+                            data-move="U"
+                            type="button"
+                        >
+                            U
+                        </button>
+
+                        <button
+                            class="move-button"
+                            data-move="U'"
+                            type="button"
+                        >
+                            U′
+                        </button>
+
+
+                        <button
+                            class="move-button"
+                            data-move="L"
+                            type="button"
+                        >
+                            L
+                        </button>
+
+                        <button
+                            class="move-button"
+                            data-move="L'"
+                            type="button"
+                        >
+                            L′
+                        </button>
+
+
+                        <button
+                            class="move-button"
+                            data-move="R"
+                            type="button"
+                        >
+                            R
+                        </button>
+
+                        <button
+                            class="move-button"
+                            data-move="R'"
+                            type="button"
+                        >
+                            R′
+                        </button>
+
+
+                        <button
+                            class="move-button"
+                            data-move="B"
+                            type="button"
+                        >
+                            B
+                        </button>
+
+                        <button
+                            class="move-button"
+                            data-move="B'"
+                            type="button"
+                        >
+                            B′
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ==========================================
+                     ACTIONS
+                     ========================================== -->
+
+                <div class="panel-section">
+
+                    <div class="section-label">
+                        Acciones
+                    </div>
+
+
+                    <div class="action-grid">
+
+
+                        <button
+                            id="btnScramble"
+                            class="action-button"
+                            type="button"
+                        >
+
+                            <span class="action-icon">
+                                ↝
+                            </span>
+
+                            Mezclar Pyraminx
+
+                        </button>
+
+
+
+                        <button
+                            id="btnSolve"
+                            class="action-button"
+                            type="button"
+                        >
+
+                            <span class="action-icon">
+                                ✓
+                            </span>
+
+                            Resolver
+
+                        </button>
+
+
+
+                        <button
+                            id="btnReset"
+                            class="action-button"
+                            type="button"
+                        >
+
+                            <span class="action-icon">
+                                ↻
+                            </span>
+
+                            Reiniciar
+
+                        </button>
+
+
+
+                        <button
+                            id="btnStop"
+                            class="action-button"
+                            type="button"
+                            hidden
+                        >
+
+                            <span class="action-icon">
+                                ■
+                            </span>
+
+                            Detener animación
+
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ==========================================
+                     HELP
+                     ========================================== -->
+
+                <div class="help-list">
+
+
+                    <div class="help-item">
+
+                        <div class="help-icon">
+                            ↖
+                        </div>
+
+                        <div class="help-copy">
+
+                            <strong>
+                                Girar una capa
+                            </strong>
+
+                            <span>
+                                Arrastra directamente una zona
+                                del Pyraminx.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="help-item">
+
+                        <div class="help-icon">
+                            ✥
+                        </div>
+
+                        <div class="help-copy">
+
+                            <strong>
+                                Mover la cámara
+                            </strong>
+
+                            <span>
+                                Arrastra el fondo o utiliza el
+                                botón derecho sobre el puzzle.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="help-item">
+
+                        <div class="help-icon">
+                            ◉
+                        </div>
+
+                        <div class="help-copy">
+
+                            <strong>
+                                Zoom suave
+                            </strong>
+
+                            <span>
+                                Utiliza la rueda del mouse para
+                                acercarte o alejarte.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </aside>
+
+        </main>
+
+    </div>
+
+
+
+    <!-- ======================================================
+         PYRAMINX ENGINE
+
+         IMPORTANTE:
+         Dejamos UN SOLO JS.
+         Nada del motor anterior debe cargarse en este template.
+         ====================================================== -->
+
+    <script
+        src="{% static 'megamix/pyraminx.js' %}?v=10"
+    ></script>
+
+
+</body>
+</html>

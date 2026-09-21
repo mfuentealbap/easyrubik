@@ -5,224 +5,1053 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>easyRubik — aprende a resolver el cubo</title>
+    <title>easyRubik — Aprende, practica y resuelve</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
     <style>
 
-        :root {
-            --bg: #121319;
-            --bg-soft: #191b23;
-            --ink: #f4f5f7;
-            --ink-dim: #9a9db0;
-            --line: #2a2d3a;
+        /* =========================================================
+           VARIABLES
+        ========================================================= */
 
-            --c-white: #f8fafc;
-            --c-yellow: #facc15;
-            --c-green: #22c55e;
-            --c-blue: #3b82f6;
-            --c-red: #ef4444;
-            --c-orange: #f97316;
+        :root {
+            --bg: #090b11;
+            --bg-2: #0f121a;
+            --panel: #141821;
+            --panel-2: #191e29;
+
+            --text: #f8fafc;
+            --muted: #8f98aa;
+
+            --border: rgba(255,255,255,.08);
+
+            --blue: #4f9cff;
+            --blue-light: #7bb7ff;
+
+            --red: #ff4d5a;
+            --yellow: #ffd43b;
+            --green: #35d47a;
+            --orange: #ff8a3d;
+            --white: #f8fafc;
+
+            --radius: 22px;
         }
+
+
+        /* =========================================================
+           RESET
+        ========================================================= */
 
         * {
             box-sizing: border-box;
-        }
-
-        html,
-        body {
             margin: 0;
-            min-height: 100vh;
-            background: var(--bg);
-            color: var(--ink);
-            font-family: "Inter", sans-serif;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 32px;
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(79,156,255,.12),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 75%,
+                    rgba(255,77,90,.08),
+                    transparent 30%
+                ),
+                var(--bg);
+
+            color: var(--text);
+            font-family: "Inter", sans-serif;
+
+            overflow-x: hidden;
         }
 
-        .stage {
-            width: 100%;
-            max-width: 980px;
-
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-
-            align-items: center;
-            gap: 64px;
-        }
-
-        .brand {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-
-            font-family: "Sora", sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-
-            letter-spacing: -0.01em;
-            color: var(--ink-dim);
-
-            margin-bottom: 48px;
-        }
-
-        .brand .dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 2px;
-            background: var(--c-red);
-        }
-
-        h1 {
-            font-family: "Sora", sans-serif;
-            font-weight: 800;
-
-            font-size: clamp(2.4rem, 4.2vw, 3.4rem);
-            line-height: 1.08;
-
-            letter-spacing: -0.02em;
-
-            margin: 0 0 22px;
-
-            max-width: 11ch;
-        }
-
-        p.lede {
-            font-size: 1.08rem;
-            line-height: 1.65;
-
-            color: var(--ink-dim);
-
-            max-width: 46ch;
-
-            margin: 0 0 36px;
-        }
-
-        .actions {
-            display: flex;
-            align-items: center;
-            gap: 22px;
-            flex-wrap: wrap;
-        }
-
-        .cta {
-            display: inline-block;
-
-            background: var(--ink);
-            color: #14151b;
-
-            font-family: "Sora", sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-
+        a {
             text-decoration: none;
+            color: inherit;
+        }
 
-            padding: 15px 28px;
+
+        /* =========================================================
+           BACKGROUND
+        ========================================================= */
+
+        .background-grid {
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,.025) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.025) 1px,
+                    transparent 1px
+                );
+
+            background-size: 55px 55px;
+
+            mask-image: linear-gradient(
+                to bottom,
+                black,
+                transparent 85%
+            );
+
+            z-index: -2;
+        }
+
+
+        .glow {
+            position: fixed;
+
+            width: 450px;
+            height: 450px;
+
+            border-radius: 50%;
+
+            filter: blur(100px);
+
+            opacity: .12;
+
+            pointer-events: none;
+
+            z-index: -1;
+        }
+
+        .glow-blue {
+            background: var(--blue);
+
+            top: -180px;
+            left: -150px;
+        }
+
+        .glow-red {
+            background: var(--red);
+
+            right: -180px;
+            bottom: -150px;
+        }
+
+
+        /* =========================================================
+           NAVBAR
+        ========================================================= */
+
+        nav {
+            width: min(1180px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            height: 82px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+
+        .logo-cube {
+            width: 14px;
+            height: 14px;
+
+            border-radius: 4px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--red) 0 33%,
+                    var(--yellow) 33% 66%,
+                    var(--blue) 66%
+                );
+
+            box-shadow:
+                0 0 18px rgba(79,156,255,.35);
+
+            transform: rotate(10deg);
+        }
+
+
+        .logo span {
+            color: var(--blue);
+        }
+
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+
+            color: var(--muted);
+
+            font-size: .92rem;
+        }
+
+        .nav-links a {
+            transition: .2s ease;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+
+        .nav-login {
+            padding: 10px 17px;
+
+            border: 1px solid var(--border);
 
             border-radius: 10px;
 
-            transition:
-                transform 0.15s ease,
-                background 0.15s ease;
+            color: white;
+
+            transition: .2s ease;
         }
 
-        .cta:hover {
-            background: var(--c-yellow);
-            transform: translateY(-2px);
+        .nav-login:hover {
+            background: rgba(255,255,255,.06);
+            border-color: rgba(255,255,255,.15);
         }
 
-        .cta:active {
-            transform: translateY(0);
-        }
 
-        .hint {
-            color: var(--ink-dim);
-            font-size: 0.92rem;
-        }
+        /* =========================================================
+           HERO
+        ========================================================= */
 
-        /* Mosaico animado */
+        .hero {
+            width: min(1180px, calc(100% - 40px));
 
-        .facepiece {
-            display: flex;
-            justify-content: center;
-        }
+            min-height: calc(100vh - 82px);
 
-        .grid3 {
-            --gap: 8px;
+            margin: 0 auto;
 
             display: grid;
 
-            grid-template-columns: repeat(3, 64px);
-            grid-template-rows: repeat(3, 64px);
+            grid-template-columns: 1fr 1fr;
 
-            gap: var(--gap);
+            align-items: center;
 
-            transform: rotate(-3deg);
+            gap: 70px;
+
+            padding: 50px 0 100px;
         }
 
-        .grid3 span {
-            border-radius: 9px;
+
+        .hero-content {
+            position: relative;
+        }
+
+
+        .eyebrow {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 8px 13px;
+
+            margin-bottom: 25px;
+
+            border: 1px solid rgba(79,156,255,.2);
+
+            border-radius: 999px;
+
+            background: rgba(79,156,255,.07);
+
+            color: var(--blue-light);
+
+            font-size: .78rem;
+
+            font-weight: 600;
+
+            animation: fadeUp .7s ease both;
+        }
+
+
+        .eyebrow-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--green);
 
             box-shadow:
-                inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+                0 0 10px var(--green);
 
-            animation:
-                settle 1.1s cubic-bezier(.2, .9, .25, 1) both;
+            animation: pulse 2s infinite;
         }
 
-        @keyframes settle {
 
-            0% {
-                transform:
-                    translate(var(--fx, 0), var(--fy, 0))
-                    rotate(var(--fr, 0deg));
+        h1 {
+            font-family: "Sora", sans-serif;
 
+            font-size: clamp(
+                3rem,
+                6vw,
+                5.4rem
+            );
+
+            line-height: .98;
+
+            letter-spacing: -0.055em;
+
+            max-width: 650px;
+
+            margin-bottom: 28px;
+
+            animation: fadeUp .8s .08s ease both;
+        }
+
+
+        h1 .gradient {
+            background:
+                linear-gradient(
+                    100deg,
+                    #ffffff,
+                    #8bbdff 45%,
+                    #4f9cff
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            color: transparent;
+        }
+
+
+        .hero-description {
+            max-width: 540px;
+
+            color: var(--muted);
+
+            font-size: 1.08rem;
+
+            line-height: 1.75;
+
+            margin-bottom: 35px;
+
+            animation: fadeUp .8s .16s ease both;
+        }
+
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            flex-wrap: wrap;
+
+            animation: fadeUp .8s .24s ease both;
+        }
+
+
+        .btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 10px;
+
+            padding: 15px 22px;
+
+            border-radius: 13px;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: .9rem;
+
+            font-weight: 700;
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                background .2s ease;
+        }
+
+
+        .btn-primary {
+            color: #06101d;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7bb7ff,
+                    #4f9cff
+                );
+
+            box-shadow:
+                0 10px 30px rgba(79,156,255,.22);
+        }
+
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 15px 40px rgba(79,156,255,.35);
+        }
+
+
+        .btn-secondary {
+            color: white;
+
+            border: 1px solid var(--border);
+
+            background: rgba(255,255,255,.035);
+        }
+
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+
+            background: rgba(255,255,255,.07);
+        }
+
+
+        .arrow {
+            font-size: 1.1rem;
+        }
+
+
+        /* =========================================================
+           CUBE AREA
+        ========================================================= */
+
+        .cube-area {
+            position: relative;
+
+            min-height: 560px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .cube-glow {
+            position: absolute;
+
+            width: 360px;
+            height: 360px;
+
+            border-radius: 50%;
+
+            background: rgba(79,156,255,.18);
+
+            filter: blur(80px);
+        }
+
+
+        .cube-platform {
+            position: absolute;
+
+            width: 390px;
+            height: 90px;
+
+            bottom: 80px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    ellipse,
+                    rgba(79,156,255,.24),
+                    transparent 70%
+                );
+
+            filter: blur(5px);
+        }
+
+
+        /* =========================================================
+           3D RUBIK CUBE
+        ========================================================= */
+
+        .rubik {
+            position: relative;
+
+            width: 270px;
+            height: 270px;
+
+            transform-style: preserve-3d;
+
+            transform:
+                rotateX(-22deg)
+                rotateY(-34deg)
+                rotateZ(5deg);
+
+            animation: cubeFloat 5s ease-in-out infinite;
+
+            z-index: 2;
+        }
+
+
+        .face {
+            position: absolute;
+
+            width: 270px;
+            height: 270px;
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 7px;
+
+            padding: 8px;
+
+            background: #08090d;
+
+            border-radius: 14px;
+
+            box-shadow:
+                inset 0 0 0 2px #05060a;
+        }
+
+
+        .face div {
+            border-radius: 7px;
+
+            box-shadow:
+                inset 0 0 0 2px rgba(0,0,0,.18),
+                inset 0 -4px 8px rgba(0,0,0,.12);
+        }
+
+
+        .front {
+            transform: translateZ(135px);
+        }
+
+
+        .back {
+            transform: rotateY(180deg)
+                       translateZ(135px);
+        }
+
+
+        .right {
+            transform:
+                rotateY(90deg)
+                translateZ(135px);
+        }
+
+
+        .left {
+            transform:
+                rotateY(-90deg)
+                translateZ(135px);
+        }
+
+
+        .top {
+            transform:
+                rotateX(90deg)
+                translateZ(135px);
+        }
+
+
+        .bottom {
+            transform:
+                rotateX(-90deg)
+                translateZ(135px);
+        }
+
+
+        /* Colores del cubo */
+
+        .white {
+            background: #f5f5f5;
+        }
+
+        .yellow {
+            background: #ffd92f;
+        }
+
+        .red {
+            background: #ef4444;
+        }
+
+        .orange {
+            background: #ff7a2f;
+        }
+
+        .blue {
+            background: #3685f5;
+        }
+
+        .green {
+            background: #22c875;
+        }
+
+
+        /* =========================================================
+           FLOATING BADGES
+        ========================================================= */
+
+        .floating-card {
+            position: absolute;
+
+            padding: 12px 15px;
+
+            border: 1px solid rgba(255,255,255,.09);
+
+            border-radius: 14px;
+
+            background:
+                rgba(20,24,33,.8);
+
+            backdrop-filter: blur(15px);
+
+            box-shadow:
+                0 20px 50px rgba(0,0,0,.3);
+
+            font-size: .78rem;
+
+            z-index: 5;
+        }
+
+
+        .floating-card strong {
+            display: block;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: .95rem;
+
+            margin-bottom: 3px;
+        }
+
+
+        .floating-card small {
+            color: var(--muted);
+        }
+
+
+        .card-one {
+            top: 90px;
+            right: 20px;
+
+            animation: floatOne 4s ease-in-out infinite;
+        }
+
+
+        .card-two {
+            left: 0;
+            bottom: 140px;
+
+            animation: floatTwo 4.5s ease-in-out infinite;
+        }
+
+
+        .mini-colors {
+            display: flex;
+
+            gap: 4px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .mini-colors i {
+            width: 9px;
+            height: 9px;
+
+            border-radius: 2px;
+        }
+
+
+        /* =========================================================
+           FEATURES
+        ========================================================= */
+
+        .features {
+            width: min(1180px, calc(100% - 40px));
+
+            margin: -20px auto 100px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+        }
+
+
+        .feature {
+            padding: 25px;
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.045),
+                    rgba(255,255,255,.018)
+                );
+
+            transition:
+                transform .25s ease,
+                border-color .25s ease,
+                background .25s ease;
+        }
+
+
+        .feature:hover {
+            transform: translateY(-6px);
+
+            border-color:
+                rgba(79,156,255,.25);
+
+            background:
+                rgba(255,255,255,.055);
+        }
+
+
+        .feature-icon {
+            width: 45px;
+            height: 45px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 18px;
+
+            border-radius: 13px;
+
+            font-size: 1.25rem;
+
+            background: rgba(79,156,255,.1);
+
+            border: 1px solid rgba(79,156,255,.15);
+        }
+
+
+        .feature h3 {
+            font-family: "Sora", sans-serif;
+
+            font-size: 1rem;
+
+            margin-bottom: 8px;
+        }
+
+
+        .feature p {
+            color: var(--muted);
+
+            font-size: .87rem;
+
+            line-height: 1.6;
+        }
+
+
+        /* =========================================================
+           BOTTOM CTA
+        ========================================================= */
+
+        .bottom-section {
+            width: min(1180px, calc(100% - 40px));
+
+            margin: 0 auto 70px;
+
+            padding: 65px 40px;
+
+            text-align: center;
+
+            border: 1px solid var(--border);
+
+            border-radius: 28px;
+
+            background:
+                radial-gradient(
+                    circle at 50% 0%,
+                    rgba(79,156,255,.12),
+                    transparent 55%
+                ),
+                var(--panel);
+        }
+
+
+        .bottom-section h2 {
+            font-family: "Sora", sans-serif;
+
+            font-size: clamp(2rem, 4vw, 3rem);
+
+            letter-spacing: -.04em;
+
+            margin-bottom: 15px;
+        }
+
+
+        .bottom-section p {
+            color: var(--muted);
+
+            max-width: 500px;
+
+            margin: 0 auto 28px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+            width: min(1180px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding: 25px 0 35px;
+
+            border-top: 1px solid var(--border);
+
+            display: flex;
+
+            justify-content: space-between;
+
+            color: var(--muted);
+
+            font-size: .78rem;
+        }
+
+
+        /* =========================================================
+           ANIMATIONS
+        ========================================================= */
+
+        @keyframes fadeUp {
+
+            from {
                 opacity: 0;
+                transform: translateY(20px);
             }
 
-            100% {
-                transform:
-                    translate(0, 0)
-                    rotate(0deg);
-
+            to {
                 opacity: 1;
+                transform: translateY(0);
             }
+
         }
+
+
+        @keyframes cubeFloat {
+
+            0%, 100% {
+                transform:
+                    rotateX(-22deg)
+                    rotateY(-34deg)
+                    rotateZ(5deg)
+                    translateY(0);
+            }
+
+            50% {
+                transform:
+                    rotateX(-18deg)
+                    rotateY(-28deg)
+                    rotateZ(3deg)
+                    translateY(-18px);
+            }
+
+        }
+
+
+        @keyframes floatOne {
+
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+
+        }
+
+
+        @keyframes floatTwo {
+
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(10px);
+            }
+
+        }
+
+
+        @keyframes pulse {
+
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(.75);
+            }
+
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 900px) {
+
+            .hero {
+                grid-template-columns: 1fr;
+
+                text-align: center;
+
+                gap: 20px;
+
+                padding-top: 35px;
+            }
+
+
+            .hero-content {
+                display: flex;
+
+                flex-direction: column;
+
+                align-items: center;
+            }
+
+
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+
+            .cube-area {
+                min-height: 470px;
+            }
+
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+
+            .nav-links a:not(.nav-login) {
+                display: none;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            nav {
+                width: calc(100% - 28px);
+            }
+
+
+            .hero,
+            .features,
+            .bottom-section,
+            footer {
+                width: calc(100% - 28px);
+            }
+
+
+            h1 {
+                font-size: 3rem;
+            }
+
+
+            .cube-area {
+                transform: scale(.78);
+
+                margin:
+                    -50px
+                    0
+                    -40px;
+            }
+
+
+            .card-one {
+                right: -5px;
+            }
+
+
+            .card-two {
+                left: -5px;
+            }
+
+
+            footer {
+                flex-direction: column;
+
+                gap: 8px;
+
+                text-align: center;
+            }
+
+        }
+
 
         @media (prefers-reduced-motion: reduce) {
 
-            .grid3 span {
-                animation: none;
-                opacity: 1;
-            }
-        }
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
 
-        @media (max-width: 760px) {
+                scroll-behavior: auto !important;
 
-            .stage {
-                grid-template-columns: 1fr;
-                gap: 44px;
-                text-align: left;
+                transition: none !important;
             }
 
-            .facepiece {
-                order: -1;
-            }
-
-            .grid3 {
-                transform: none;
-            }
         }
 
     </style>
@@ -231,102 +1060,412 @@
 
 <body>
 
-    <div class="stage">
+    <div class="background-grid"></div>
 
-        <div>
+    <div class="glow glow-blue"></div>
+    <div class="glow glow-red"></div>
 
-            <div class="brand">
-                <span class="dot"></span>
-                easyRubik
+
+    <!-- =========================================================
+         NAVBAR
+    ========================================================== -->
+
+    <nav>
+
+        <a href="/" class="logo">
+
+            <div class="logo-cube"></div>
+
+            easy<span>Rubik</span>
+
+        </a>
+
+
+        <div class="nav-links">
+
+            <a href="#caracteristicas">
+                Características
+            </a>
+
+            <a href="#como-funciona">
+                ¿Cómo funciona?
+            </a>
+
+            <a
+                href="{% url 'login' %}"
+                class="nav-login"
+            >
+                Iniciar sesión
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================================
+         HERO
+    ========================================================== -->
+
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="eyebrow">
+
+                    <span class="eyebrow-dot"></span>
+
+                    Aprende. Practica. Resuelve.
+
+                </div>
+
+
+                <h1>
+
+                    El cubo
+                    <span class="gradient">
+                        nunca fue
+                    </span>
+                    tan fácil.
+
+                </h1>
+
+
+                <p class="hero-description">
+
+                    Aprende a resolver cubos Rubik de forma
+                    interactiva. Practica movimientos,
+                    descubre algoritmos y mejora poco a poco
+                    hasta dominar el cubo.
+
+                </p>
+
+
+                <div class="actions">
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="btn btn-primary"
+                    >
+
+                        Comenzar ahora
+
+                        <span class="arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="#caracteristicas"
+                        class="btn btn-secondary"
+                    >
+
+                        Descubrir easyRubik
+
+                    </a>
+
+                </div>
+
             </div>
 
-            <h1>
-                Resuelve el cubo, un movimiento a la vez
-            </h1>
 
-            <p class="lede">
-                Practica con un cubo 3×3×3 en 3D directamente
-                en el navegador: arrastra una cara para girarla,
-                mezcla y deshace cada movimiento para ver
-                exactamente cómo se resuelve.
+            <!-- =================================================
+                 CUBO 3D
+            ================================================== -->
+
+            <div class="cube-area">
+
+                <div class="cube-glow"></div>
+
+                <div class="cube-platform"></div>
+
+
+                <!-- TARJETA SUPERIOR -->
+
+                <div class="floating-card card-one">
+
+                    <div class="mini-colors">
+
+                        <i style="background:#ef4444"></i>
+                        <i style="background:#ffd92f"></i>
+                        <i style="background:#3685f5"></i>
+                        <i style="background:#22c875"></i>
+                        <i style="background:#ff7a2f"></i>
+
+                    </div>
+
+                    <strong>
+                        3×3×3
+                    </strong>
+
+                    <small>
+                        El clásico.
+                    </small>
+
+                </div>
+
+
+                <!-- TARJETA INFERIOR -->
+
+                <div class="floating-card card-two">
+
+                    <strong>
+                         Aprende jugando
+                    </strong>
+
+                    <small>
+                        Paso a paso y sin presión.
+                    </small>
+
+                </div>
+
+
+                <!-- CUBO -->
+
+                <div class="rubik">
+
+
+                    <!-- FRONT -->
+
+                    <div class="face front">
+
+                        <div class="green"></div>
+                        <div class="green"></div>
+                        <div class="white"></div>
+
+                        <div class="green"></div>
+                        <div class="green"></div>
+                        <div class="red"></div>
+
+                        <div class="yellow"></div>
+                        <div class="green"></div>
+                        <div class="red"></div>
+
+                    </div>
+
+
+                    <!-- RIGHT -->
+
+                    <div class="face right">
+
+                        <div class="red"></div>
+                        <div class="red"></div>
+                        <div class="yellow"></div>
+
+                        <div class="red"></div>
+                        <div class="red"></div>
+                        <div class="yellow"></div>
+
+                        <div class="orange"></div>
+                        <div class="orange"></div>
+                        <div class="yellow"></div>
+
+                    </div>
+
+
+                    <!-- TOP -->
+
+                    <div class="face top">
+
+                        <div class="white"></div>
+                        <div class="white"></div>
+                        <div class="blue"></div>
+
+                        <div class="white"></div>
+                        <div class="yellow"></div>
+                        <div class="blue"></div>
+
+                        <div class="orange"></div>
+                        <div class="orange"></div>
+                        <div class="blue"></div>
+
+                    </div>
+
+
+                    <!-- BACK -->
+
+                    <div class="face back">
+
+                        <div class="blue"></div>
+                        <div class="blue"></div>
+                        <div class="white"></div>
+
+                        <div class="blue"></div>
+                        <div class="blue"></div>
+                        <div class="green"></div>
+
+                        <div class="yellow"></div>
+                        <div class="green"></div>
+                        <div class="green"></div>
+
+                    </div>
+
+
+                    <!-- LEFT -->
+
+                    <div class="face left">
+
+                        <div class="orange"></div>
+                        <div class="orange"></div>
+                        <div class="white"></div>
+
+                        <div class="orange"></div>
+                        <div class="orange"></div>
+                        <div class="white"></div>
+
+                        <div class="red"></div>
+                        <div class="yellow"></div>
+                        <div class="white"></div>
+
+                    </div>
+
+
+                    <!-- BOTTOM -->
+
+                    <div class="face bottom">
+
+                        <div class="yellow"></div>
+                        <div class="yellow"></div>
+                        <div class="green"></div>
+
+                        <div class="yellow"></div>
+                        <div class="yellow"></div>
+                        <div class="green"></div>
+
+                        <div class="orange"></div>
+                        <div class="red"></div>
+                        <div class="green"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FEATURES
+        ====================================================== -->
+
+        <section
+            class="features"
+            id="caracteristicas"
+        >
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🧩
+                </div>
+
+                <h3>
+                    Aprende paso a paso
+                </h3>
+
+                <p>
+                    Sigue instrucciones claras y descubre
+                    cómo funciona cada movimiento del cubo.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🎮
+                </div>
+
+                <h3>
+                    Practica de forma interactiva
+                </h3>
+
+                <p>
+                    Manipula el cubo directamente en pantalla
+                    y experimenta con diferentes movimientos.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🏆
+                </div>
+
+                <h3>
+                    Supera nuevos desafíos
+                </h3>
+
+                <p>
+                    Mejora tus tiempos, practica algoritmos
+                    y prepárate para resolver cubos más grandes.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOTTOM CTA
+        ====================================================== -->
+
+        <section
+            class="bottom-section"
+            id="como-funciona"
+        >
+
+            <h2>
+                ¿Listo para hacer tu primer movimiento?
+            </h2>
+
+            <p>
+                Entra a easyRubik y comienza a practicar.
+                Tu próximo cubo resuelto empieza aquí.
             </p>
 
-            <div class="actions">
 
-              <!-- BOTÓN AL SELECTOR -->
-                <a href="{% url 'login' %}">
-                     Iniciar sesión
-                </a>
+            <a
+                href="{% url 'login' %}"
+                class="btn btn-primary"
+            >
 
-                <span class="hint">
-                    No necesitas instalar nada
+                 Empezar a aprender
+
+                <span class="arrow">
+                    →
                 </span>
 
-            </div>
+            </a>
 
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer>
+
+        <div>
+            © 2026 easyRubik
         </div>
 
-
-        <div class="facepiece">
-
-            <div class="grid3" id="grid3"></div>
-
+        <div>
+            Aprende jugando 
         </div>
 
-    </div>
-
-
-    <script>
-
-        // Colores del mosaico
-
-        const colors = [
-            "var(--c-white)",
-            "var(--c-red)",
-            "var(--c-green)",
-
-            "var(--c-yellow)",
-            "var(--c-blue)",
-            "var(--c-white)",
-
-            "var(--c-orange)",
-            "var(--c-green)",
-            "var(--c-red)"
-        ];
-
-
-        const grid = document.getElementById("grid3");
-
-
-        colors.forEach((color, i) => {
-
-            const cell = document.createElement("span");
-
-            cell.style.background = color;
-
-            cell.style.setProperty(
-                "--fx",
-                (Math.random() * 60 - 30) + "px"
-            );
-
-            cell.style.setProperty(
-                "--fy",
-                (Math.random() * -50 - 20) + "px"
-            );
-
-            cell.style.setProperty(
-                "--fr",
-                (Math.random() * 60 - 30) + "deg"
-            );
-
-            cell.style.animationDelay =
-                (i * 55) + "ms";
-
-            grid.appendChild(cell);
- 
-        });
-
-    </script>
+    </footer>
 
 </body>
 

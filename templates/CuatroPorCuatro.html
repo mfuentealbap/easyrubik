@@ -1,783 +1,464 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>EasyRubik - Simulador 4×4×4</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-:root {
-    --bg: #0f1117;
-    --panel: #181b24;
-    --panel-light: #20242f;
-    --line: #2b303d;
-    --text: #f8fafc;
-    --muted: #9ca3af;
-    --accent: #facc15;
-    --green: #22c55e;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: Arial, sans-serif;
-
-    background:
-        radial-gradient(
-            circle at 20% 20%,
-            rgba(59,130,246,0.08),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 80% 80%,
-            rgba(250,204,21,0.06),
-            transparent 30%
-        ),
-        var(--bg);
-
-    color: var(--text);
-}
-
-
-/* =====================================================
-   CONTENEDOR PRINCIPAL
-===================================================== */
-
-.page {
-    width: 100%;
-    max-width: 1250px;
-    min-height: 100vh;
-    margin: auto;
-    padding: 35px 40px;
-}
-
-
-/* =====================================================
-   HEADER
-===================================================== */
-
-header {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 2.8rem;
-    letter-spacing: -1px;
-}
-
-header p {
-    margin-top: 8px;
-    color: var(--muted);
-    font-size: 1.05rem;
-}
-
-
-/* =====================================================
-   ZONA DEL SIMULADOR
-===================================================== */
-
-.simulator-layout {
-    display: grid;
-    grid-template-columns:
-        minmax(500px, 1fr)
-        380px;
-    gap: 45px;
-    align-items: center;
-}
-
-
-/* =====================================================
-   CUBO
-===================================================== */
-
-.cube-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.cube-card {
-    width: 100%;
-    min-height: 560px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    position: relative;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(255,255,255,0.045),
-            transparent 55%
-        ),
-        rgba(255,255,255,0.015);
-
-    border: 1px solid var(--line);
-    border-radius: 24px;
-
-    box-shadow:
-        0 20px 60px rgba(0,0,0,0.35),
-        inset 0 1px 0
-        rgba(255,255,255,0.03);
-}
-
-.cube-container {
-    width: 100%;
-    max-width: 500px;
-    aspect-ratio: 1 / 1;
-
-    cursor: grab;
-    touch-action: none;
-}
-
-.cube-container:active {
-    cursor: grabbing;
-}
-
-.cube-container canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.cube-help {
-    margin-top: 18px;
-    text-align: center;
-    color: var(--muted);
-    line-height: 1.5;
-}
-
-.cube-help strong {
-    color: var(--text);
-}
-
-
-/* =====================================================
-   PANEL DERECHO
-===================================================== */
-
-.controls-panel {
-    background: var(--panel);
-
-    border: 1px solid var(--line);
-    border-radius: 22px;
-
-    padding: 25px;
-
-    box-shadow:
-        0 20px 50px rgba(0,0,0,0.3),
-        inset 0 1px 0
-        rgba(255,255,255,0.025);
-}
-
-.panel-title {
-    margin-bottom: 22px;
-}
-
-.panel-title h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.panel-title p {
-    margin: 7px 0 0;
-    color: var(--muted);
-    font-size: 0.9rem;
-}
-
-
-/* =====================================================
-   BOTONES
-===================================================== */
-
-button {
-    border: none;
-    border-radius: 10px;
-
-    padding: 12px 15px;
-
-    font-size: 0.95rem;
-    font-weight: bold;
-
-    cursor: pointer;
-
-    background: var(--panel-light);
-    color: white;
-
-    border: 1px solid var(--line);
-
-    transition:
-        transform 0.15s,
-        background 0.15s,
-        border-color 0.15s;
-}
-
-button:hover {
-    background: #292e3a;
-    border-color: #414858;
-    transform: translateY(-2px);
-}
-
-button:active {
-    transform: scale(0.95);
-}
-
-button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-}
-
-
-/* =====================================================
-   BOTÓN MOSTRAR CONTROLES
-===================================================== */
-
-.toggle-buttons {
-    margin-bottom: 18px;
-}
-
-.toggle-buttons button {
-    width: 100%;
-    background: #242936;
-}
-
-
-/* =====================================================
-   MOVIMIENTOS
-===================================================== */
-
-.hidden {
-    display: none;
-}
-
-#backupControls {
-    margin-bottom: 22px;
-}
-
-.move-section {
-    margin-bottom: 18px;
-}
-
-.move-section h2 {
-    font-size: 1rem;
-    margin: 0 0 12px;
-    color: var(--muted);
-}
-
-.move-buttons {
-    display: grid;
-    grid-template-columns:
-        repeat(4, 1fr);
-    gap: 8px;
-}
-
-.move-buttons button {
-    min-width: 0;
-    padding: 12px 5px;
-}
-
-
-/* =====================================================
-   MOVIMIENTOS INTERNOS
-===================================================== */
-
-.wide-buttons {
-    display: grid;
-    grid-template-columns:
-        repeat(4, 1fr);
-    gap: 8px;
-}
-
-.wide-buttons button {
-    min-width: 0;
-    padding: 12px 5px;
-}
-
-.wide-buttons button:nth-child(odd) {
-    background: #252a35;
-}
-
-
-/* =====================================================
-   BOTONES ESPECIALES
-===================================================== */
-
-.special-buttons {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-}
-
-.special-buttons button {
-    padding: 14px;
-    font-size: 1rem;
-}
-
-#scrambleBtn {
-    background: #252a35;
-}
-
-#solveBtn {
-    background: #263b2c;
-    border-color: #315f3d;
-}
-
-#resetBtn {
-    background: #292d38;
-}
-
-
-/* =====================================================
-   BOTÓN VOLVER AL SELECTOR
-===================================================== */
-
-.back-selector {
-    display: block;
-    width: 100%;
-
-    margin-top: 10px;
-    padding: 14px;
-
-    border-radius: 10px;
-
-    text-align: center;
-    text-decoration: none;
-
-    font-size: 1rem;
-    font-weight: bold;
-
-    color: white;
-    background: #20242f;
-
-    border: 1px solid var(--line);
-
-    transition:
-        transform 0.15s,
-        background 0.15s,
-        border-color 0.15s;
-}
-
-.back-selector:hover {
-    background: #292e3a;
-    border-color: #414858;
-    transform: translateY(-2px);
-}
-
-.back-selector:active {
-    transform: scale(0.97);
-}
-
-
-/* =====================================================
-   ESTADO
-===================================================== */
-
-#status {
-    margin-top: 20px;
-
-    padding: 13px;
-
-    border-radius: 10px;
-
-    background:
-        rgba(34,197,94,0.08);
-
-    border:
-        1px solid rgba(34,197,94,0.18);
-
-    color: #86efac;
-
-    text-align: center;
-
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-
-/* =====================================================
-   PIE
-===================================================== */
-
-.footer {
-    text-align: center;
-
-    margin-top: 30px;
-
-    color: #6b7280;
-
-    font-size: 0.85rem;
-}
-
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media (max-width: 900px) {
-
-    .page {
-        padding: 25px 20px;
-    }
-
-    .simulator-layout {
-        grid-template-columns: 1fr;
-        gap: 25px;
-    }
-
-    .cube-card {
-        min-height: 450px;
-    }
-
-    .controls-panel {
-        width: 100%;
-        max-width: 600px;
-        margin: auto;
-    }
-}
-
-
-@media (max-width: 500px) {
-
-    header h1 {
-        font-size: 2.2rem;
-    }
-
-    .cube-card {
-        min-height: 350px;
-        border-radius: 18px;
-    }
-
-    .move-buttons,
-    .wide-buttons {
-        grid-template-columns:
-            repeat(3, 1fr);
-    }
-
-    .page {
-        padding: 20px 12px;
-    }
-}
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EasyRubik - Simulador 4×4×4</title>
+
+    <style>
+*{box-sizing:border-box}
+:root{color-scheme:dark;--text:#f4f7fc;--muted:#929caf;--line:rgba(255,255,255,.10)}
+body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 0 0,rgba(53,111,185,.23),transparent 43%),radial-gradient(ellipse at 100% 40%,rgba(133,42,60,.18),transparent 42%),#090c11}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:49px 49px}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}a:focus-visible,button:focus-visible{outline:2px solid #75b5ff;outline-offset:4px}
+.topbar{border-bottom:1px solid rgba(255,255,255,.04)}.nav,.page{width:calc(100% - 64px);max-width:1360px;margin:auto}.nav{height:88px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:8px;font-size:19px;font-weight:850;letter-spacing:-.6px}.brand i{width:13px;height:13px;border-radius:4px;background:linear-gradient(135deg,#ff9782,#ffdb54 48%,#66bcff)}.brand span{color:#7bb8ff}.nav-back{color:#83bdff;border:1px solid #354969;border-radius:10px;padding:10px 14px;background:#141720;font-size:13px}
+.page{padding:28px 0 38px}.hero{margin-bottom:28px}.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid #253d5a;border-radius:30px;padding:6px 11px;color:#80baff;background:rgba(26,54,85,.2);font-size:11px;font-weight:700}.eyebrow:before{content:"";width:5px;height:5px;border-radius:50%;background:#58a3ff}
+.hero h1{font-size:clamp(40px,5vw,64px);line-height:1.08;letter-spacing:-3px;margin:14px 0 15px;font-weight:850}.hero h1 span{background:linear-gradient(110deg,#cee5ff,#4a97ff);background-clip:text;-webkit-background-clip:text;color:transparent}.hero p{max-width:700px;color:var(--muted);font-size:15px;line-height:1.8;margin:0}
+.simulator-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:stretch}
+.cube-section,.controls-panel{min-width:0;border:1px solid var(--line);border-radius:21px;background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.018));overflow:hidden}
+.viewer-head{padding:20px 22px;min-height:78px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.07)}.viewer-head h2{font-size:17px;margin:0 0 4px;letter-spacing:-.3px}.viewer-head p{font-size:11px;color:var(--muted);margin:0}.badge{font-size:10px;font-weight:700;color:#80baff;background:#131e2c;border:1px solid #253c5b;padding:6px 8px;border-radius:6px}
+.cube-card{width:100%;display:flex;align-items:center;justify-content:center}.cube-container{width:100%;max-width:560px;aspect-ratio:1/1;cursor:grab;touch-action:none}.cube-container:active{cursor:grabbing}.cube-container canvas{display:block;width:100%;height:100%}
+.cube-help{width:fit-content;max-width:calc(100% - 30px);margin:0 auto 18px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(9,12,17,.5);padding:7px 12px;font-size:11px;line-height:1.6;text-align:center;color:var(--muted)}.cube-help strong{color:#cbd5e1;font-weight:500}
+.controls-panel{padding:24px}.panel-title{margin-bottom:19px}.panel-title h2{font-size:17px;letter-spacing:-.3px;margin:0 0 6px}.panel-title p{font-size:12px;line-height:1.6;color:var(--muted);margin:0}
+button{border:1px solid var(--line);border-radius:9px;background:#202633;color:var(--text);font-size:12px;font-weight:700;padding:11px 6px}button:hover{background:#304665}button:disabled{opacity:.45;cursor:wait}.toggle-buttons{margin-bottom:18px}.toggle-buttons button{width:100%;text-align:left;padding:16px;border:1px solid #2b3c57;border-radius:14px;background:rgba(100,121,158,.10)}.hidden{display:none}#backupControls{margin-bottom:20px}#backupControls h2{font-size:12px;color:var(--muted);margin:0 0 10px}.move-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.move-buttons button{min-width:0}
+.special-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.special-buttons button{padding:13px 4px;font-size:11px;border-radius:11px}#scrambleBtn{background:linear-gradient(110deg,#80baff,#4b98ff);color:#061729;border:0}#solveBtn{background:linear-gradient(110deg,#48de8b,#21c46a);color:#062216;border:0}#resetBtn{background:rgba(255,255,255,.045)}.special-buttons button:hover{filter:brightness(1.1)}.back-selector{grid-column:1/-1;text-align:center;font-size:11px;color:var(--muted);padding:12px 0 2px}
+#status{margin-top:18px;border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:12px 14px;background:rgba(0,0,0,.1);font-size:12px;font-weight:600;line-height:1.6}#status:before{content:"ESTADO";display:block;margin-bottom:5px;font-size:9px;letter-spacing:1px;color:var(--muted);font-weight:500}.footer{margin-top:22px;text-align:center;color:var(--muted);font-size:11px}
+@media(max-width:1000px){.simulator-layout{grid-template-columns:minmax(0,1fr) 310px;gap:16px}.controls-panel{padding:18px}}
+@media(max-width:760px){.nav,.page{width:calc(100% - 32px)}.nav{height:72px}.simulator-layout{grid-template-columns:1fr}.hero h1{letter-spacing:-2px}.cube-container{max-width:480px}.nav-back{font-size:11px}.brand{font-size:17px}}
+
+.wide-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.wide-buttons button{min-width:0;padding:11px 5px}
+.move-section{margin-bottom:18px}.moves-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 9px}.central-label{margin-top:18px}
+.moves-menu{margin-top:2px}.moves-toggle{width:100%;min-height:64px;padding:12px 15px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:1px solid #2b3c57;border-radius:14px;background:rgba(100,121,158,.10)}.moves-toggle-content{display:block}.moves-toggle-title{display:block;font-size:13px;font-weight:600}.moves-toggle-subtitle{display:block;margin-top:4px;color:var(--muted);font-size:11px;font-weight:400;line-height:1.6}.moves-arrow{flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;border:1px solid #2b4765;border-radius:8px;color:#80baff;font-size:18px}.moves-toggle[aria-expanded="true"] .moves-arrow{transform:rotate(180deg)}
+.moves-panel{max-height:0;overflow:hidden;opacity:0;margin-top:0}.moves-panel.open{max-height:none;opacity:1;margin-top:14px}
 </style>
-
 </head>
 
 
 <body>
+<div class="topbar"><nav class="nav" aria-label="Navegación principal">
+<a class="brand" href="{% url 'selector' %}"><i aria-hidden="true"></i>easy <span>Rubik</span></a>
+<a class="nav-back" href="{% url 'selector' %}">← Volver al selector</a>
+</nav></div>
 
 <div class="page">
 
 
-<header>
-
-    <h1>
-        easyRubik 
-    </h1>
-
-    <p>
-        Aprende a resolver un cubo Rubik 4×4×4
-    </p>
-
+    <header class="hero">
+<div class="eyebrow">Aprende. Practica. Resuelve.</div>
+<h1>Cubo <span>4×4×4</span></h1>
+<p>Practica los movimientos del cubo Rubik de forma interactiva. Usa los botones o interactúa directamente con el cubo para aprender paso a paso.</p>
 </header>
 
 
-<div class="simulator-layout">
+    <div class="simulator-layout">
 
 
-<!-- =====================================================
-     IZQUIERDA: CUBO
-====================================================== -->
+        <!-- =====================================================
+             IZQUIERDA: CUBO
+        ====================================================== -->
 
-<section class="cube-section">
+        <section class="cube-section">
+<div class="viewer-head"><div><h2>Simulador 4×4×4</h2><p>Interactúa con el cubo</p></div><span class="badge">4 × 4</span></div>
 
-    <div class="cube-card">
-
-        <div
-            class="cube-container"
-            id="cubeContainer">
-        </div>
-
-    </div>
-
-
-    <div class="cube-help">
-
-        <strong>
-             Arrastra una cara
-        </strong>
-
-        para moverla.
-
-        <br>
-
-        Arrastra el espacio alrededor
-        para girar la vista.
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     DERECHA: CONTROLES
-====================================================== -->
-
-<section class="controls-panel">
-
-
-    <div class="panel-title">
-
-        <h2>
-             Controles
-        </h2>
-
-        <p>
-            Controla el cubo y practica tus movimientos.
-        </p>
-
-    </div>
-
-
-    <div class="moves">
-
-
-        <!-- MOSTRAR BOTONES -->
-
-        <div class="toggle-buttons">
-
-            <button
-                onclick="toggleButtons()"
-                id="toggleBtn">
-
-                🎛️ Mostrar botones de respaldo
-
-            </button>
-
-        </div>
-
-
-        <!-- MOVIMIENTOS -->
-
-        <div
-            id="backupControls"
-            class="hidden">
-
-
-            <!-- CAPAS EXTERIORES -->
-
-            <div class="move-section">
-
-                <h2>
-                    Movimientos exteriores
-                </h2>
-
+            <div class="cube-card">
 
                 <div
-                    class="move-buttons"
-                    id="moveButtons">
-
-
-                    <button data-move="R">
-                        R
-                    </button>
-
-                    <button data-move="Rprime">
-                        R'
-                    </button>
-
-
-                    <button data-move="L">
-                        L
-                    </button>
-
-                    <button data-move="Lprime">
-                        L'
-                    </button>
-
-
-                    <button data-move="U">
-                        U
-                    </button>
-
-                    <button data-move="Uprime">
-                        U'
-                    </button>
-
-
-                    <button data-move="D">
-                        D
-                    </button>
-
-                    <button data-move="Dprime">
-                        D'
-                    </button>
-
-
-                    <button data-move="F">
-                        F
-                    </button>
-
-                    <button data-move="Fprime">
-                        F'
-                    </button>
-
-
-                    <button data-move="B">
-                        B
-                    </button>
-
-                    <button data-move="Bprime">
-                        B'
-                    </button>
-
+                    class="cube-container"
+                    id="cubeContainer">
                 </div>
 
             </div>
 
 
-            <!-- MOVIMIENTOS DE DOS CAPAS -->
+            <div class="cube-help">
 
-            <div class="move-section">
+                <strong>
+                    Arrastra una cara
+                </strong>
+
+                para moverla.
+
+                <br>
+
+                Arrastra el espacio alrededor
+                para girar la vista.
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DERECHA: CONTROLES
+        ====================================================== -->
+
+        <section class="controls-panel">
+
+
+            <div class="panel-title">
 
                 <h2>
-                    Movimientos de dos capas
+                    Controles
                 </h2>
 
-
-                <div
-                    class="wide-buttons"
-                    id="wideButtons">
-
-
-                    <button data-move="Rw">
-                        Rw
-                    </button>
-
-                    <button data-move="RwPrime">
-                        Rw'
-                    </button>
-
-
-                    <button data-move="Lw">
-                        Lw
-                    </button>
-
-                    <button data-move="LwPrime">
-                        Lw'
-                    </button>
-
-
-                    <button data-move="Uw">
-                        Uw
-                    </button>
-
-                    <button data-move="UwPrime">
-                        Uw'
-                    </button>
-
-
-                    <button data-move="Dw">
-                        Dw
-                    </button>
-
-                    <button data-move="DwPrime">
-                        Dw'
-                    </button>
-
-
-                    <button data-move="Fw">
-                        Fw
-                    </button>
-
-                    <button data-move="FwPrime">
-                        Fw'
-                    </button>
-
-
-                    <button data-move="Bw">
-                        Bw
-                    </button>
-
-                    <button data-move="BwPrime">
-                        Bw'
-                    </button>
-
-                </div>
+                <p>
+                    Controla el cubo y practica tus movimientos.
+                </p>
 
             </div>
 
 
-        </div>
+            <div class="moves">
 
 
-        <!-- BOTONES ESPECIALES -->
+                <!-- =================================================
+                     BOTÓN ANTIGUO DE RESPALDO
+                ================================================== -->
 
-        <div class="special-buttons">
+                <div class="toggle-buttons">
 
+                    <button
+                        onclick="toggleButtons()"
+                        id="toggleBtn">
 
-            <button id="scrambleBtn">
-                 Mezclar
-            </button>
+                        🎛️ Mostrar botones de respaldo
 
+                    </button>
 
-            <button id="solveBtn">
-                 Resolver
-            </button>
-
-
-            <button id="resetBtn">
-                 Reiniciar
-            </button>
+                </div>
 
 
-            <a
-                href="{% url 'selector' %}"
-                class="back-selector">
+                <!-- =================================================
+                     MOVIMIENTOS
+                ================================================== -->
 
-                ← Volver al selector
-
-            </a>
-
-
-        </div>
+                <div
+                    id="backupControls"
+                    class="hidden">
 
 
-        <!-- ESTADO -->
+                    <!-- =================================================
+                         SUBMENÚ PRINCIPAL
+                    ================================================== -->
 
-        <div id="status">
+                    <div class="moves-menu">
 
-             Cubo resuelto
+                        <button
+                            class="moves-toggle"
+                            id="movesToggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="movesPanel">
 
-        </div>
+                            <span class="moves-toggle-content">
 
+                                <span class="moves-toggle-title">
+                                    Mostrar movimientos
+                                </span>
+
+                                <span class="moves-toggle-subtitle">
+                                    Caras exteriores · Dos capas · Capas centrales
+                                </span>
+
+                            </span>
+
+                            <span class="moves-arrow">
+                                ⌄
+                            </span>
+
+                        </button>
+
+
+                        <div
+                            class="moves-panel"
+                            id="movesPanel">
+
+
+                            <!-- =================================================
+                                 CAPAS EXTERIORES
+                            ================================================== -->
+
+                            <div class="move-section">
+
+                                <div class="moves-label">
+                                    Movimientos exteriores
+                                </div>
+
+
+                                <div
+                                    class="move-buttons"
+                                    id="moveButtons">
+
+
+                                    <button data-move="R">
+                                        R
+                                    </button>
+
+                                    <button data-move="Rprime">
+                                        R'
+                                    </button>
+
+
+                                    <button data-move="L">
+                                        L
+                                    </button>
+
+                                    <button data-move="Lprime">
+                                        L'
+                                    </button>
+
+
+                                    <button data-move="U">
+                                        U
+                                    </button>
+
+                                    <button data-move="Uprime">
+                                        U'
+                                    </button>
+
+
+                                    <button data-move="D">
+                                        D
+                                    </button>
+
+                                    <button data-move="Dprime">
+                                        D'
+                                    </button>
+
+
+                                    <button data-move="F">
+                                        F
+                                    </button>
+
+                                    <button data-move="Fprime">
+                                        F'
+                                    </button>
+
+
+                                    <button data-move="B">
+                                        B
+                                    </button>
+
+                                    <button data-move="Bprime">
+                                        B'
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================================
+                                 MOVIMIENTOS DE DOS CAPAS
+                            ================================================== -->
+
+                            <div class="move-section">
+
+                                <div class="moves-label">
+                                    Movimientos de dos capas
+                                </div>
+
+
+                                <div
+                                    class="wide-buttons"
+                                    id="wideButtons">
+
+
+                                    <button data-move="Rw">
+                                        Rw
+                                    </button>
+
+                                    <button data-move="RwPrime">
+                                        Rw'
+                                    </button>
+
+
+                                    <button data-move="Lw">
+                                        Lw
+                                    </button>
+
+                                    <button data-move="LwPrime">
+                                        Lw'
+                                    </button>
+
+
+                                    <button data-move="Uw">
+                                        Uw
+                                    </button>
+
+                                    <button data-move="UwPrime">
+                                        Uw'
+                                    </button>
+
+
+                                    <button data-move="Dw">
+                                        Dw
+                                    </button>
+
+                                    <button data-move="DwPrime">
+                                        Dw'
+                                    </button>
+
+
+                                    <button data-move="Fw">
+                                        Fw
+                                    </button>
+
+                                    <button data-move="FwPrime">
+                                        Fw'
+                                    </button>
+
+
+                                    <button data-move="Bw">
+                                        Bw
+                                    </button>
+
+                                    <button data-move="BwPrime">
+                                        Bw'
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================================
+                                 CAPAS CENTRALES
+                            ================================================== -->
+
+                            <div class="move-section">
+
+                                <div class="moves-label central-label">
+                                    Capas centrales del 4×4
+                                </div>
+
+
+                                <div
+                                    class="wide-buttons"
+                                    id="centralButtons">
+
+
+                                    <button data-move="Mx1">
+                                        Mx1
+                                    </button>
+
+                                    <button data-move="Mx1Prime">
+                                        Mx1'
+                                    </button>
+
+
+                                    <button data-move="Mx2">
+                                        Mx2
+                                    </button>
+
+                                    <button data-move="Mx2Prime">
+                                        Mx2'
+                                    </button>
+
+
+                                    <button data-move="My1">
+                                        My1
+                                    </button>
+
+                                    <button data-move="My1Prime">
+                                        My1'
+                                    </button>
+
+
+                                    <button data-move="My2">
+                                        My2
+                                    </button>
+
+                                    <button data-move="My2Prime">
+                                        My2'
+                                    </button>
+
+
+                                    <button data-move="Mz1">
+                                        Mz1
+                                    </button>
+
+                                    <button data-move="Mz1Prime">
+                                        Mz1'
+                                    </button>
+
+
+                                    <button data-move="Mz2">
+                                        Mz2
+                                    </button>
+
+                                    <button data-move="Mz2Prime">
+                                        Mz2'
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     BOTONES ESPECIALES
+                ================================================== -->
+
+                <div class="special-buttons">
+
+
+                    <button id="scrambleBtn">
+                        Mezclar
+                    </button>
+
+
+                    <button id="solveBtn">
+                        🔄 Resolver
+                    </button>
+
+
+                    <button id="resetBtn">
+                        ↻ Reiniciar
+                    </button>
+
+
+                    <a
+                        href="{% url 'selector' %}"
+                        class="back-selector">
+
+                        ← Volver al selector
+
+                    </a>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     ESTADO
+                ================================================== -->
+
+                <div id="status" role="status" aria-live="polite">
+                    ✅ Cubo resuelto
+                </div>
+
+
+            </div>
+
+        </section>
 
     </div>
 
-</section>
 
-</div>
-
-
-<div class="footer">
-
-    easyRubik · Aprende jugando 🧩
-
-</div>
+    <div class="footer">
+        easyRubik · Aprende jugando 🧩
+    </div>
 
 </div>
 
@@ -793,13 +474,13 @@ button:disabled {
 
 <script>
 
+
 /* =========================================================
    CHEQUEO DE SEGURIDAD
 ========================================================= */
 
 if (
-    typeof THREE === "undefined" ||
-    typeof THREE.OrbitControls === "undefined"
+    typeof THREE === "undefined"
 ) {
 
     document.getElementById(
@@ -953,6 +634,7 @@ const COLOR_HEX = {
     R: 0xef4444,
 
     L: 0xf97316
+
 };
 
 
@@ -962,14 +644,6 @@ const BLACK = 0x0a0a0a;
 /* =========================================================
    CONFIGURACIÓN DEL 4×4
 ========================================================= */
-
-/*
-    Coordenadas del cubo:
-
-    -1.5   -0.5   +0.5   +1.5
-
-    Tenemos 4 cubitos por eje.
-*/
 
 const SPACING = 1.02;
 
@@ -994,11 +668,9 @@ let cubeGroupObjects = [];
 
 function buildCube() {
 
-
     cubeGroupObjects.forEach(
         obj => scene.remove(obj)
     );
-
 
     cubeGroupObjects = [];
 
@@ -1011,20 +683,17 @@ function buildCube() {
         xi++
     ) {
 
-
         for (
             let yi = 0;
             yi < 4;
             yi++
         ) {
 
-
             for (
                 let zi = 0;
                 zi < 4;
                 zi++
             ) {
-
 
                 const x =
                     POSITIONS[xi];
@@ -1038,76 +707,63 @@ function buildCube() {
 
                 const materials = [
 
-
                     /* RIGHT */
 
                     new THREE.MeshLambertMaterial({
-
                         color:
                             x === 1.5
                                 ? COLOR_HEX.R
                                 : BLACK
-
                     }),
 
 
                     /* LEFT */
 
                     new THREE.MeshLambertMaterial({
-
                         color:
                             x === -1.5
                                 ? COLOR_HEX.L
                                 : BLACK
-
                     }),
 
 
                     /* UP */
 
                     new THREE.MeshLambertMaterial({
-
                         color:
                             y === 1.5
                                 ? COLOR_HEX.U
                                 : BLACK
-
                     }),
 
 
                     /* DOWN */
 
                     new THREE.MeshLambertMaterial({
-
                         color:
                             y === -1.5
                                 ? COLOR_HEX.D
                                 : BLACK
-
                     }),
 
 
                     /* FRONT */
 
                     new THREE.MeshLambertMaterial({
-
                         color:
                             z === 1.5
                                 ? COLOR_HEX.F
                                 : BLACK
-
                     }),
 
 
                     /* BACK */
 
                     new THREE.MeshLambertMaterial({
-
                         color:
                             z === -1.5
                                 ? COLOR_HEX.B
                                 : BLACK
-
                     })
 
                 ];
@@ -1163,6 +819,7 @@ function buildCube() {
                     x,
                     y,
                     z,
+
                     mesh
 
                 });
@@ -1193,13 +850,11 @@ const MOVES = {
         direction: 1
     },
 
-
     Rprime: {
         axis: "x",
         layers: [1.5],
         direction: -1
     },
-
 
     L: {
         axis: "x",
@@ -1207,13 +862,11 @@ const MOVES = {
         direction: -1
     },
 
-
     Lprime: {
         axis: "x",
         layers: [-1.5],
         direction: 1
     },
-
 
     U: {
         axis: "y",
@@ -1221,13 +874,11 @@ const MOVES = {
         direction: 1
     },
 
-
     Uprime: {
         axis: "y",
         layers: [1.5],
         direction: -1
     },
-
 
     D: {
         axis: "y",
@@ -1235,13 +886,11 @@ const MOVES = {
         direction: -1
     },
 
-
     Dprime: {
         axis: "y",
         layers: [-1.5],
         direction: 1
     },
-
 
     F: {
         axis: "z",
@@ -1249,20 +898,17 @@ const MOVES = {
         direction: -1
     },
 
-
     Fprime: {
         axis: "z",
         layers: [1.5],
         direction: 1
     },
 
-
     B: {
         axis: "z",
         layers: [-1.5],
         direction: 1
     },
-
 
     Bprime: {
         axis: "z",
@@ -1281,13 +927,11 @@ const MOVES = {
         direction: 1
     },
 
-
     RwPrime: {
         axis: "x",
         layers: [0.5, 1.5],
         direction: -1
     },
-
 
     Lw: {
         axis: "x",
@@ -1295,13 +939,11 @@ const MOVES = {
         direction: -1
     },
 
-
     LwPrime: {
         axis: "x",
         layers: [-1.5, -0.5],
         direction: 1
     },
-
 
     Uw: {
         axis: "y",
@@ -1309,13 +951,11 @@ const MOVES = {
         direction: 1
     },
 
-
     UwPrime: {
         axis: "y",
         layers: [0.5, 1.5],
         direction: -1
     },
-
 
     Dw: {
         axis: "y",
@@ -1323,13 +963,11 @@ const MOVES = {
         direction: -1
     },
 
-
     DwPrime: {
         axis: "y",
         layers: [-1.5, -0.5],
         direction: 1
     },
-
 
     Fw: {
         axis: "z",
@@ -1337,20 +975,17 @@ const MOVES = {
         direction: -1
     },
 
-
     FwPrime: {
         axis: "z",
         layers: [0.5, 1.5],
         direction: 1
     },
 
-
     Bw: {
         axis: "z",
         layers: [-1.5, -0.5],
         direction: 1
     },
-
 
     BwPrime: {
         axis: "z",
@@ -1369,13 +1004,11 @@ const MOVES = {
         direction: 1
     },
 
-
     Mx1Prime: {
         axis: "x",
         layers: [-0.5],
         direction: -1
     },
-
 
     Mx2: {
         axis: "x",
@@ -1383,13 +1016,11 @@ const MOVES = {
         direction: 1
     },
 
-
     Mx2Prime: {
         axis: "x",
         layers: [0.5],
         direction: -1
     },
-
 
     My1: {
         axis: "y",
@@ -1397,13 +1028,11 @@ const MOVES = {
         direction: 1
     },
 
-
     My1Prime: {
         axis: "y",
         layers: [-0.5],
         direction: -1
     },
-
 
     My2: {
         axis: "y",
@@ -1411,13 +1040,11 @@ const MOVES = {
         direction: 1
     },
 
-
     My2Prime: {
         axis: "y",
         layers: [0.5],
         direction: -1
     },
-
 
     Mz1: {
         axis: "z",
@@ -1425,20 +1052,17 @@ const MOVES = {
         direction: 1
     },
 
-
     Mz1Prime: {
         axis: "z",
         layers: [-0.5],
         direction: -1
     },
 
-
     Mz2: {
         axis: "z",
         layers: [0.5],
         direction: 1
     },
-
 
     Mz2Prime: {
         axis: "z",
@@ -1473,6 +1097,7 @@ const INVERSE = {
     B: "Bprime",
     Bprime: "B",
 
+
     Rw: "RwPrime",
     RwPrime: "Rw",
 
@@ -1492,9 +1117,7 @@ const INVERSE = {
     BwPrime: "Bw",
 
 
-    /* =====================================================
-       CAPAS CENTRALES X
-    ===================================================== */
+    /* CAPAS CENTRALES X */
 
     Mx1: "Mx1Prime",
     Mx1Prime: "Mx1",
@@ -1503,9 +1126,7 @@ const INVERSE = {
     Mx2Prime: "Mx2",
 
 
-    /* =====================================================
-       CAPAS CENTRALES Y
-    ===================================================== */
+    /* CAPAS CENTRALES Y */
 
     My1: "My1Prime",
     My1Prime: "My1",
@@ -1514,9 +1135,7 @@ const INVERSE = {
     My2Prime: "My2",
 
 
-    /* =====================================================
-       CAPAS CENTRALES Z
-    ===================================================== */
+    /* CAPAS CENTRALES Z */
 
     Mz1: "Mz1Prime",
     Mz1Prime: "Mz1",
@@ -1563,8 +1182,10 @@ const AXIS_VECTORS = {
 
 function formatMove(move) {
 
-    return move
-        .replace("Prime", "'");
+    return move.replace(
+        "Prime",
+        "'"
+    );
 
 }
 
@@ -1581,27 +1202,21 @@ function rotateLayer(
 
     return new Promise(resolve => {
 
-
         const group =
             new THREE.Group();
-
 
         scene.add(group);
 
 
         const selected =
             cubies.filter(
-
                 c =>
                     layers.some(
-
                         layer =>
                             Math.abs(
                                 c[axis] - layer
                             ) < 0.01
-
                     )
-
             );
 
 
@@ -1622,13 +1237,11 @@ function rotateLayer(
 
         const duration = 220;
 
-
         const start =
             performance.now();
 
 
         function step() {
-
 
             const now =
                 performance.now();
@@ -1650,17 +1263,13 @@ function rotateLayer(
 
             if (t < 1) {
 
-
                 requestAnimationFrame(
                     step
                 );
 
-
             } else {
 
-
                 selected.forEach(c => {
-
 
                     scene.attach(
                         c.mesh
@@ -1712,7 +1321,6 @@ function rotateLayer(
 
                 scene.remove(group);
 
-
                 resolve();
 
             }
@@ -1738,11 +1346,14 @@ let moveHistory = [];
 let isBusy = false;
 
 
+/* =========================================================
+   HACER MOVIMIENTO
+========================================================= */
+
 async function performMove(
     moveName,
     recordHistory = true
 ) {
-
 
     const move =
         MOVES[moveName];
@@ -1783,7 +1394,6 @@ async function makeMove(
     moveName,
     recordHistory = true
 ) {
-
 
     if (isBusy)
         return;
@@ -1841,6 +1451,12 @@ const wideButtons =
     );
 
 
+const centralButtons =
+    document.getElementById(
+        "centralButtons"
+    );
+
+
 const backupControls =
     document.getElementById(
         "backupControls"
@@ -1853,16 +1469,54 @@ const toggleBtn =
     );
 
 
-function setBusy(busy) {
+/* =========================================================
+   NUEVO SUBMENÚ
+========================================================= */
 
+const movesToggle =
+    document.getElementById(
+        "movesToggle"
+    );
+
+
+const movesPanel =
+    document.getElementById(
+        "movesPanel"
+    );
+
+
+movesToggle.addEventListener(
+    "click",
+    () => {
+
+        const isOpen =
+            movesPanel.classList.toggle(
+                "open"
+            );
+
+
+        movesToggle.setAttribute(
+            "aria-expanded",
+            isOpen
+                ? "true"
+                : "false"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   ESTADO OCUPADO
+========================================================= */
+
+function setBusy(busy) {
 
     scrambleBtn.disabled =
         busy;
 
-
     solveBtn.disabled =
         busy;
-
 
     resetBtn.disabled =
         busy;
@@ -1883,6 +1537,14 @@ function setBusy(busy) {
                 b.disabled = busy
         );
 
+
+    centralButtons
+        .querySelectorAll("button")
+        .forEach(
+            b =>
+                b.disabled = busy
+        );
+
 }
 
 
@@ -1893,7 +1555,6 @@ function setBusy(busy) {
 moveButtons.addEventListener(
     "click",
     event => {
-
 
         const btn =
             event.target.closest(
@@ -1922,6 +1583,32 @@ wideButtons.addEventListener(
     "click",
     event => {
 
+        const btn =
+            event.target.closest(
+                "button"
+            );
+
+
+        if (!btn || isBusy)
+            return;
+
+
+        makeMove(
+            btn.dataset.move,
+            true
+        );
+
+    }
+);
+
+
+/* =========================================================
+   BOTONES CENTRALES
+========================================================= */
+
+centralButtons.addEventListener(
+    "click",
+    event => {
 
         const btn =
             event.target.closest(
@@ -1943,11 +1630,10 @@ wideButtons.addEventListener(
 
 
 /* =========================================================
-   MOSTRAR / OCULTAR
+   MOSTRAR / OCULTAR BOTONES DE RESPALDO
 ========================================================= */
 
 function toggleButtons() {
-
 
     backupControls.classList.toggle(
         "hidden"
@@ -1959,9 +1645,9 @@ function toggleButtons() {
             "hidden"
         )
 
-            ? " Mostrar botones de respaldo"
+            ? "🎛️ Mostrar botones de respaldo"
 
-            : " Ocultar botones de respaldo";
+            : "🎛️ Ocultar botones de respaldo";
 
 }
 
@@ -1971,7 +1657,6 @@ function toggleButtons() {
 ========================================================= */
 
 async function scramble() {
-
 
     if (isBusy)
         return;
@@ -1996,15 +1681,12 @@ async function scramble() {
         i++
     ) {
 
-
         const randomMove =
             possibleMoves[
-
                 Math.floor(
                     Math.random() *
                     possibleMoves.length
                 )
-
             ];
 
 
@@ -2017,7 +1699,7 @@ async function scramble() {
 
 
     status.textContent =
-        "🌀 Cubo mezclado — prueba  Resolver";
+        "🌀 Cubo mezclado — prueba Resolver";
 
 
     isBusy = false;
@@ -2033,7 +1715,6 @@ async function scramble() {
 
 async function solveCube() {
 
-
     if (isBusy)
         return;
 
@@ -2042,10 +1723,8 @@ async function solveCube() {
         moveHistory.length === 0
     ) {
 
-
         status.textContent =
             "El cubo ya está resuelto";
-
 
         return;
 
@@ -2058,13 +1737,12 @@ async function solveCube() {
 
 
     status.textContent =
-        " Resolviendo...";
+        "🔄 Resolviendo...";
 
 
     while (
         moveHistory.length > 0
     ) {
-
 
         const last =
             moveHistory.pop();
@@ -2094,7 +1772,6 @@ async function solveCube() {
 ========================================================= */
 
 function resetCube() {
-
 
     if (isBusy)
         return;
@@ -2183,7 +1860,6 @@ let gestureStartY = 0;
 
 function getFaceHit(event) {
 
-
     const rect =
         renderer.domElement
         .getBoundingClientRect();
@@ -2239,7 +1915,6 @@ function toScreenPx(
     worldPoint
 ) {
 
-
     const rect =
         renderer.domElement
         .getBoundingClientRect();
@@ -2254,10 +1929,12 @@ function toScreenPx(
     return new THREE.Vector2(
 
         (v.x * 0.5 + 0.5)
-        * rect.width,
+        *
+        rect.width,
 
         (-(v.y * 0.5) + 0.5)
-        * rect.height
+        *
+        rect.height
 
     );
 
@@ -2273,7 +1950,6 @@ function determineMove(
     dx,
     dy
 ) {
-
 
     const worldNormal =
         hit.face.normal
@@ -2298,9 +1974,7 @@ function determineMove(
         > maxComp
     ) {
 
-
         normalAxisKey = "y";
-
 
         maxComp =
             Math.abs(
@@ -2315,9 +1989,7 @@ function determineMove(
         > maxComp
     ) {
 
-
         normalAxisKey = "z";
-
 
         maxComp =
             Math.abs(
@@ -2344,22 +2016,6 @@ function determineMove(
 
     if (!cubieObj)
         return null;
-
-
-    /*
-       EN EL 4×4 AHORA PERMITIMOS:
-
-       -1.5 = capa exterior
-       -0.5 = capa central izquierda
-        0.5 = capa central derecha
-        1.5 = capa exterior
-
-       Antes solamente se permitían
-       las posiciones -1.5 y 1.5.
-
-       Esta era la razón por la que las
-       filas del medio no se movían.
-    */
 
 
     const origin =
@@ -2398,17 +2054,6 @@ function determineMove(
     candidateAxes.forEach(
         axisKey => {
 
-
-            /*
-               IMPORTANTE:
-
-               Ahora usamos directamente la
-               coordenada del cubito.
-
-               Así las capas centrales
-               -0.5 y 0.5 también pueden
-               seleccionarse.
-            */
 
             let layer;
 
@@ -2502,7 +2147,6 @@ function determineMove(
                         score > best.score
                     ) {
 
-
                         best = {
 
                             score,
@@ -2518,11 +2162,9 @@ function determineMove(
                     }
 
                 }
-
             );
 
         }
-
     );
 
 
@@ -2539,7 +2181,6 @@ function determineMove(
     return Object.keys(
         MOVES
     ).find(name => {
-
 
         const m =
             MOVES[name];
@@ -2575,7 +2216,6 @@ renderer.domElement.addEventListener(
     "pointerdown",
     event => {
 
-
         if (isBusy)
             return;
 
@@ -2588,7 +2228,6 @@ renderer.domElement.addEventListener(
             hit &&
             hit.face
         ) {
-
 
             gestureHit = hit;
 
@@ -2620,7 +2259,6 @@ renderer.domElement.addEventListener(
 window.addEventListener(
     "pointerup",
     event => {
-
 
         if (!gestureActive)
             return;
@@ -2655,7 +2293,6 @@ window.addEventListener(
             isBusy
         ) {
 
-
             gestureHit = null;
 
             return;
@@ -2673,15 +2310,12 @@ window.addEventListener(
 
         if (move) {
 
-
             makeMove(
                 move,
                 true
             );
 
-
         } else {
-
 
             status.textContent =
                 "🤔 No reconocí ese movimiento, inténtalo de nuevo";
@@ -2700,7 +2334,6 @@ window.addEventListener(
 ========================================================= */
 
 function animate() {
-
 
     requestAnimationFrame(
         animate
@@ -2726,9 +2359,8 @@ buildCube();
 
 animate();
 
+
 </script>
 
 </body>
-
 </html>
-```

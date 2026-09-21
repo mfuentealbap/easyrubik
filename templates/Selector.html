@@ -1,984 +1,1582 @@
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Selecciona tu cubo · easyRubik</title>
 
-<title>Seleccionar cubo · easyRubik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
 
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
 
-<style>
-    * {
-        box-sizing: border-box;
-    }
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
 
-    :root {
-        --bg: #121319;
-        --panel: #181a22;
-        --panel-light: #1e212b;
-        --line: #262a35;
-        --line-soft: #1e212b;
-        --text: #f4f5f7;
-        --muted: #9a9db0;
-        --muted-dim: #6b7280;
+        :root {
+            --bg: #080a10;
+            --bg-2: #0d1018;
 
-        --c-white: #f8fafc;
-        --c-yellow: #facc15;
-        --c-green: #22c55e;
-        --c-blue: #3b82f6;
-        --c-red: #ef4444;
-        --c-orange: #f97316;
-    }
+            --panel: rgba(22, 25, 36, 0.78);
+            --panel-hover: rgba(30, 34, 48, 0.92);
 
-    body {
-        margin: 0;
-        min-height: 100vh;
+            --border: rgba(255,255,255,0.08);
+            --border-hover: rgba(255,255,255,0.16);
 
-        font-family: "Inter", Arial, sans-serif;
+            --text: #f8fafc;
+            --muted: #9299aa;
 
-        background:
-            radial-gradient(
-                circle at 18% 14%,
-                rgba(59,130,246,0.09),
-                transparent 32%
-            ),
-            radial-gradient(
-                circle at 82% 78%,
-                rgba(250,204,21,0.07),
-                transparent 32%
-            ),
-            var(--bg);
+            --white: #ffffff;
+            --red: #ff3b4d;
+            --orange: #ff861c;
+            --yellow: #ffd21f;
+            --green: #23d66f;
+            --blue: #438cff;
 
-        color: var(--text);
-    }
-
-    .page {
-        width: 100%;
-        max-width: 1200px;
-        min-height: 100vh;
-
-        margin: auto;
-        padding: 40px 40px 20px;
-    }
-
-    .brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 9px;
-
-        font-family: "Sora", sans-serif;
-        font-weight: 700;
-        font-size: 0.95rem;
-
-        color: var(--muted);
-    }
-
-    .brand .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 2px;
-        background: var(--c-red);
-    }
-
-    header {
-        text-align: center;
-        margin: 26px 0 44px;
-    }
-
-    header h1 {
-        margin: 14px 0 0;
-
-        font-family: "Sora", sans-serif;
-        font-weight: 800;
-        font-size: 2.6rem;
-
-        letter-spacing: -0.03em;
-    }
-
-    header p {
-        margin-top: 10px;
-        color: var(--muted);
-        font-size: 1.05rem;
-    }
-
-    .back-container {
-    margin-bottom: 6px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-
-        padding: 9px 15px;
-
-        border-radius: 10px;
-        text-decoration: none;
-
-        font-size: 0.9rem;
-
-        color: var(--text);
-        background: var(--panel);
-        border: 1px solid var(--line);
-
-        transition: 0.2s;
-    }
-
-    .back-button:hover {
-        background: var(--panel-light);
-        border-color: #33394a;
-
-        transform: translateX(-3px);
-    }
-
-    .selector-title {
-        text-align: center;
-        margin-bottom: 34px;
-    }
-
-    .selector-title h2 {
-        margin: 0;
-
-        font-family: "Sora", sans-serif;
-        font-weight: 700;
-        font-size: 1.5rem;
-
-        letter-spacing: -0.01em;
-    }
-
-    .selector-title p {
-        margin-top: 8px;
-        color: var(--muted);
-    }
-
-    .category {
-        margin-bottom: 44px;
-    }
-
-    .category-title {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
-
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-
-        border-bottom: 1px solid var(--line-soft);
-    }
-
-    .category-title h3 {
-        margin: 0;
-
-        font-family: "Sora", sans-serif;
-        font-weight: 700;
-        font-size: 1.15rem;
-
-        letter-spacing: -0.01em;
-    }
-
-    .category-title span {
-        color: var(--muted-dim);
-        font-size: 0.85rem;
-    }
-
-    .cube-grid {
-        display: grid;
-
-        grid-template-columns:
-            repeat(4, minmax(0, 1fr));
-
-        gap: 16px;
-    }
-
-    .cube-card {
-        position: relative;
-
-        min-height: 250px;
-        padding: 22px 20px;
-
-        display: flex;
-        flex-direction: column;
-
-        align-items: center;
-        justify-content: space-between;
-
-        text-align: center;
-
-        background: var(--panel);
-
-        border: 1px solid var(--line);
-        border-radius: 16px;
-
-        box-shadow:
-            0 15px 34px rgba(0,0,0,0.28),
-            inset 0 1px 0 rgba(255,255,255,0.025);
-
-        transition:
-            transform 0.2s ease,
-            border-color 0.2s ease,
-            background 0.2s ease,
-            box-shadow 0.2s ease;
-    }
-
-    .cube-card:hover {
-        transform: translateY(-5px);
-
-        border-color: #3a4152;
-        background: #1c1f29;
-
-        box-shadow:
-            0 20px 40px rgba(0,0,0,0.34),
-            inset 0 1px 0 rgba(255,255,255,0.03);
-    }
-
-    .cube-icon {
-        width: 84px;
-        height: 84px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        margin-bottom: 6px;
-    }
-
-    .grid-icon {
-        display: grid;
-
-        gap: 3px;
-
-        width: 100%;
-        height: 100%;
-    }
-
-    .grid-icon span {
-        border-radius: 3px;
-    }
-
-    .badge-icon {
-        width: 74px;
-        height: 74px;
-
-        border-radius: 50%;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        font-size: 2.1rem;
-
-        background: var(--panel-light);
-        border: 1px solid var(--line);
-    }
-
-    .cube-info h4 {
-        margin: 0;
-
-        font-family: "Sora", sans-serif;
-        font-weight: 600;
-        font-size: 1.1rem;
-
-        letter-spacing: -0.01em;
-    }
-
-    .cube-info p {
-        margin: 7px 0 0;
-
-        color: var(--muted);
-
-        font-size: 0.87rem;
-        line-height: 1.45;
-    }
-
-    .select-button {
-        width: 100%;
-
-        margin-top: 18px;
-        padding: 11px 15px;
-
-        border: 1px solid var(--line);
-        border-radius: 10px;
-
-        background: var(--panel-light);
-        color: white;
-
-        font-family: "Sora", sans-serif;
-        font-size: 0.92rem;
-        font-weight: 600;
-
-        cursor: pointer;
-        text-decoration: none;
-
-        transition: 0.2s;
-    }
-
-    .select-button:hover {
-        background: #2a2f3c;
-        border-color: #414858;
-
-        transform: translateY(-2px);
-    }
-
-    .available {
-        border-color: rgba(34,197,94,0.28);
-    }
-
-    .available:hover {
-        border-color: rgba(34,197,94,0.6);
-    }
-
-    .available .select-button {
-        background: #1f3327;
-        border-color: rgba(34,197,94,0.4);
-        color: #d6ffe5;
-    }
-
-    .available .select-button:hover {
-        background: #24402f;
-        border-color: rgba(34,197,94,0.65);
-    }
-
-    .coming-soon {
-        opacity: 0.6;
-    }
-
-    .coming-soon .select-button {
-        cursor: not-allowed;
-
-        background: #191c23;
-        color: #6b7280;
-    }
-
-    .coming-soon:hover {
-        transform: none;
-
-        border-color: var(--line);
-        background: var(--panel);
-
-        box-shadow:
-            0 15px 34px rgba(0,0,0,0.28),
-            inset 0 1px 0 rgba(255,255,255,0.025);
-    }
-
-    .badge {
-        position: absolute;
-
-        top: 14px;
-        right: 14px;
-
-        padding: 5px 9px;
-
-        border-radius: 7px;
-
-        font-family: "Sora", sans-serif;
-        font-size: 0.65rem;
-        font-weight: 700;
-
-        letter-spacing: 0.02em;
-
-        background: rgba(34,197,94,0.14);
-        color: #86efac;
-
-        border: 1px solid rgba(34,197,94,0.25);
-    }
-
-    .badge-soon {
-        background: rgba(156,163,175,0.1);
-        color: #9ca3af;
-        border-color: rgba(156,163,175,0.15);
-    }
-
-    .footer {
-        text-align: center;
-
-        margin-top: 46px;
-        padding-bottom: 24px;
-
-        color: var(--muted-dim);
-        font-size: 0.85rem;
-    }
-
-    @media (max-width: 1000px) {
-        .cube-grid {
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
+            --shadow:
+                0 25px 70px rgba(0,0,0,0.35);
         }
-    }
 
-    @media (max-width: 750px) {
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family: "Inter", sans-serif;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(67,140,255,0.15),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 90% 20%,
+                    rgba(255,59,77,0.10),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(35,214,111,0.08),
+                    transparent 30%
+                ),
+                var(--bg);
+
+            overflow-x: hidden;
+        }
+
+
+        /* =====================================================
+           BACKGROUND DECORATION
+        ===================================================== */
+
+        body::before {
+            content: "";
+            position: fixed;
+
+            width: 500px;
+            height: 500px;
+
+            top: -250px;
+            right: -200px;
+
+            border-radius: 50%;
+
+            background: rgba(67,140,255,0.07);
+
+            filter: blur(80px);
+
+            pointer-events: none;
+        }
+
+        body::after {
+            content: "";
+
+            position: fixed;
+
+            width: 400px;
+            height: 400px;
+
+            bottom: -220px;
+            left: -150px;
+
+            border-radius: 50%;
+
+            background: rgba(255,210,31,0.06);
+
+            filter: blur(80px);
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
         .page {
-            padding: 28px 20px 16px;
+            position: relative;
+
+            width: 100%;
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 28px 35px 45px;
         }
 
+
+        /* =====================================================
+           TOP BAR
+        ===================================================== */
+
+        .topbar {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 65px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-family: "Sora", sans-serif;
+            font-weight: 700;
+
+            font-size: 1.05rem;
+        }
+
+        .brand-icon {
+            width: 10px;
+            height: 10px;
+
+            border-radius: 3px;
+
+            background: linear-gradient(
+                135deg,
+                var(--red),
+                var(--orange)
+            );
+
+            box-shadow:
+                0 0 15px rgba(255,59,77,0.6);
+        }
+
+        .logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 9px 14px;
+
+            border-radius: 10px;
+
+            color: var(--muted);
+
+            text-decoration: none;
+
+            border: 1px solid var(--border);
+
+            background: rgba(255,255,255,0.03);
+
+            font-size: 0.85rem;
+
+            transition: 0.2s ease;
+        }
+
+        .logout:hover {
+            color: white;
+
+            background: rgba(255,255,255,0.07);
+
+            border-color: var(--border-hover);
+
+            transform: translateY(-2px);
+        }
+
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+            position: relative;
+
+            text-align: center;
+
+            margin-bottom: 70px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+
+            align-items: center;
+            gap: 8px;
+
+            padding: 7px 13px;
+
+            border-radius: 999px;
+
+            font-size: 0.75rem;
+            font-weight: 600;
+
+            color: #b9d5ff;
+
+            background: rgba(67,140,255,0.09);
+
+            border: 1px solid rgba(67,140,255,0.2);
+
+            margin-bottom: 20px;
+        }
+
+        .hero-badge span {
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+
+            box-shadow:
+                0 0 10px var(--green);
+        }
+
+        .hero h1 {
+            margin: 0;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: clamp(
+                2.5rem,
+                6vw,
+                4.5rem
+            );
+
+            line-height: 1.05;
+
+            letter-spacing: -0.055em;
+
+            font-weight: 800;
+        }
+
+        .hero h1 .gradient {
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff,
+                    #78aaff,
+                    #ffffff
+                );
+
+            background-size: 200% auto;
+
+            color: transparent;
+
+            background-clip: text;
+            -webkit-background-clip: text;
+
+            animation: gradientMove 5s linear infinite;
+        }
+
+        @keyframes gradientMove {
+
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        .hero p {
+            max-width: 600px;
+
+            margin: 18px auto 0;
+
+            color: var(--muted);
+
+            font-size: 1.05rem;
+
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           SECTION
+        ===================================================== */
+
+        .section {
+            margin-bottom: 65px;
+        }
+
+        .section-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: 1.25rem;
+
+            font-weight: 700;
+        }
+
+        .section-title span {
+            color: #697185;
+
+            font-size: 0.82rem;
+        }
+
+        .section-line {
+            height: 1px;
+
+            flex: 1;
+
+            margin-left: 25px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.1),
+                    transparent
+                );
+        }
+
+
+        /* =====================================================
+           CARDS GRID
+        ===================================================== */
+
         .cube-grid {
+            display: grid;
+
             grid-template-columns:
-                repeat(2, minmax(0, 1fr));
+                repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
         }
 
-        header h1 {
-            font-size: 2.1rem;
-        }
-    }
 
-    @media (max-width: 500px) {
-        .page {
-            padding: 22px 14px 14px;
-        }
-
-        .cube-grid {
-            grid-template-columns: 1fr;
-        }
-
-        header h1 {
-            font-size: 1.9rem;
-        }
+        /* =====================================================
+           CARD
+        ===================================================== */
 
         .cube-card {
-            min-height: 230px;
-        }
-    }
-</style>
+            position: relative;
 
+            min-height: 365px;
+
+            padding: 22px;
+
+            display: flex;
+            flex-direction: column;
+
+            text-align: center;
+
+            border-radius: 22px;
+
+            border: 1px solid var(--border);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.045),
+                    rgba(255,255,255,0.015)
+                );
+
+            backdrop-filter: blur(14px);
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+
+            transition:
+                transform 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                background 0.3s ease;
+        }
+
+        .cube-card::before {
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            top: -100px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            border-radius: 50%;
+
+            background: var(--card-color, #438cff);
+
+            opacity: 0.10;
+
+            filter: blur(35px);
+
+            pointer-events: none;
+        }
+
+        .cube-card:hover {
+            transform: translateY(-9px);
+
+            background: var(--panel-hover);
+
+            border-color:
+                var(--card-color, var(--border-hover));
+
+            box-shadow:
+                0 30px 80px rgba(0,0,0,0.48),
+                0 0 35px
+                color-mix(
+                    in srgb,
+                    var(--card-color, #438cff) 10%,
+                    transparent
+                );
+        }
+
+
+        /* =====================================================
+           CARD STATUS
+        ===================================================== */
+
+        .status {
+            position: absolute;
+
+            top: 16px;
+            right: 16px;
+
+            padding: 5px 9px;
+
+            border-radius: 7px;
+
+            font-size: 0.62rem;
+
+            font-weight: 700;
+
+            letter-spacing: 0.04em;
+
+            background: rgba(35,214,111,0.10);
+
+            border: 1px solid rgba(35,214,111,0.2);
+
+            color: #72f5a8;
+        }
+
+        .status.soon {
+            background: rgba(255,255,255,0.04);
+
+            border-color: rgba(255,255,255,0.07);
+
+            color: #687080;
+        }
+
+
+        /* =====================================================
+           CUBE VISUAL
+        ===================================================== */
+
+        .cube-visual {
+            height: 145px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 12px;
+            margin-bottom: 8px;
+
+            perspective: 700px;
+        }
+
+        .mini-cube {
+            display: grid;
+
+            gap: 4px;
+
+            width: 112px;
+            height: 112px;
+
+            padding: 7px;
+
+            border-radius: 13px;
+
+            background: #0b0d12;
+
+            border: 1px solid rgba(255,255,255,0.09);
+
+            box-shadow:
+                0 18px 35px rgba(0,0,0,0.45);
+
+            transform:
+                rotateX(12deg)
+                rotateY(-14deg)
+                rotateZ(-2deg);
+
+            transition:
+                transform 0.45s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .cube-card:hover .mini-cube {
+            transform:
+                rotateX(8deg)
+                rotateY(18deg)
+                rotateZ(-4deg)
+                translateY(-4px);
+        }
+
+        .mini-cube span {
+            border-radius: 4px;
+
+            box-shadow:
+                inset 0 0 0 1px rgba(0,0,0,0.18),
+                inset 0 4px 8px rgba(255,255,255,0.10);
+
+            transition: 0.2s;
+        }
+
+
+        /* =====================================================
+           SPECIAL ICON
+        ===================================================== */
+
+        .special-icon {
+            width: 112px;
+            height: 112px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 28px;
+
+            font-size: 3.6rem;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,0.08),
+                    rgba(255,255,255,0.025)
+                );
+
+            border: 1px solid var(--border);
+
+            box-shadow:
+                0 18px 35px rgba(0,0,0,0.35);
+
+            transform: rotate(-4deg);
+
+            transition:
+                transform 0.35s ease;
+        }
+
+        .cube-card:hover .special-icon {
+            transform:
+                rotate(5deg)
+                scale(1.08);
+        }
+
+
+        /* =====================================================
+           CARD CONTENT
+        ===================================================== */
+
+        .cube-info {
+            position: relative;
+
+            flex: 1;
+        }
+
+        .cube-info h3 {
+            margin: 5px 0 8px;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: 1.15rem;
+
+            font-weight: 700;
+        }
+
+        .cube-info p {
+            margin: 0 auto;
+
+            max-width: 220px;
+
+            color: var(--muted);
+
+            font-size: 0.86rem;
+
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           BUTTON
+        ===================================================== */
+
+        .select-button {
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 100%;
+
+            margin-top: 22px;
+
+            padding: 13px 16px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            font-family: "Sora", sans-serif;
+
+            font-size: 0.85rem;
+
+            font-weight: 700;
+
+            color: white;
+
+            background:
+                rgba(255,255,255,0.055);
+
+            border: 1px solid rgba(255,255,255,0.10);
+
+            transition:
+                0.25s ease;
+
+            cursor: pointer;
+        }
+
+        .select-button::after {
+            content: "→";
+
+            margin-left: 8px;
+
+            transition:
+                transform 0.2s ease;
+        }
+
+        .select-button:hover {
+            background:
+                var(--card-color, #438cff);
+
+            border-color:
+                var(--card-color, #438cff);
+
+            color: white;
+
+            box-shadow:
+                0 8px 25px
+                color-mix(
+                    in srgb,
+                    var(--card-color, #438cff) 25%,
+                    transparent
+                );
+        }
+
+        .select-button:hover::after {
+            transform: translateX(4px);
+        }
+
+
+        /* =====================================================
+           AVAILABLE COLORS
+        ===================================================== */
+
+        .blue {
+            --card-color: var(--blue);
+        }
+
+        .green {
+            --card-color: var(--green);
+        }
+
+        .orange {
+            --card-color: var(--orange);
+        }
+
+        .purple {
+            --card-color: #a855f7;
+        }
+
+        .yellow {
+            --card-color: var(--yellow);
+        }
+
+
+        /* =====================================================
+           COMING SOON
+        ===================================================== */
+
+        .coming-soon {
+            opacity: 0.55;
+        }
+
+        .coming-soon:hover {
+            transform: none;
+
+            border-color: var(--border);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.035),
+                    rgba(255,255,255,0.01)
+                );
+
+            box-shadow: var(--shadow);
+        }
+
+        .coming-soon .mini-cube {
+            filter: grayscale(1);
+
+            opacity: 0.35;
+        }
+
+        .coming-soon .special-icon {
+            filter: grayscale(1);
+
+            opacity: 0.4;
+        }
+
+        .coming-soon .select-button {
+            cursor: not-allowed;
+
+            color: #626a79;
+
+            background: rgba(255,255,255,0.025);
+
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .coming-soon .select-button::after {
+            content: "";
+        }
+
+
+        /* =====================================================
+           DESAFÍO
+        ===================================================== */
+
+        .challenge-card {
+            --card-color: var(--yellow);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,210,31,0.08),
+                    rgba(255,255,255,0.02)
+                );
+
+            border-color:
+                rgba(255,210,31,0.20);
+        }
+
+        .challenge-card::after {
+            content: "⚡";
+
+            position: absolute;
+
+            top: -35px;
+            left: -25px;
+
+            font-size: 8rem;
+
+            opacity: 0.035;
+
+            transform: rotate(-15deg);
+
+            pointer-events: none;
+        }
+
+        .challenge-card .special-icon {
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,210,31,0.15),
+                    rgba(255,210,31,0.025)
+                );
+
+            border-color:
+                rgba(255,210,31,0.18);
+        }
+
+        .challenge-card .select-button {
+            background:
+                linear-gradient(
+                    135deg,
+                    #f0b900,
+                    #ff8a00
+                );
+
+            border-color: transparent;
+
+            color: #171008;
+
+            box-shadow:
+                0 8px 25px rgba(255,160,0,0.18);
+        }
+
+        .challenge-card .select-button:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffd21f,
+                    #ff9d20
+                );
+
+            box-shadow:
+                0 12px 35px rgba(255,160,0,0.30);
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #596171;
+
+            font-size: 0.8rem;
+        }
+
+        footer strong {
+            color: #7c8494;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1050px) {
+
+            .cube-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .page {
+                padding:
+                    22px
+                    16px
+                    35px;
+            }
+
+            .topbar {
+                margin-bottom: 45px;
+            }
+
+            .hero {
+                margin-bottom: 50px;
+            }
+
+            .hero h1 {
+                font-size: 2.6rem;
+            }
+
+            .hero p {
+                font-size: 0.95rem;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .section-line {
+                display: none;
+            }
+
+            .cube-grid {
+                grid-template-columns: 1fr;
+
+                gap: 15px;
+            }
+
+            .cube-card {
+                min-height: 350px;
+            }
+
+        }
+
+
+        @media (max-width: 400px) {
+
+            .hero h1 {
+                font-size: 2.25rem;
+            }
+
+            .brand {
+                font-size: 0.95rem;
+            }
+
+            .logout {
+                font-size: 0.78rem;
+            }
+
+        }
+
+
+        /* =====================================================
+           REDUCE MOTION
+        ===================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+
+        }
+
+    </style>
 </head>
+
 
 <body>
 
 <div class="page">
 
 
-<!-- CERRAR SESIÓN -->
+    <!-- =====================================================
+         TOP BAR
+    ====================================================== -->
 
-<div class="back-container">
+    <div class="topbar">
 
-    <a href="{% url 'logout' %}" class="back-button">
-        Cerrar sesión
+        <div class="brand">
+
+            <span class="brand-icon"></span>
+
+            easyRubik
+
+        </div>
+
+
+        <a
+            href="{% url 'logout' %}"
+            class="logout"
+        >
+            ↪ Cerrar sesión
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <header class="hero">
+
+        <div class="hero-badge">
+
+            <span></span>
+
+            Todo listo para practicar
+
+        </div>
+
+
+        <h1>
+
+            Elige tu
+            <span class="gradient">
+                desafío
+            </span>
+
+        </h1>
+
+
+        <p>
+
+            Selecciona un puzzle y empieza a practicar.
+            Desde el clásico 3×3 hasta desafíos mucho más grandes.
+
+        </p>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CUBOS CLÁSICOS
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <h2>
+                    🧩 Cubos clásicos
+                </h2>
+
+                <span>
+                    Por tamaño
+                </span>
+
+            </div>
+
+            <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="cube-grid">
+
+
+            <!-- ================= 3x3 ================= -->
+
+            <div class="cube-card blue">
+
+                <span class="status">
+                    DISPONIBLE
+                </span>
+
+
+                <div class="cube-visual">
+
+                    <div
+                        class="mini-cube"
+                        style="
+                            grid-template-columns: repeat(3, 1fr);
+                            grid-template-rows: repeat(3, 1fr);
+                        "
+                    >
+
+                        <span style="background:#ffffff;"></span>
+                        <span style="background:#ff3b4d;"></span>
+                        <span style="background:#23d66f;"></span>
+
+                        <span style="background:#ffd21f;"></span>
+                        <span style="background:#438cff;"></span>
+                        <span style="background:#ffffff;"></span>
+
+                        <span style="background:#ff861c;"></span>
+                        <span style="background:#23d66f;"></span>
+                        <span style="background:#ff3b4d;"></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="cube-info">
+
+                    <h3>
+                        Cubo 3×3×3
+                    </h3>
+
+                    <p>
+                        El clásico cubo Rubik.
+                        El mejor lugar para comenzar.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{% url 'simulador' %}"
+                    class="select-button"
+                >
+                    Abrir simulador
+                </a>
+
+            </div>
+
+
+
+            <!-- ================= 4x4 ================= -->
+
+            <div class="cube-card green">
+
+                <span class="status">
+                    DISPONIBLE
+                </span>
+
+
+                <div class="cube-visual">
+
+                    <div
+                        class="mini-cube"
+                        style="
+                            grid-template-columns: repeat(4, 1fr);
+                            grid-template-rows: repeat(4, 1fr);
+                        "
+                    >
+
+                        <span style="background:#ffffff;"></span>
+                        <span style="background:#ff3b4d;"></span>
+                        <span style="background:#23d66f;"></span>
+                        <span style="background:#ffd21f;"></span>
+
+                        <span style="background:#438cff;"></span>
+                        <span style="background:#ffffff;"></span>
+                        <span style="background:#ff861c;"></span>
+                        <span style="background:#ff3b4d;"></span>
+
+                        <span style="background:#23d66f;"></span>
+                        <span style="background:#ffd21f;"></span>
+                        <span style="background:#438cff;"></span>
+                        <span style="background:#ffffff;"></span>
+
+                        <span style="background:#ff861c;"></span>
+                        <span style="background:#ff3b4d;"></span>
+                        <span style="background:#23d66f;"></span>
+                        <span style="background:#ffd21f;"></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="cube-info">
+
+                    <h3>
+                        Cubo 4×4×4
+                    </h3>
+
+                    <p>
+                        Más piezas, más movimientos
+                        y nuevos desafíos.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{% url 'cuatro_por_cuatro' %}"
+                    class="select-button"
+                >
+                    Abrir simulador
+                </a>
+
+            </div>
+
+
+
+            <!-- ================= 5x5 ================= -->
+
+            <div class="cube-card orange">
+
+                <span class="status">
+                    DISPONIBLE
+                </span>
+
+
+                <div class="cube-visual">
+
+                    <div
+                        class="mini-cube"
+                        style="
+                            grid-template-columns: repeat(5, 1fr);
+                            grid-template-rows: repeat(5, 1fr);
+                        "
+                    >
+
+                        <span style="background:#ffffff;"></span>
+                        <span style="background:#ff3b4d;"></span>
+                        <span style="background:#23d66f;"></span>
+                        <span style="background:#ffd21f;"></span>
+                        <span style="background:#438cff;"></span>
+
+                        <span style="background:#ff861c;"></span>
+                        <span style="background:#ffffff;"></span>
+                        <span style="background:#ff3b4d;"></span>
+                        <span style="background:#23d66f;"></span>
+                        <span style="background:#ffd21f;"></span>
+
+                        <span style="background:#438cff;"></span>
+                        <span style="background:#ff861c;"></span>
+                        <span style="background:#ffffff;"></span>
+                        <span style="background:#ff3b4d;"></span>
+                        <span style="background:#23d66f;"></span>
+
+                        <span style="background:#ffd21f;"></span>
+                        <span style="background:#438cff;"></span>
+                        <span style="background:#ff861c;"></span>
+                        <span style="background:#ffffff;"></span>
+                        <span style="background:#ff3b4d;"></span>
+
+                        <span style="background:#23d66f;"></span>
+                        <span style="background:#ffd21f;"></span>
+                        <span style="background:#438cff;"></span>
+                        <span style="background:#ff861c;"></span>
+                        <span style="background:#ffffff;"></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="cube-info">
+
+                    <h3>
+                        Cubo 5×5×5
+                    </h3>
+
+                    <p>
+                        Un desafío todavía más grande
+                        para seguir mejorando.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{% url 'cinco_por_cinco' %}"
+                    class="select-button"
+                >
+                    Abrir simulador
+                </a>
+
+            </div>
+
+
+
+            <!-- ================= 6x6 ================= -->
+
+            <div class="cube-card purple">
+
+                <span class="status">
+                    DISPONIBLE
+                </span>
+
+
+                <div class="cube-visual">
+
+                    <div
+                        class="mini-cube"
+                        style="
+                            grid-template-columns: repeat(6, 1fr);
+                            grid-template-rows: repeat(6, 1fr);
+                            gap: 3px;
+                        "
+                    >
+
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+                        <span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span><span style="background:var(--card-color)"></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="cube-info">
+
+                    <h3>
+                        Cubo 6×6×6
+                    </h3>
+
+                    <p>
+                        Para quienes buscan
+                        un desafío todavía mayor.
+                    </p>
+
+                </div>
+
+
+                <a href="{% url 'seis_por_seis' %}" class="select-button">Abrir simulador</a>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CUBOS ESPECIALES
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <h2>
+                    ✨ Cubos especiales
+                </h2>
+
+                <span>
+                    Nuevas formas de jugar
+                </span>
+
+            </div>
+
+            <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="cube-grid">
+
+
+            <!-- ================= MIRROR ================= -->
+
+            <div class="cube-card yellow">
+
+                <span class="status">
+                    DISPONIBLE
+                </span>
+
+
+                <div class="cube-visual">
+
+                    <div class="special-icon">
+                        🪞
+                    </div>
+
+                </div>
+
+
+                <div class="cube-info">
+
+                    <h3>
+                        Mirror Cube
+                    </h3>
+
+                    <p>
+                        Resuelve el cubo por la forma
+                        y el tamaño de sus piezas.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{% url 'mirror' %}"
+                    class="select-button"
+                >
+                    Abrir simulador
+                </a>
+
+            </div>
+
+
+
+            <!-- ================= PYRAMINX ================= -->
+
+<div class="cube-card yellow">
+
+    <span class="status">
+        DISPONIBLE
+    </span>
+
+
+    <div class="cube-visual">
+
+        <div class="special-icon">
+            🔺
+        </div>
+
+    </div>
+
+
+    <div class="cube-info">
+
+        <h3>
+            Pyraminx
+        </h3>
+
+        <p>
+            Domina el puzzle triangular,
+            sus capas y sus cuatro puntas.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'pyraminx' %}"
+        class="select-button"
+    >
+        Abrir simulador
     </a>
 
 </div>
-<!-- HEADER -->
-
-<header>
-
-    <div class="brand">
-        <span class="dot"></span>
-        easyRubik
-    </div>
-
-    <h1>Selecciona tu cubo</h1>
-
-    <p>
-        Elige el puzzle que quieres practicar.
-    </p>
-
-</header>
 
 
-<!-- CUBOS CLÁSICOS -->
 
-<section class="category">
+            <!-- ================= MEGAMINX ================= -->
 
-    <div class="category-title">
+            <div class="cube-card purple">
 
-        <h3>Cubos clásicos</h3>
-
-        <span>
-            Por tamaño
-        </span>
-
-    </div>
+                <span class="status">
+                    DISPONIBLE
+                </span>
 
 
-    <div class="cube-grid">
+                <div class="cube-visual">
+
+                    <div class="special-icon">
+                        🔶
+                    </div>
+
+                </div>
 
 
-        <!-- 3x3 -->
+                <div class="cube-info">
 
-        <div class="cube-card available">
+                    <h3>
+                        Megaminx
+                    </h3>
 
-            <span class="badge">
-                DISPONIBLE
-            </span>
+                    <p>
+                        Muchas caras, muchos movimientos
+                        y un gran desafío.
+                    </p>
 
-            <div class="cube-icon">
+                </div>
 
-                <div
-                    class="grid-icon"
-                    style="
-                        grid-template-columns: repeat(3, 1fr);
-                        grid-template-rows: repeat(3, 1fr);
-                    "
+
+                <a href="{% url 'megaminx' %}" class="select-button">Abrir simulador</a>
+
+            </div>
+
+
+
+            <!-- ================= DESAFÍO ================= -->
+
+            <div class="cube-card challenge-card">
+
+                <span class="status">
+                    DISPONIBLE
+                </span>
+
+
+                <div class="cube-visual">
+
+                    <div class="special-icon">
+                        🏆
+                    </div>
+
+                </div>
+
+
+                <div class="cube-info">
+
+                    <h3>
+                        Modo desafío
+                    </h3>
+
+                    <p>
+                        Pon a prueba tu velocidad
+                        y supera tu mejor marca.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{% url 'desafio' %}"
+                    class="select-button"
                 >
-
-                    <span style="background: var(--c-white);"></span>
-                    <span style="background: var(--c-red);"></span>
-                    <span style="background: var(--c-green);"></span>
-
-                    <span style="background: var(--c-yellow);"></span>
-                    <span style="background: var(--c-blue);"></span>
-                    <span style="background: var(--c-white);"></span>
-
-                    <span style="background: var(--c-orange);"></span>
-                    <span style="background: var(--c-green);"></span>
-                    <span style="background: var(--c-red);"></span>
-
-                </div>
+                    Comenzar desafío
+                </a>
 
             </div>
 
-
-            <div class="cube-info">
-
-                <h4>
-                    Cubo 3×3×3
-                </h4>
-
-                <p>
-                    El clásico cubo Rubik.
-                    Ideal para comenzar.
-                </p>
-
-            </div>
-
-
-            <a
-                href="{% url 'simulador' %}"
-                class="select-button"
-            >
-                Abrir simulador
-            </a>
 
         </div>
 
+    </section>
 
-        <!-- 4x4 -->
 
-        <div class="cube-card available">
 
-            <span class="badge">
-                DISPONIBLE
-            </span>
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
 
-            <div class="cube-icon">
+    <footer>
 
-                <div
-                    class="grid-icon"
-                    style="
-                        grid-template-columns: repeat(4, 1fr);
-                        grid-template-rows: repeat(4, 1fr);
-                    "
-                >
+        <strong>easyRubik</strong>
+        · Aprende jugando 
 
-                    <span style="background: var(--c-white);"></span>
-                    <span style="background: var(--c-red);"></span>
-                    <span style="background: var(--c-green);"></span>
-                    <span style="background: var(--c-yellow);"></span>
-
-                    <span style="background: var(--c-blue);"></span>
-                    <span style="background: var(--c-white);"></span>
-                    <span style="background: var(--c-orange);"></span>
-                    <span style="background: var(--c-red);"></span>
-
-                    <span style="background: var(--c-green);"></span>
-                    <span style="background: var(--c-yellow);"></span>
-                    <span style="background: var(--c-blue);"></span>
-                    <span style="background: var(--c-white);"></span>
-
-                    <span style="background: var(--c-orange);"></span>
-                    <span style="background: var(--c-red);"></span>
-                    <span style="background: var(--c-green);"></span>
-                    <span style="background: var(--c-yellow);"></span>
-
-                </div>
-
-            </div>
-
-
-            <div class="cube-info">
-
-                <h4>
-                    Cubo 4×4×4
-                </h4>
-
-                <p>
-                    Más piezas, más movimientos
-                    y nuevos desafíos.
-                </p>
-
-            </div>
-
-
-            <a
-                href="{% url 'cuatro_por_cuatro' %}"
-                class="select-button"
-            >
-                Abrir simulador
-            </a>
-
-        </div>
-
-
-        <!-- 5x5 -->
-
-        <div class="cube-card available">
-
-            <span class="badge">
-                DISPONIBLE
-            </span>
-
-            <div class="cube-icon">
-
-                <div
-                    class="grid-icon"
-                    style="
-                        grid-template-columns: repeat(5, 1fr);
-                        grid-template-rows: repeat(5, 1fr);
-                    "
-                >
-
-                    <span style="background: var(--c-white);"></span>
-                    <span style="background: var(--c-red);"></span>
-                    <span style="background: var(--c-green);"></span>
-                    <span style="background: var(--c-yellow);"></span>
-                    <span style="background: var(--c-blue);"></span>
-
-                    <span style="background: var(--c-orange);"></span>
-                    <span style="background: var(--c-white);"></span>
-                    <span style="background: var(--c-red);"></span>
-                    <span style="background: var(--c-green);"></span>
-                    <span style="background: var(--c-yellow);"></span>
-
-                    <span style="background: var(--c-blue);"></span>
-                    <span style="background: var(--c-orange);"></span>
-                    <span style="background: var(--c-white);"></span>
-                    <span style="background: var(--c-red);"></span>
-                    <span style="background: var(--c-green);"></span>
-
-                    <span style="background: var(--c-yellow);"></span>
-                    <span style="background: var(--c-blue);"></span>
-                    <span style="background: var(--c-orange);"></span>
-                    <span style="background: var(--c-white);"></span>
-                    <span style="background: var(--c-red);"></span>
-
-                    <span style="background: var(--c-green);"></span>
-                    <span style="background: var(--c-yellow);"></span>
-                    <span style="background: var(--c-blue);"></span>
-                    <span style="background: var(--c-orange);"></span>
-                    <span style="background: var(--c-white);"></span>
-
-                </div>
-
-            </div>
-
-
-            <div class="cube-info">
-
-                <h4>
-                    Cubo 5×5×5
-                </h4>
-
-                <p>
-                    Un desafío todavía
-                    más grande.
-                </p>
-
-            </div>
-
-
-            <a
-                href="{% url 'cinco_por_cinco' %}"
-                class="select-button"
-            >
-                Abrir simulador
-            </a>
-
-        </div>
-
-
-        <!-- 6x6 -->
-
-        <div class="cube-card coming-soon">
-
-            <span class="badge badge-soon">
-                PRÓXIMAMENTE
-            </span>
-
-            <div class="cube-icon">
-
-                <div
-                    class="grid-icon"
-                    style="
-                        grid-template-columns: repeat(6, 1fr);
-                        grid-template-rows: repeat(6, 1fr);
-                        gap: 2px;
-                    "
-                >
-
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-                    <span style="background: var(--panel-light);"></span>
-                    <span style="background: var(--line);"></span>
-
-                </div>
-
-            </div>
-
-
-            <div class="cube-info">
-
-                <h4>
-                    Cubo 6×6×6
-                </h4>
-
-                <p>
-                    Para quienes buscan
-                    un desafío mayor.
-                </p>
-
-            </div>
-
-
-            <button
-                class="select-button"
-                disabled
-            >
-                Próximamente
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- CUBOS ESPECIALES -->
-
-<section class="category">
-
-    <div class="category-title">
-
-        <h3>
-            Cubos especiales
-        </h3>
-
-        <span>
-            Formas y mecanismos diferentes
-        </span>
-
-    </div>
-
-
-    <div class="cube-grid">
-
-
-        <!-- MIRROR -->
-
-        <div class="cube-card coming-soon">
-
-            <span class="badge badge-soon">
-                PRÓXIMAMENTE
-            </span>
-
-            <div class="cube-icon">
-
-                <div class="badge-icon">
-                    🪞
-                </div>
-
-            </div>
-
-            <div class="cube-info">
-
-                <h4>
-                    Mirror Cube
-                </h4>
-
-                <p>
-                    Un cubo donde todas las
-                    piezas tienen diferentes tamaños.
-                </p>
-
-            </div>
-
-            <button
-                class="select-button"
-                disabled
-            >
-                Próximamente
-            </button>
-
-        </div>
-
-
-        <!-- PYRAMINX -->
-
-        <div class="cube-card coming-soon">
-
-            <span class="badge badge-soon">
-                PRÓXIMAMENTE
-            </span>
-
-            <div class="cube-icon">
-
-                <div class="badge-icon">
-                    🔺
-                </div>
-
-            </div>
-
-            <div class="cube-info">
-
-                <h4>
-                    Pyraminx
-                </h4>
-
-                <p>
-                    Puzzle con forma
-                    de pirámide.
-                </p>
-
-            </div>
-
-            <button
-                class="select-button"
-                disabled
-            >
-                Próximamente
-            </button>
-
-        </div>
-
-
-       <!-- MEGAMINX -->
-
-<div class="cube-card available">
-
-<span class="badge">
-    DISPONIBLE
-</span>
-
-<div class="cube-icon">
-    <div class="badge-icon">
-        🔶
-    </div>
-</div>
-
-<div class="cube-info">
-    <h4>
-        Megaminx
-    </h4>
-
-    <p>
-        Un puzzle de muchas caras
-        para un gran desafío.
-    </p>
-</div>
-
-<a
-    href="{% url 'megaminx' %}"
-    class="select-button"
->
-    Abrir simulador
-</a>
-
-</div>
-
-
-        <!-- DESAFÍO -->
-
-        <div class="cube-card available">
-
-            <span class="badge">
-                DISPONIBLE
-            </span>
-
-            <div class="cube-icon">
-
-                <div class="badge-icon">
-                    🏆
-                </div>
-
-            </div>
-
-            <div class="cube-info">
-
-                <h4>
-                    Modo desafío
-                </h4>
-
-                <p>
-                    Pon a prueba tu velocidad
-                    y consigue el mejor puntaje.
-                </p>
-
-            </div>
-
-            <a
-                href="{% url 'desafio' %}"
-                class="select-button"
-            >
-                Comenzar desafío
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- FOOTER -->
-
-<div class="footer">
-    easyRubik · Aprende jugando 🧩
-</div>
+    </footer>
 
 
 </div>

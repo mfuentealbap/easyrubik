@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>EasyRubik - Simulador 5×5×5</title>
+<title>EasyRubik - Simulador 6×6×6</title>
 
 <style>
 *{box-sizing:border-box}
@@ -28,6 +28,13 @@ button{border:1px solid var(--line);border-radius:9px;background:#202633;color:v
 #status{margin-top:18px;border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:12px 14px;background:rgba(0,0,0,.1);font-size:12px;font-weight:600;line-height:1.6}#status:before{content:"ESTADO";display:block;margin-bottom:5px;font-size:9px;letter-spacing:1px;color:var(--muted);font-weight:500}.footer{margin-top:22px;text-align:center;color:var(--muted);font-size:11px}
 @media(max-width:1000px){.simulator-layout{grid-template-columns:minmax(0,1fr) 310px;gap:16px}.controls-panel{padding:18px}}
 @media(max-width:760px){.nav,.page{width:calc(100% - 32px)}.nav{height:72px}.simulator-layout{grid-template-columns:1fr}.hero h1{letter-spacing:-2px}.cube-container{max-width:480px}.nav-back{font-size:11px}.brand{font-size:17px}}
+
+html{overflow-y:scroll;scrollbar-gutter:stable both-edges}
+.simulator-layout{align-items:start}
+.move-group{grid-column:1/-1;font-size:12px;color:var(--muted);margin:12px 0 3px}
+.layer-guide{font-size:11px;line-height:1.7;color:var(--muted)}
+.cube-container{user-select:none;-webkit-user-select:none}
+#status{height:96px;overflow:auto;overflow-wrap:anywhere}
 </style>
 
 </head>
@@ -42,7 +49,7 @@ button{border:1px solid var(--line);border-radius:9px;background:#202633;color:v
 
 <header class="hero">
 <div class="eyebrow">Aprende. Practica. Resuelve.</div>
-<h1>Cubo <span>5×5×5</span></h1>
+<h1>Cubo <span>6×6×6</span></h1>
 <p>Practica los movimientos del cubo Rubik de forma interactiva. Usa los botones o interactúa directamente con el cubo para aprender paso a paso.</p>
 </header>
 
@@ -53,7 +60,7 @@ button{border:1px solid var(--line);border-radius:9px;background:#202633;color:v
 ====================================================== -->
 
 <section class="cube-section">
-<div class="viewer-head"><div><h2>Simulador 5×5×5</h2><p>Interactúa con el cubo</p></div><span class="badge">5 × 5</span></div>
+<div class="viewer-head"><div><h2>Simulador 6×6×6</h2><p>Interactúa con el cubo</p></div><span class="badge">6 × 6</span></div>
 
 <div class="cube-card">
 
@@ -93,7 +100,7 @@ button{border:1px solid var(--line);border-radius:9px;background:#202633;color:v
     </h2>
 
     <p>
-        Controla el cubo y practica tus movimientos.
+        Mueve cualquiera de sus seis capas por eje. Resolver deshace el historial de esta sesión.
     </p>
 
 </div>
@@ -107,7 +114,7 @@ button{border:1px solid var(--line);border-radius:9px;background:#202633;color:v
     <div class="toggle-buttons">
 
         <button
-            onclick="toggleButtons()"
+            onclick="toggleButtons()" aria-controls="backupControls" aria-expanded="false"
             id="toggleBtn">
 
             🎛️ Mostrar botones de respaldo
@@ -128,59 +135,48 @@ button{border:1px solid var(--line);border-radius:9px;background:#202633;color:v
         </h2>
 
 
-        <div
-            class="move-buttons"
-            id="moveButtons">
-
-
-            <button data-move="R">
-                R
-            </button>
-
-            <button data-move="Rprime">
-                R'
-            </button>
-
-            <button data-move="L">
-                L
-            </button>
-
-            <button data-move="Lprime">
-                L'
-            </button>
-
-            <button data-move="U">
-                U
-            </button>
-
-            <button data-move="Uprime">
-                U'
-            </button>
-
-            <button data-move="D">
-                D
-            </button>
-
-            <button data-move="Dprime">
-                D'
-            </button>
-
-            <button data-move="F">
-                F
-            </button>
-
-            <button data-move="Fprime">
-                F'
-            </button>
-
-            <button data-move="B">
-                B
-            </button>
-
-            <button data-move="Bprime">
-                B'
-            </button>
-
+        <p class="layer-guide">R/L/U/D/F/B: caras exteriores. X: izquierda a derecha; Y: abajo a arriba; Z: atrás hacia delante. Los números 1–4 identifican cada capa interior.</p>
+        <div class="move-buttons" id="moveButtons">
+          <h3 class="move-group">Caras exteriores</h3>
+          <button type="button" data-move="R" aria-label="Movimiento R">R</button>
+          <button type="button" data-move="Rprime" aria-label="Movimiento R'">R'</button>
+          <button type="button" data-move="L" aria-label="Movimiento L">L</button>
+          <button type="button" data-move="Lprime" aria-label="Movimiento L'">L'</button>
+          <button type="button" data-move="U" aria-label="Movimiento U">U</button>
+          <button type="button" data-move="Uprime" aria-label="Movimiento U'">U'</button>
+          <button type="button" data-move="D" aria-label="Movimiento D">D</button>
+          <button type="button" data-move="Dprime" aria-label="Movimiento D'">D'</button>
+          <button type="button" data-move="F" aria-label="Movimiento F">F</button>
+          <button type="button" data-move="Fprime" aria-label="Movimiento F'">F'</button>
+          <button type="button" data-move="B" aria-label="Movimiento B">B</button>
+          <button type="button" data-move="Bprime" aria-label="Movimiento B'">B'</button>
+          <h3 class="move-group">Capas interiores · eje X</h3>
+          <button type="button" data-move="X1" aria-label="Movimiento X1">X1</button>
+          <button type="button" data-move="X1prime" aria-label="Movimiento X1'">X1'</button>
+          <button type="button" data-move="X2" aria-label="Movimiento X2">X2</button>
+          <button type="button" data-move="X2prime" aria-label="Movimiento X2'">X2'</button>
+          <button type="button" data-move="X3" aria-label="Movimiento X3">X3</button>
+          <button type="button" data-move="X3prime" aria-label="Movimiento X3'">X3'</button>
+          <button type="button" data-move="X4" aria-label="Movimiento X4">X4</button>
+          <button type="button" data-move="X4prime" aria-label="Movimiento X4'">X4'</button>
+          <h3 class="move-group">Capas interiores · eje Y</h3>
+          <button type="button" data-move="Y1" aria-label="Movimiento Y1">Y1</button>
+          <button type="button" data-move="Y1prime" aria-label="Movimiento Y1'">Y1'</button>
+          <button type="button" data-move="Y2" aria-label="Movimiento Y2">Y2</button>
+          <button type="button" data-move="Y2prime" aria-label="Movimiento Y2'">Y2'</button>
+          <button type="button" data-move="Y3" aria-label="Movimiento Y3">Y3</button>
+          <button type="button" data-move="Y3prime" aria-label="Movimiento Y3'">Y3'</button>
+          <button type="button" data-move="Y4" aria-label="Movimiento Y4">Y4</button>
+          <button type="button" data-move="Y4prime" aria-label="Movimiento Y4'">Y4'</button>
+          <h3 class="move-group">Capas interiores · eje Z</h3>
+          <button type="button" data-move="Z1" aria-label="Movimiento Z1">Z1</button>
+          <button type="button" data-move="Z1prime" aria-label="Movimiento Z1'">Z1'</button>
+          <button type="button" data-move="Z2" aria-label="Movimiento Z2">Z2</button>
+          <button type="button" data-move="Z2prime" aria-label="Movimiento Z2'">Z2'</button>
+          <button type="button" data-move="Z3" aria-label="Movimiento Z3">Z3</button>
+          <button type="button" data-move="Z3prime" aria-label="Movimiento Z3'">Z3'</button>
+          <button type="button" data-move="Z4" aria-label="Movimiento Z4">Z4</button>
+          <button type="button" data-move="Z4prime" aria-label="Movimiento Z4'">Z4'</button>
         </div>
 
     </div>
@@ -296,11 +292,7 @@ const camera =
     );
 
 
-camera.position.set(
-    4.2,
-    4,
-    6
-);
+camera.position.set(8, 7, 10);
 
 
 const renderer =
@@ -320,8 +312,8 @@ container.appendChild(
 
 function resizeRenderer() {
 
-    const size =
-        container.clientWidth;
+    const size = Math.max(1, container.clientWidth);
+    if (renderer.domElement.width === Math.round(size * renderer.getPixelRatio())) return;
 
     renderer.setSize(
         size,
@@ -334,8 +326,9 @@ function resizeRenderer() {
 }
 
 
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 resizeRenderer();
-
+new ResizeObserver(resizeRenderer).observe(container);
 
 window.addEventListener(
     "resize",
@@ -355,10 +348,11 @@ const controls =
 
 
 controls.enablePan = false;
+controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
 
-controls.minDistance = 5;
+controls.minDistance = 12;
 
-controls.maxDistance = 11;
+controls.maxDistance = 23;
 
 
 /* =========================================================
@@ -417,14 +411,14 @@ const BLACK = 0x0a0a0a;
 
 
 /* =========================================================
-   CUBO 5×5×5
+   CUBO 6×6×6
 ========================================================= */
 
 const SPACING = 1.05;
 
 const SIZE = 0.95;
 
-const POSITIONS = [-2, -1, 0, 1, 2];
+const POSITIONS = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5];
 
 let cubies = [];
 
@@ -434,7 +428,16 @@ let cubeGroupObjects = [];
 function buildCube() {
 
     cubeGroupObjects.forEach(
-        obj => scene.remove(obj)
+        obj => {
+            scene.remove(obj);
+            obj.traverse(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    const materials = Array.isArray(child.material) ? child.material : [child.material];
+                    materials.forEach(material => material.dispose());
+                }
+            });
+        }
     );
 
     cubeGroupObjects = [];
@@ -456,7 +459,7 @@ function buildCube() {
                     new THREE.MeshLambertMaterial({
 
                         color:
-                            x === 2
+                            x === 2.5
                                 ? COLOR_HEX.R
                                 : BLACK
 
@@ -468,7 +471,7 @@ function buildCube() {
                     new THREE.MeshLambertMaterial({
 
                         color:
-                            x === -2
+                            x === -2.5
                                 ? COLOR_HEX.L
                                 : BLACK
 
@@ -480,7 +483,7 @@ function buildCube() {
                     new THREE.MeshLambertMaterial({
 
                         color:
-                            y === 2
+                            y === 2.5
                                 ? COLOR_HEX.U
                                 : BLACK
 
@@ -492,7 +495,7 @@ function buildCube() {
                     new THREE.MeshLambertMaterial({
 
                         color:
-                            y === -2
+                            y === -2.5
                                 ? COLOR_HEX.D
                                 : BLACK
 
@@ -504,7 +507,7 @@ function buildCube() {
                     new THREE.MeshLambertMaterial({
 
                         color:
-                            z === 2
+                            z === 2.5
                                 ? COLOR_HEX.F
                                 : BLACK
 
@@ -516,7 +519,7 @@ function buildCube() {
                     new THREE.MeshLambertMaterial({
 
                         color:
-                            z === -2
+                            z === -2.5
                                 ? COLOR_HEX.B
                                 : BLACK
 
@@ -597,227 +600,196 @@ function buildCube() {
 
 
 /* =========================================================
-   MOVIMIENTOS 5×5
+   MOVIMIENTOS 6×6
 ========================================================= */
 
-/*
-   En el 5×5 existen 5 capas por cada eje:
-
-   -2 = exterior izquierda / abajo / atrás
-   -1 = capa interna
-    0 = capa central
-    1 = capa interna
-    2 = exterior derecha / arriba / frente
+/* Six layers per axis: -2.5, -1.5, -0.5, 0.5, 1.5, 2.5.
+   X1..X4 / Y1..Y4 / Z1..Z4 name individual inner layers,
+   numbered from left / bottom / back towards the opposite side.
 */
 
-
 const MOVES = {
-
-    /* =========================
-       EJE X
-    ========================= */
-
-    R: {
-        axis: "x",
-        layer: 2,
-        direction: 1
-    },
-
-    Rprime: {
-        axis: "x",
-        layer: 2,
-        direction: -1
-    },
-
-    L: {
-        axis: "x",
-        layer: -2,
-        direction: -1
-    },
-
-    Lprime: {
-        axis: "x",
-        layer: -2,
-        direction: 1
-    },
-
-
-    /* CAPAS INTERNAS X */
-
-    X1: {
-        axis: "x",
-        layer: 1,
-        direction: 1
-    },
-
-    X1prime: {
-        axis: "x",
-        layer: 1,
-        direction: -1
-    },
-
-    XM: {
-        axis: "x",
-        layer: 0,
-        direction: 1
-    },
-
-    XMprime: {
-        axis: "x",
-        layer: 0,
-        direction: -1
-    },
-
-    X3: {
-        axis: "x",
-        layer: -1,
-        direction: 1
-    },
-
-    X3prime: {
-        axis: "x",
-        layer: -1,
-        direction: -1
-    },
-
-
-    /* =========================
-       EJE Y
-    ========================= */
-
-    U: {
-        axis: "y",
-        layer: 2,
-        direction: 1
-    },
-
-    Uprime: {
-        axis: "y",
-        layer: 2,
-        direction: -1
-    },
-
-    D: {
-        axis: "y",
-        layer: -2,
-        direction: -1
-    },
-
-    Dprime: {
-        axis: "y",
-        layer: -2,
-        direction: 1
-    },
-
-
-    /* CAPAS INTERNAS Y */
-
-    Y1: {
-        axis: "y",
-        layer: 1,
-        direction: 1
-    },
-
-    Y1prime: {
-        axis: "y",
-        layer: 1,
-        direction: -1
-    },
-
-    YM: {
-        axis: "y",
-        layer: 0,
-        direction: 1
-    },
-
-    YMprime: {
-        axis: "y",
-        layer: 0,
-        direction: -1
-    },
-
-    Y3: {
-        axis: "y",
-        layer: -1,
-        direction: 1
-    },
-
-    Y3prime: {
-        axis: "y",
-        layer: -1,
-        direction: -1
-    },
-
-
-    /* =========================
-       EJE Z
-    ========================= */
-
-    F: {
-        axis: "z",
-        layer: 2,
-        direction: -1
-    },
-
-    Fprime: {
-        axis: "z",
-        layer: 2,
-        direction: 1
-    },
-
-    B: {
-        axis: "z",
-        layer: -2,
-        direction: 1
-    },
-
-    Bprime: {
-        axis: "z",
-        layer: -2,
-        direction: -1
-    },
-
-
-    /* CAPAS INTERNAS Z */
-
-    Z1: {
-        axis: "z",
-        layer: 1,
-        direction: -1
-    },
-
-    Z1prime: {
-        axis: "z",
-        layer: 1,
-        direction: 1
-    },
-
-    ZM: {
-        axis: "z",
-        layer: 0,
-        direction: -1
-    },
-
-    ZMprime: {
-        axis: "z",
-        layer: 0,
-        direction: 1
-    },
-
-    Z3: {
-        axis: "z",
-        layer: -1,
-        direction: -1
-    },
-
-    Z3prime: {
-        axis: "z",
-        layer: -1,
-        direction: 1
-    }
-
+  "R": {
+    "axis": "x",
+    "layer": 2.5,
+    "direction": -1
+  },
+  "Rprime": {
+    "axis": "x",
+    "layer": 2.5,
+    "direction": 1
+  },
+  "L": {
+    "axis": "x",
+    "layer": -2.5,
+    "direction": 1
+  },
+  "Lprime": {
+    "axis": "x",
+    "layer": -2.5,
+    "direction": -1
+  },
+  "U": {
+    "axis": "y",
+    "layer": 2.5,
+    "direction": -1
+  },
+  "Uprime": {
+    "axis": "y",
+    "layer": 2.5,
+    "direction": 1
+  },
+  "D": {
+    "axis": "y",
+    "layer": -2.5,
+    "direction": 1
+  },
+  "Dprime": {
+    "axis": "y",
+    "layer": -2.5,
+    "direction": -1
+  },
+  "F": {
+    "axis": "z",
+    "layer": 2.5,
+    "direction": -1
+  },
+  "Fprime": {
+    "axis": "z",
+    "layer": 2.5,
+    "direction": 1
+  },
+  "B": {
+    "axis": "z",
+    "layer": -2.5,
+    "direction": 1
+  },
+  "Bprime": {
+    "axis": "z",
+    "layer": -2.5,
+    "direction": -1
+  },
+  "X1": {
+    "axis": "x",
+    "layer": -1.5,
+    "direction": 1
+  },
+  "X1prime": {
+    "axis": "x",
+    "layer": -1.5,
+    "direction": -1
+  },
+  "X2": {
+    "axis": "x",
+    "layer": -0.5,
+    "direction": 1
+  },
+  "X2prime": {
+    "axis": "x",
+    "layer": -0.5,
+    "direction": -1
+  },
+  "X3": {
+    "axis": "x",
+    "layer": 0.5,
+    "direction": 1
+  },
+  "X3prime": {
+    "axis": "x",
+    "layer": 0.5,
+    "direction": -1
+  },
+  "X4": {
+    "axis": "x",
+    "layer": 1.5,
+    "direction": 1
+  },
+  "X4prime": {
+    "axis": "x",
+    "layer": 1.5,
+    "direction": -1
+  },
+  "Y1": {
+    "axis": "y",
+    "layer": -1.5,
+    "direction": 1
+  },
+  "Y1prime": {
+    "axis": "y",
+    "layer": -1.5,
+    "direction": -1
+  },
+  "Y2": {
+    "axis": "y",
+    "layer": -0.5,
+    "direction": 1
+  },
+  "Y2prime": {
+    "axis": "y",
+    "layer": -0.5,
+    "direction": -1
+  },
+  "Y3": {
+    "axis": "y",
+    "layer": 0.5,
+    "direction": 1
+  },
+  "Y3prime": {
+    "axis": "y",
+    "layer": 0.5,
+    "direction": -1
+  },
+  "Y4": {
+    "axis": "y",
+    "layer": 1.5,
+    "direction": 1
+  },
+  "Y4prime": {
+    "axis": "y",
+    "layer": 1.5,
+    "direction": -1
+  },
+  "Z1": {
+    "axis": "z",
+    "layer": -1.5,
+    "direction": 1
+  },
+  "Z1prime": {
+    "axis": "z",
+    "layer": -1.5,
+    "direction": -1
+  },
+  "Z2": {
+    "axis": "z",
+    "layer": -0.5,
+    "direction": 1
+  },
+  "Z2prime": {
+    "axis": "z",
+    "layer": -0.5,
+    "direction": -1
+  },
+  "Z3": {
+    "axis": "z",
+    "layer": 0.5,
+    "direction": 1
+  },
+  "Z3prime": {
+    "axis": "z",
+    "layer": 0.5,
+    "direction": -1
+  },
+  "Z4": {
+    "axis": "z",
+    "layer": 1.5,
+    "direction": 1
+  },
+  "Z4prime": {
+    "axis": "z",
+    "layer": 1.5,
+    "direction": -1
+  }
 };
-
 
 /* =========================================================
    INVERSOS
@@ -890,6 +862,13 @@ function formatMove(move) {
    GIRAR CAPA
 ========================================================= */
 
+function rotatedCoordinates(c, axis, direction) {
+    const { x, y, z } = c;
+    if (axis === 'x') return { x, y: -direction * z, z: direction * y };
+    if (axis === 'y') return { x: direction * z, y, z: -direction * x };
+    return { x: -direction * y, y: direction * x, z };
+}
+
 function rotateLayer(
     axis,
     layer,
@@ -944,7 +923,7 @@ function rotateLayer(
 
             group.quaternion.setFromAxisAngle(
                 axisVec,
-                targetAngle * t
+                targetAngle * (t * t * (3 - 2 * t))
             );
 
 
@@ -964,45 +943,14 @@ function rotateLayer(
                     );
 
 
-                    c.mesh.position.set(
-
-                        Math.round(
-                            c.mesh.position.x /
-                            SPACING
-                        ) * SPACING,
-
-                        Math.round(
-                            c.mesh.position.y /
-                            SPACING
-                        ) * SPACING,
-
-                        Math.round(
-                            c.mesh.position.z /
-                            SPACING
-                        ) * SPACING
-
-                    );
-
-
-                    c.x =
-                        Math.round(
-                            c.mesh.position.x /
-                            SPACING
-                        );
-
-
-                    c.y =
-                        Math.round(
-                            c.mesh.position.y /
-                            SPACING
-                        );
-
-
-                    c.z =
-                        Math.round(
-                            c.mesh.position.z /
-                            SPACING
-                        );
+                    // Update exact half-integer coordinates, never round them to integers.
+                    const next = rotatedCoordinates(c, axis, direction);
+                    c.x = next.x; c.y = next.y; c.z = next.z;
+                    c.mesh.position.set(c.x * SPACING, c.y * SPACING, c.z * SPACING);
+                    // All completed orientations are signed permutation matrices.
+                    const rotation = new THREE.Matrix4().makeRotationFromQuaternion(c.mesh.quaternion);
+                    rotation.elements = rotation.elements.map(value => Math.round(value));
+                    c.mesh.quaternion.setFromRotationMatrix(rotation).normalize();
 
                 });
 
@@ -1192,6 +1140,7 @@ function toggleButtons() {
     );
 
 
+    toggleBtn.setAttribute("aria-expanded", String(!backupControls.classList.contains("hidden")));
     toggleBtn.textContent =
         backupControls.classList.contains(
             "hidden"
@@ -1229,7 +1178,7 @@ async function scramble() {
 
     for (
         let i = 0;
-        i < 30;
+        i < 50;
         i++
     ) {
 
@@ -1397,6 +1346,7 @@ const worldAxes = {
 
 
 let gestureActive = false;
+let gesturePointerId = null;
 
 let gestureHit = null;
 
@@ -1604,11 +1554,7 @@ function determineMove(
     candidateAxes.forEach(
         axisKey => {
 
-            /*
-             * IMPORTANTE:
-             * En el 5×5 incluso la capa central
-             * (0) se puede mover.
-             */
+            /* All six layers, including the four inner layers, are movable. */
 
             const layer =
                 cubieObj[axisKey];
@@ -1738,122 +1684,43 @@ function determineMove(
    POINTER DOWN
 ========================================================= */
 
-renderer.domElement.addEventListener(
-    "pointerdown",
-    event => {
+// Capture before OrbitControls: a face drag must not move the camera too.
+renderer.domElement.addEventListener('pointerdown', event => {
+    if (isBusy || gestureActive) { event.stopImmediatePropagation(); return; }
+    if (event.button !== 0 || event.shiftKey) return;
+    scene.updateMatrixWorld(true);
+    camera.updateMatrixWorld(true);
+    const hit = getFaceHit(event);
+    if (!hit || !hit.face) return;
+    gestureHit = hit;
+    gestureStartX = event.clientX; gestureStartY = event.clientY;
+    gesturePointerId = event.pointerId; gestureActive = true;
+    controls.enabled = false;
+    renderer.domElement.setPointerCapture(event.pointerId);
+    event.preventDefault(); event.stopImmediatePropagation();
+}, {capture:true});
 
-        if (isBusy)
-            return;
-
-
-        const hit =
-            getFaceHit(event);
-
-
-        if (
-            hit &&
-            hit.face
-        ) {
-
-            gestureHit = hit;
-
-
-            gestureStartX =
-                event.clientX;
-
-
-            gestureStartY =
-                event.clientY;
-
-
-            gestureActive = true;
-
-
-            controls.enabled =
-                false;
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   POINTER UP
-========================================================= */
-
-window.addEventListener(
-    "pointerup",
-    event => {
-
-        if (!gestureActive)
-            return;
-
-
-        gestureActive = false;
-
-
-        controls.enabled =
-            true;
-
-
-        const dx =
-            event.clientX -
-            gestureStartX;
-
-
-        const dy =
-            event.clientY -
-            gestureStartY;
-
-
-        const distance =
-            Math.hypot(
-                dx,
-                dy
-            );
-
-
-        if (
-            distance < 20 ||
-            isBusy
-        ) {
-
-            gestureHit = null;
-
-            return;
-
-        }
-
-
-        const move =
-            determineMove(
-                gestureHit,
-                dx,
-                dy
-            );
-
-
-        if (move) {
-
-            makeMove(
-                move,
-                true
-            );
-
-        } else {
-
-            status.textContent =
-                "🤔 No reconocí ese movimiento, inténtalo de nuevo";
-
-        }
-
-
-        gestureHit = null;
-
-    }
-);
-
+function clearGesture() {
+    const id = gesturePointerId;
+    gestureActive = false; gesturePointerId = null; gestureHit = null;
+    controls.enabled = true;
+    if (id !== null && renderer.domElement.hasPointerCapture(id)) renderer.domElement.releasePointerCapture(id);
+}
+window.addEventListener('pointerup', event => {
+    if (!gestureActive || event.pointerId !== gesturePointerId) return;
+    const hit = gestureHit, dx = event.clientX - gestureStartX, dy = event.clientY - gestureStartY;
+    clearGesture();
+    if (Math.hypot(dx,dy) < 10 || isBusy) return;
+    const move = determineMove(hit,dx,dy);
+    if (move) makeMove(move,true);
+}, {capture:true});
+window.addEventListener('pointercancel', event => {
+    if (event.pointerId === gesturePointerId) clearGesture();
+});
+renderer.domElement.addEventListener('lostpointercapture', event => {
+    if (event.pointerId === gesturePointerId) clearGesture();
+});
+window.addEventListener('blur', clearGesture);
 
 /* =========================================================
    RENDER

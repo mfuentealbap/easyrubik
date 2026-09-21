@@ -19,4 +19,7 @@ urlpatterns = [
     path("5x5x5/", views.cinco_por_cinco, name="cinco_por_cinco"),
     path("megaminx/", views.megaminx, name="megaminx"),
     path("registro/", views.registro_view, name="registro"),
+    path("pyraminx/", views.pyraminx, name="pyraminx"),
+    path("mirror/",views.mirror,name="mirror"),
+    path("6x6x6/",views.seis_por_seis,name="seis_por_seis"),
 ]
