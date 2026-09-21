@@ -1,0 +1,2849 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Aprende a resolver · easyRubik</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #090b11;
+            --bg-2: #0f121a;
+            --panel: #141821;
+            --panel-2: #191e29;
+            --text: #f8fafc;
+            --muted: #8f98aa;
+            --border: rgba(255,255,255,.08);
+            --blue: #4f9cff;
+            --blue-light: #7bb7ff;
+            --red: #ff4d5a;
+            --yellow: #ffd43b;
+            --green: #35d47a;
+            --orange: #ff8a3d;
+            --radius: 22px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: "Inter", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 15% 10%,
+                    rgba(79,156,255,.12),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 85% 25%,
+                    rgba(255,77,90,.08),
+                    transparent 30%
+                ),
+                var(--bg);
+
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           BACKGROUND
+        ========================= */
+
+        .background-grid {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -3;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,.025) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.025) 1px,
+                    transparent 1px
+                );
+
+            background-size: 55px 55px;
+
+            mask-image: linear-gradient(
+                to bottom,
+                black 0%,
+                black 70%,
+                transparent 100%
+            );
+        }
+
+        .glow {
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: .12;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .glow.blue {
+            background: var(--blue);
+            top: -220px;
+            left: -180px;
+        }
+
+        .glow.red {
+            background: var(--red);
+            right: -220px;
+            top: 250px;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        header {
+            width: min(1180px, calc(100% - 40px));
+            height: 82px;
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            text-decoration: none;
+            color: var(--text);
+
+            font-family: "Sora", sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .logo-cube {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--red) 0%,
+                    var(--yellow) 45%,
+                    var(--blue) 100%
+                );
+
+            box-shadow:
+                0 0 18px rgba(79,156,255,.35);
+        }
+
+        .logo span {
+            color: var(--blue-light);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            transition:
+                color .2s ease,
+                transform .2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            transform: translateY(-1px);
+        }
+
+        .nav-button {
+            padding: 10px 16px;
+
+            border: 1px solid rgba(123,183,255,.3);
+            border-radius: 10px;
+
+            color: var(--blue-light) !important;
+            background: rgba(79,156,255,.06);
+
+            transition:
+                background .2s ease,
+                border-color .2s ease,
+                transform .2s ease;
+        }
+
+        .nav-button:hover {
+            background: rgba(79,156,255,.12);
+            border-color: rgba(123,183,255,.55);
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            width: min(1180px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 55px 0 80px;
+        }
+
+        .hero {
+            margin-bottom: 40px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 7px 12px;
+
+            border: 1px solid rgba(123,183,255,.16);
+            border-radius: 999px;
+
+            color: var(--blue-light);
+            background: rgba(79,156,255,.06);
+
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .02em;
+        }
+
+        .eyebrow::before {
+            content: "";
+
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+
+            background: var(--blue);
+
+            box-shadow:
+                0 0 12px rgba(79,156,255,.8);
+        }
+
+        h1 {
+            margin: 18px 0 14px;
+
+            font-family: "Sora", sans-serif;
+            font-size: clamp(42px, 6vw, 70px);
+            line-height: 1.02;
+            letter-spacing: -.045em;
+            font-weight: 800;
+        }
+
+        h1 span {
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff 0%,
+                    var(--blue-light) 55%,
+                    var(--blue) 100%
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           SIMULATOR
+        ========================= */
+
+        .simulator {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.25fr)
+                minmax(330px, .75fr);
+
+            gap: 22px;
+        }
+
+        .card {
+            position: relative;
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.045),
+                    rgba(255,255,255,.018)
+                );
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,.25);
+
+            overflow: hidden;
+        }
+
+        /* =========================
+           CUBE PANEL
+        ========================= */
+
+        .cube-card {
+            min-height: 610px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cube-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 22px 24px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cube-title {
+            font-family: "Sora", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .cube-subtitle {
+            margin-top: 4px;
+
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .cube-badge {
+            padding: 7px 10px;
+
+            border-radius: 8px;
+
+            color: var(--blue-light);
+            background: rgba(79,156,255,.08);
+
+            border: 1px solid rgba(79,156,255,.15);
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        #cube-container {
+            position: relative;
+
+            flex: 1;
+            min-height: 520px;
+
+            overflow: hidden;
+
+            cursor: grab;
+            touch-action: none;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(79,156,255,.045),
+                    transparent 48%
+                );
+        }
+
+        #cube-container:active {
+            cursor: grabbing;
+        }
+
+        #cube-container canvas {
+            display: block;
+
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .mouse-help {
+            position: absolute;
+
+            left: 50%;
+            bottom: 18px;
+
+            transform: translateX(-50%);
+
+            padding: 8px 12px;
+
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 10px;
+
+            color: #788296;
+            background: rgba(9,11,17,.72);
+
+            backdrop-filter: blur(10px);
+
+            font-size: 11px;
+
+            pointer-events: none;
+
+            white-space: nowrap;
+        }
+
+        /* =========================
+           CONTROLS
+        ========================= */
+
+        .controls-card {
+            padding: 24px;
+        }
+
+        .section-title {
+            margin-bottom: 18px;
+
+            font-family: "Sora", sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           BOTÓN GRANDE MOVIMIENTOS
+        ========================= */
+
+        .moves-toggle {
+            width: 100%;
+            min-height: 58px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 17px;
+
+            border: 1px solid rgba(79,156,255,.18);
+            border-radius: 14px;
+
+            color: var(--text);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(79,156,255,.10),
+                    rgba(255,255,255,.035)
+                );
+
+            font-family: "Sora", sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform .2s ease,
+                background .2s ease,
+                border-color .2s ease;
+        }
+
+        .moves-toggle:hover {
+            transform: translateY(-2px);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(79,156,255,.16),
+                    rgba(255,255,255,.05)
+                );
+
+            border-color: rgba(79,156,255,.38);
+        }
+
+        .moves-toggle:active {
+            transform: translateY(0);
+        }
+
+        .moves-toggle-left {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .moves-icon {
+            width: 31px;
+            height: 31px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            color: var(--blue-light);
+            background: rgba(79,156,255,.10);
+
+            border: 1px solid rgba(79,156,255,.15);
+
+            font-size: 15px;
+        }
+
+        .moves-arrow {
+            font-size: 17px;
+            color: var(--muted);
+
+            transition:
+                transform .25s ease,
+                color .2s ease;
+        }
+
+        .moves-toggle.open .moves-arrow {
+            transform: rotate(180deg);
+            color: var(--blue-light);
+        }
+
+        /* =========================
+           SUBMENU
+        ========================= */
+
+        .moves-menu {
+            max-height: 0;
+            opacity: 0;
+
+            overflow: hidden;
+
+            margin-top: 0;
+
+            transition:
+                max-height .35s ease,
+                opacity .25s ease,
+                margin-top .35s ease;
+        }
+
+        .moves-menu.open {
+            max-height: 600px;
+            opacity: 1;
+            margin-top: 14px;
+        }
+
+        .moves-category {
+            margin-bottom: 16px;
+        }
+
+        .moves-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .moves-category-title {
+            margin-bottom: 9px;
+
+            color: #6f7889;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .moves-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 9px;
+        }
+
+        .move-btn {
+            min-height: 46px;
+
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 12px;
+
+            color: var(--text);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.055),
+                    rgba(255,255,255,.025)
+                );
+
+            font-family: "Sora", sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                transform .2s ease,
+                background .2s ease,
+                border-color .2s ease;
+        }
+
+        .move-btn:hover {
+            transform: translateY(-2px);
+
+            background: rgba(79,156,255,.10);
+
+            border-color: rgba(79,156,255,.35);
+        }
+
+        .move-btn:active {
+            transform: translateY(0);
+        }
+
+        /* =========================
+           ACTIONS
+        ========================= */
+
+        .actions {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 9px;
+
+            margin-top: 26px;
+        }
+
+        .action-btn {
+            min-height: 45px;
+
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 11px;
+
+            color: var(--text);
+            background: rgba(255,255,255,.035);
+
+            font-size: 12px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                transform .2s ease,
+                background .2s ease,
+                border-color .2s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,.07);
+        }
+
+        .btn-blue {
+            color: #07111f;
+
+            border-color: transparent;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--blue-light),
+                    var(--blue)
+                );
+
+            box-shadow:
+                0 8px 25px rgba(79,156,255,.18);
+        }
+
+        .btn-blue:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #91c5ff,
+                    #5da5ff
+                );
+        }
+
+        .btn-green {
+            color: #06150d;
+
+            border-color: transparent;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #55e28d,
+                    #25c96c
+                );
+        }
+
+        .btn-green:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #70eca0,
+                    #35d47a
+                );
+        }
+
+        .btn-dark {
+            background:
+                rgba(255,255,255,.04);
+        }
+
+        .btn-dark:hover {
+            background:
+                rgba(255,255,255,.08);
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            margin-top: 20px;
+
+            padding: 14px 15px;
+
+            border-radius: 12px;
+
+            border: 1px solid rgba(255,255,255,.07);
+
+            background:
+                rgba(0,0,0,.15);
+        }
+
+        .status-label {
+            margin-bottom: 5px;
+
+            color: #6f7889;
+
+            font-size: 10px;
+            font-weight: 600;
+
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        #status {
+            color: var(--text);
+
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* =========================
+           BACK
+        ========================= */
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 22px;
+
+            color: var(--muted);
+
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 500;
+
+            transition:
+                color .2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--blue-light);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .simulator {
+                grid-template-columns: 1fr;
+            }
+
+            .cube-card {
+                min-height: 560px;
+            }
+
+            #cube-container {
+                min-height: 500px;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                width: min(100% - 28px, 1180px);
+            }
+
+            .nav-links a:not(.nav-button) {
+                display: none;
+            }
+
+            main {
+                width: min(100% - 28px, 1180px);
+                padding-top: 35px;
+            }
+
+            h1 {
+                font-size: 42px;
+            }
+
+            .cube-card {
+                min-height: 470px;
+            }
+
+            #cube-container {
+                min-height: 410px;
+            }
+
+            .mouse-help {
+                font-size: 10px;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 380px) {
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .moves-grid {
+                gap: 7px;
+            }
+
+            .move-btn {
+                min-height: 43px;
+            }
+
+            .controls-card {
+                padding: 18px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    
+/* Interfaz de la primera lección. */
+main { padding-top: 28px; }
+.hero { margin-bottom: 26px; }
+h1 { font-size: clamp(36px, 5vw, 58px); }
+.simulator { grid-template-columns: minmax(0, 1.25fr) minmax(340px, .85fr); align-items: start; }
+.cube-card { position: sticky; top: 18px; }
+#cube-container { height: 530px; flex: none; }
+.lesson-kicker { color: var(--blue-light); font-size: 11px; letter-spacing: .1em; font-weight: 700; }
+.lesson-title { font: 700 26px Sora, sans-serif; margin: 15px 0 12px; letter-spacing: -.04em; }
+.lesson-copy { color: #b0bbce; font-size: 13px; line-height: 1.8; }
+.lesson-count { display: inline-block; padding: 6px 10px; border: 1px solid #354b67; border-radius: 8px; color: #b7d7ff; font-size: 12px; }
+.lesson-progress { width: 100%; height: 7px; display: block; margin: 16px 0 25px; accent-color: #68acff; border: 0; border-radius: 8px; overflow: hidden; background: #252e40; }
+.lesson-progress::-webkit-progress-bar { background: #252e40; }
+.lesson-progress::-webkit-progress-value { background: #68acff; }
+.lesson-progress::-moz-progress-bar { background: #68acff; }
+.lesson-task { background: #4f9cff0c; border: 1px solid #4f9cff35; border-radius: 14px; padding: 16px; margin-top: 20px; }
+.lesson-task strong { font-size: 13px; }
+.lesson-task p { margin-bottom: 0; }
+.lesson-feedback { min-height: 66px; padding: 14px 0 8px; font-size: 13px; line-height: 1.65; color: #b3c8e3; }
+.lesson-feedback[data-kind="success"] { color: #78e5a2; }
+.lesson-feedback[data-kind="retry"] { color: #ffce87; }
+.lesson-buttons { display: flex; flex-wrap: wrap; gap: 9px; margin: 8px 0 22px; }
+.lesson-buttons button { padding: 11px 15px; }
+button:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+button:focus-visible,summary:focus-visible,a:focus-visible { outline: 3px solid #9ecbff; outline-offset: 4px; }
+.lesson-tools { border-top: 1px solid var(--border); padding-top: 16px; }
+.lesson-tools > summary { cursor: pointer; font-size: 12px; color: #afbfda; padding: 6px 0 17px; }
+.lesson-tools .moves-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.lesson-tools .move-btn { min-height: 37px; }
+.lesson-tools .actions { margin-top: 16px; }
+.lesson-finish { padding: 20px; border: 1px solid #35d47a45; border-radius: 14px; background: #35d47a09; }
+.lesson-finish h2 { font: 700 23px Sora, sans-serif; }
+.lesson-finish li { color: #c1d4c8; font-size: 13px; line-height: 2; }
+.lesson-footnote { font-size: 11px; color: #8f98aa; line-height: 1.7; margin-top: 18px; }
+[hidden] { display: none !important; }
+.mouse-help { white-space: normal; width: max-content; max-width: calc(100% - 24px); text-align: center; line-height: 1.6; }
+@media(max-width:900px) { .simulator { grid-template-columns: 1fr; } .cube-card { position: relative; top: auto; min-height: 0; } #cube-container { height: 380px; min-height: 380px; } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } *,*::before,*::after { transition: none !important; } }
+
+
+/* Recorrido de resolución */
+main{width:min(1320px,calc(100% - 40px));padding-top:24px}
+header{width:min(1320px,calc(100% - 40px))}
+.hero{margin-bottom:24px}.hero h1{font-size:clamp(34px,4.4vw,54px)}
+.simulator{grid-template-columns:minmax(0,1.2fr) minmax(380px,.9fr)}
+.cube-card{position:sticky;top:16px;min-height:0}#cube-container{height:510px;min-height:510px;flex:none}
+.course-path{display:flex;flex-wrap:wrap;gap:7px;list-style:none;margin:0 0 24px;padding:0}
+.course-path li{font-size:10px;line-height:1.4;border:1px solid #ffffff14;border-radius:9px;padding:8px 10px;color:#8293ac;background:#111722}
+.course-path li[aria-current]{color:#bbdaff;border-color:#579fffa0;background:#4f9cff16}
+.course-path li.done{color:#86e3a8;border-color:#35d47a45}
+.viewer-tools{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--border)}
+.viewer-tools button{padding:0 12px;min-height:36px}.viewer-note{color:#a0b2ca;font-size:11px;padding:0 18px 16px;margin:0;line-height:1.7}
+.controls-card{padding:25px}.lesson-title{margin-top:10px;font-size:27px}
+#practicePanel p{font-size:12px;line-height:1.8;color:#b1bfd2}.observe-note{padding:13px;border-left:2px solid #83b8ff;background:#4f9cff09;border-radius:0 9px 9px 0}
+.hint-panel{padding:16px;margin:16px 0;border:1px solid #679dea55;border-radius:14px;background:#4f9cff09}
+.hint-top{display:flex;gap:14px;align-items:center}.next-move{display:grid;place-items:center;min-width:56px;height:56px;border:1px solid #7bb7ff70;border-radius:12px;background:#4f9cff20;font:700 27px Sora,sans-serif;color:#c6e0ff}
+#nextExplain{margin:0}#routePosition{font-size:10px;color:#89a8ce;margin-top:12px}
+.algorithm-chips{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0}
+.algorithm-chips span{font:600 11px Sora,sans-serif;padding:6px 7px;border:1px solid #ffffff13;border-radius:6px;color:#8194af}
+.algorithm-chips .played{color:#76dca0;background:#35d47a10}.algorithm-chips .current{color:#06121f;background:#8bbfff;border-color:#8bbfff}
+.stage-algorithm{font:500 12px Sora,sans-serif;line-height:1.9;color:#b7cde9}
+#solveBtn{padding:0 13px;width:100%}.course-moves{margin-top:16px}.moves-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.move-btn{min-height:38px;font-size:12px}
+.move-btn.suggested{border-color:#83bdff;box-shadow:0 0 0 2px #4f9cff30;background:#4f9cff25}
+.course-actions{display:flex;gap:8px;margin-top:12px}.course-actions button{padding:0 14px;flex:1}
+.notation{border-top:1px solid var(--border);margin-top:18px;padding-top:16px}.notation summary{cursor:pointer;color:#b4ccec;font-size:12px}.notation p{font-size:11px;color:#9faec5;line-height:1.8}.face-legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;margin-top:12px;color:#aabbd3}.face-legend span{padding:6px;border-radius:5px;background:#ffffff04}
+.course-meta{display:flex;justify-content:space-between;gap:12px;color:#91a7c6;font-size:11px;margin-bottom:6px}.lesson-progress{margin:10px 0 20px}
+#skipIntro{border:0;background:none;color:#90c1ff;font-size:12px;text-decoration:underline;cursor:pointer;padding:4px 0 14px}
+.lesson-finish a{display:inline-block;margin-top:16px;color:#99c6ff;font-size:13px}.source-note{font-size:11px;color:#8093af;margin-top:24px;line-height:1.7}.source-note a{color:#9cbfe8}
+@media(max-width:1000px){.simulator{grid-template-columns:1fr}.cube-card{position:relative;top:auto}#cube-container{height:380px;min-height:380px}.controls-card{padding:22px}}
+@media(max-width:500px){main,header{width:calc(100% - 24px)}#cube-container{height:330px;min-height:330px}.course-path li{font-size:9px;padding:6px}.cube-header{padding:16px}.controls-card{padding:18px}.nav-links a{font-size:11px}}
+
+
+.micro-coach{padding:18px;border:1px solid #78b7ff60;border-radius:16px;background:linear-gradient(145deg,#172940,#101b2c);margin:18px 0}
+.micro-coach h3{font:700 20px Sora,sans-serif;margin:9px 0 12px;letter-spacing:-.03em}
+.micro-coach p{font-size:12px;color:#b9c9dd;line-height:1.8}
+.micro-target{font-weight:600;color:#d3e6ff!important;text-transform:capitalize}
+.micro-cue{display:flex;align-items:center;gap:13px;margin:15px 0}
+#microMove{display:grid;place-items:center;min-width:58px;min-height:58px;border-radius:12px;background:#79baff;color:#06192e;font:700 26px Sora,sans-serif}
+#microDirection{font-size:12px;line-height:1.7;color:#bed5f2}
+#microSequence{font:500 12px Sora,sans-serif;line-height:2;color:#bed8fc;overflow-wrap:anywhere;margin:10px 0}
+.coach-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.coach-actions button{padding:10px 12px;min-height:42px;font-size:11px}
+#practicePanel{margin-top:12px}#practicePanel p{font-size:12px}
+.pattern-preview{display:flex;align-items:center;gap:13px;padding:15px 18px;background:#0a111b;border-top:1px solid #ffffff10}
+#topPattern{display:grid;grid-template-columns:repeat(3,18px);gap:3px;flex-shrink:0}#topPattern span{width:18px;height:18px;background:#2b3546;border-radius:3px}#topPattern .yellow{background:#ffdb35}
+.pattern-preview p{margin:0;font-size:11px;color:#98abc5;line-height:1.8}.pattern-preview strong{display:block;color:#d1deef;font-size:12px}
+.pattern-lab{padding:17px;border-top:1px solid #ffffff16}.pattern-lab summary{cursor:pointer;color:#9fcaff;font-size:12px;font-weight:600}.pattern-lab p{font-size:11px;color:#9cacc2;line-height:1.7}
+.pattern-lab label{display:block;font-size:11px;color:#a5bad5;margin:12px 0 8px}.pattern-lab select{max-width:100%;width:100%;padding:11px;border-radius:9px;border:1px solid #344862;background:#121e30;color:#e0ebfc;font:12px Inter,sans-serif}.pattern-lab button{padding:0 12px;margin-top:12px}
+#labReturn{width:100%;margin-bottom:15px;border-color:#a78bfa70;color:#d2c2ff}
+.lesson-copy{line-height:1.7}.lesson-title{font-size:25px}
+
+</style>
+
+<style>
+/* Presentación compartida con Mirror, 4×4 y 5×5. */
+:root{--text:#f4f7fc;--muted:#929caf;--border:rgba(255,255,255,.10);--radius:21px}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 0 0,rgba(53,111,185,.23),transparent 43%),radial-gradient(ellipse at 100% 40%,rgba(133,42,60,.18),transparent 42%),#090c11}
+.background-grid{z-index:0;background-size:49px 49px;mask-image:none}.glow{display:none}
+header,main{position:relative;width:calc(100% - 64px);max-width:1360px;margin-left:auto;margin-right:auto}
+header{height:88px;border-bottom:1px solid rgba(255,255,255,.04)}main{padding:28px 0 38px}
+.logo{font-family:inherit;font-size:19px;letter-spacing:-.6px}.logo-cube{width:13px;height:13px;box-shadow:none}.nav-button{background:#141720;border-color:#354969;font-size:13px!important}
+.hero{margin-bottom:28px}.eyebrow{font-size:11px;padding:6px 11px}.hero h1{font-family:inherit;font-size:clamp(40px,5vw,64px);font-weight:850;line-height:1.08;letter-spacing:-3px;margin:14px 0 15px}.hero h1 span{background-image:linear-gradient(110deg,#cee5ff,#4a97ff)}.hero p{max-width:700px;font-size:15px;line-height:1.8}
+.simulator{grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}.card{min-width:0;box-shadow:none;background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}
+.cube-card{min-height:0}.cube-header{min-height:78px;padding:20px 22px}.cube-title{font-family:inherit;font-size:17px}.cube-subtitle{font-size:11px}.cube-badge{padding:6px 8px;border-radius:6px;font-size:10px}
+#cube-container{flex:none;height:560px;min-height:0;background:transparent}.mouse-help{max-width:calc(100% - 30px);width:max-content;white-space:normal;text-align:center;font-size:11px;line-height:1.6;padding:7px 12px;background:rgba(9,12,17,.5);z-index:1}
+.controls-card{padding:24px;min-height:638px}.section-title{font-family:inherit;font-size:17px;margin-bottom:19px}.moves-toggle{border-color:#2b3c57;background:rgba(100,121,158,.10)}.actions{gap:8px}.action-btn{font-size:11px;padding:13px 4px;border-radius:11px}.btn-blue{background:linear-gradient(110deg,#80baff,#4b98ff)}.btn-green{background:linear-gradient(110deg,#48de8b,#21c46a)}.btn-dark{background:rgba(255,255,255,.045)}.status{border-radius:11px;background:rgba(0,0,0,.1)}.back-link{font-size:11px}
+a:focus-visible,button:focus-visible{outline:2px solid #75b5ff;outline-offset:4px}
+@media(max-width:1000px){.simulator{grid-template-columns:minmax(0,1fr) 310px;gap:16px}.controls-card{padding:18px}}
+@media(max-width:760px){header,main{width:calc(100% - 32px)}header{height:72px}.simulator{grid-template-columns:1fr}.controls-card{min-height:0}#cube-container{height:480px}.hero h1{letter-spacing:-2px}.logo{font-size:17px}.nav-button{font-size:11px!important}.actions{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:420px){#cube-container{height:390px}.mouse-help{font-size:10px}}
+
+/* Recorrido de resolución */
+main{width:min(1320px,calc(100% - 40px));padding-top:24px}
+header{width:min(1320px,calc(100% - 40px))}
+.hero{margin-bottom:24px}.hero h1{font-size:clamp(34px,4.4vw,54px)}
+.simulator{grid-template-columns:minmax(0,1.2fr) minmax(380px,.9fr)}
+.cube-card{position:sticky;top:16px;min-height:0}#cube-container{height:510px;min-height:510px;flex:none}
+.course-path{display:flex;flex-wrap:wrap;gap:7px;list-style:none;margin:0 0 24px;padding:0}
+.course-path li{font-size:10px;line-height:1.4;border:1px solid #ffffff14;border-radius:9px;padding:8px 10px;color:#8293ac;background:#111722}
+.course-path li[aria-current]{color:#bbdaff;border-color:#579fffa0;background:#4f9cff16}
+.course-path li.done{color:#86e3a8;border-color:#35d47a45}
+.viewer-tools{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--border)}
+.viewer-tools button{padding:0 12px;min-height:36px}.viewer-note{color:#a0b2ca;font-size:11px;padding:0 18px 16px;margin:0;line-height:1.7}
+.controls-card{padding:25px}.lesson-title{margin-top:10px;font-size:27px}
+#practicePanel p{font-size:12px;line-height:1.8;color:#b1bfd2}.observe-note{padding:13px;border-left:2px solid #83b8ff;background:#4f9cff09;border-radius:0 9px 9px 0}
+.hint-panel{padding:16px;margin:16px 0;border:1px solid #679dea55;border-radius:14px;background:#4f9cff09}
+.hint-top{display:flex;gap:14px;align-items:center}.next-move{display:grid;place-items:center;min-width:56px;height:56px;border:1px solid #7bb7ff70;border-radius:12px;background:#4f9cff20;font:700 27px Sora,sans-serif;color:#c6e0ff}
+#nextExplain{margin:0}#routePosition{font-size:10px;color:#89a8ce;margin-top:12px}
+.algorithm-chips{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0}
+.algorithm-chips span{font:600 11px Sora,sans-serif;padding:6px 7px;border:1px solid #ffffff13;border-radius:6px;color:#8194af}
+.algorithm-chips .played{color:#76dca0;background:#35d47a10}.algorithm-chips .current{color:#06121f;background:#8bbfff;border-color:#8bbfff}
+.stage-algorithm{font:500 12px Sora,sans-serif;line-height:1.9;color:#b7cde9}
+#solveBtn{padding:0 13px;width:100%}.course-moves{margin-top:16px}.moves-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.move-btn{min-height:38px;font-size:12px}
+.move-btn.suggested{border-color:#83bdff;box-shadow:0 0 0 2px #4f9cff30;background:#4f9cff25}
+.course-actions{display:flex;gap:8px;margin-top:12px}.course-actions button{padding:0 14px;flex:1}
+.notation{border-top:1px solid var(--border);margin-top:18px;padding-top:16px}.notation summary{cursor:pointer;color:#b4ccec;font-size:12px}.notation p{font-size:11px;color:#9faec5;line-height:1.8}.face-legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;margin-top:12px;color:#aabbd3}.face-legend span{padding:6px;border-radius:5px;background:#ffffff04}
+.course-meta{display:flex;justify-content:space-between;gap:12px;color:#91a7c6;font-size:11px;margin-bottom:6px}.lesson-progress{margin:10px 0 20px}
+#skipIntro{border:0;background:none;color:#90c1ff;font-size:12px;text-decoration:underline;cursor:pointer;padding:4px 0 14px}
+.lesson-finish a{display:inline-block;margin-top:16px;color:#99c6ff;font-size:13px}.source-note{font-size:11px;color:#8093af;margin-top:24px;line-height:1.7}.source-note a{color:#9cbfe8}
+@media(max-width:1000px){.simulator{grid-template-columns:1fr}.cube-card{position:relative;top:auto}#cube-container{height:380px;min-height:380px}.controls-card{padding:22px}}
+@media(max-width:500px){main,header{width:calc(100% - 24px)}#cube-container{height:330px;min-height:330px}.course-path li{font-size:9px;padding:6px}.cube-header{padding:16px}.controls-card{padding:18px}.nav-links a{font-size:11px}}
+
+</style>
+</head>
+
+<body>
+<div class="background-grid"></div><div class="glow blue"></div><div class="glow red"></div>
+<header><a href="{% url 'home' %}" class="logo"><span class="logo-cube"></span>easy<span>Rubik</span></a><nav class="nav-links"><a href="{% url 'aprender' %}" class="nav-button">← Volver a aprender</a></nav></header>
+<main>
+<section class="hero"><div class="eyebrow">CURSO 3×3 · MÉTODO PRINCIPIANTE</div><h1>Tu primera <span>resolución.</span></h1><p>Reconoce la pieza, observa cómo se mueve, practica con ayuda y repite por tu cuenta. Un pequeño paso cada vez, hasta completar el cubo.</p></section>
+<ol class="course-path" id="coursePath" aria-label="Recorrido del curso"></ol>
+<section class="simulator">
+<div class="card cube-card">
+ <div class="cube-header"><div><div class="cube-title">Tu mesa de práctica</div><div class="cube-subtitle">Amarillo arriba · Blanco abajo · Verde al frente</div></div><span class="cube-badge">3 × 3</span></div>
+ <div id="cube-container"><div class="mouse-help">Clic: reconocer pieza · Arrastrar pieza: girar capa<br>Arrastrar fondo: girar vista · Rueda: acercar</div></div>
+ <div class="viewer-tools"><button id="lessonCenter" class="action-btn btn-dark" type="button">Vista de referencia</button><button id="whiteView" class="action-btn btn-dark" type="button">Ver base blanca</button></div>
+ <div class="pattern-preview"><div id="topPattern" role="img" aria-label="Amarillos de la cara superior, frente verde abajo"></div><p><strong id="patternName">Observa la cara amarilla</strong>Vista superior fija · Frente verde abajo<br>Para reconocer la cruz, ignora las esquinas.</p></div>
+ <details class="pattern-lab"><summary>Taller: practicar otro patrón</summary><p>Explora un caso concreto y vuelve después al mismo punto de tu recorrido.</p><label for="patternSelect">Elige el patrón que quieres practicar</label><select id="patternSelect"></select><button id="patternLabOpen" type="button" class="action-btn btn-blue">Practicar este patrón</button></details>
+ <p class="viewer-note">Puedes observar desde cualquier ángulo. Las letras siguen referidas a las caras originales, aunque gires la cámara.</p>
+</div>
+<aside class="card controls-card" aria-label="Guía interactiva">
+ <div class="course-meta"><span>Tu recorrido</span><span id="courseProgressText">0 / 7 etapas de resolución</span></div><progress id="courseProgress" class="lesson-progress" max="7" value="0" aria-label="Etapas de resolución completadas"></progress>
+ <button id="labReturn" class="action-btn btn-dark" type="button" hidden>← Volver a mi punto del curso</button>
+ <div id="lessonWork">
+  <div id="lessonStep" class="lesson-kicker">CONOCE LAS PIEZAS</div>
+  <h2 id="lessonTitle" class="lesson-title" tabindex="-1">Prepara tu cubo</h2>
+  <p id="lessonCopy" class="lesson-copy">Cargando el visor interactivo…</p>
+  <div id="introControls"><button type="button" id="skipIntro">Ya conozco las piezas: ir a la cruz blanca →</button></div>
+  <div class="lesson-task"><strong id="lessonTask">Observa las piezas</strong><p id="pieceCount" class="lesson-copy"></p></div>
+  <div id="practicePanel" hidden>
+   <p id="stageTip"></p><p class="observe-note" id="stageObserve"></p>
+   <details class="notation"><summary>Secuencia de este ejercicio</summary><p id="stageAlgorithm" class="stage-algorithm"></p></details>
+  </div>
+  <section id="microCoach" class="micro-coach" hidden aria-label="Práctica paso a paso">
+   <div class="lesson-kicker" id="microCount"></div><h3 id="microTitle"></h3>
+   <p class="micro-target" id="microTarget"></p><p id="microInstructions"></p>
+   <div class="micro-cue"><span id="microMove"></span><span id="microDirection"></span></div>
+   <div id="microSequence"></div>
+   <div class="coach-actions"><button type="button" id="coachAction" class="action-btn btn-blue">Ver demostración lenta</button><button type="button" id="coachLook" class="action-btn btn-dark" hidden>Ver cara del giro</button><button type="button" id="coachRetry" class="action-btn btn-dark" hidden>Reiniciar bloque</button><button type="button" id="coachHelp" class="action-btn btn-dark" hidden>Necesito ayuda</button></div>
+  </section>
+  <div class="lesson-feedback" id="lessonFeedback" role="status" aria-live="polite">Cargando…</div>
+  <div class="lesson-buttons"><button id="lessonHint" class="action-btn btn-dark" type="button" aria-pressed="false">Mostrar pista</button><button id="lessonNext" class="action-btn btn-blue" type="button" disabled>Continuar →</button></div>
+  <div id="hintPanel" class="hint-panel" hidden>
+   <div class="hint-top"><span id="nextMove" class="next-move">—</span><p id="nextExplain" class="lesson-copy"></p></div>
+   <div id="routePosition"></div><div id="algorithmChips" class="algorithm-chips" aria-label="Secuencia guiada"></div>
+   <button id="solveBtn" class="action-btn btn-blue" type="button">Practicar este giro</button>
+  </div>
+  <div class="course-moves"><button id="movesToggle" class="moves-toggle open" type="button" aria-expanded="true" aria-controls="movesMenu"><span>Girar una cara</span><span class="moves-arrow">⌄</span></button>
+   <div class="moves-menu open" id="movesMenu"><div class="moves-grid"><button type="button" class="move-btn" data-move="U" aria-label="Girar U">U</button>
+<button type="button" class="move-btn" data-move="U'" aria-label="Girar U inversa">U′</button>
+<button type="button" class="move-btn" data-move="R" aria-label="Girar R">R</button>
+<button type="button" class="move-btn" data-move="R'" aria-label="Girar R inversa">R′</button>
+<button type="button" class="move-btn" data-move="F" aria-label="Girar F">F</button>
+<button type="button" class="move-btn" data-move="F'" aria-label="Girar F inversa">F′</button>
+<button type="button" class="move-btn" data-move="D" aria-label="Girar D">D</button>
+<button type="button" class="move-btn" data-move="D'" aria-label="Girar D inversa">D′</button>
+<button type="button" class="move-btn" data-move="L" aria-label="Girar L">L</button>
+<button type="button" class="move-btn" data-move="L'" aria-label="Girar L inversa">L′</button>
+<button type="button" class="move-btn" data-move="B" aria-label="Girar B">B</button>
+<button type="button" class="move-btn" data-move="B'" aria-label="Girar B inversa">B′</button></div></div>
+  </div>
+  <div class="course-actions"><button id="resetBtn" class="action-btn btn-dark" type="button">↶ Deshacer</button><button id="scrambleBtn" class="action-btn btn-dark" type="button">Repetir etapa</button></div>
+ </div>
+ <div class="lesson-finish" id="lessonFinish" hidden><span class="lesson-kicker">RECORRIDO COMPLETADO</span><h2 id="finishTitle" tabindex="-1">¡Lo armaste!</h2><p class="lesson-copy">Completaste esta resolución guiada: cruz blanca, primera capa, segunda capa y última capa. Practica de nuevo prestando atención a las piezas, no solo a las letras.</p><button id="courseAgain" class="action-btn btn-blue" type="button">Practicar otra vez</button><br><a href="{% url 'aprender' %}">← Volver al aprendizaje</a></div>
+ <details class="notation"><summary>¿Qué significan las letras?</summary><p>Una letra sola es un cuarto de vuelta en sentido horario mirando esa cara directamente. El símbolo ′ indica el sentido contrario. Un 2 significa media vuelta: dos giros de la misma cara.</p><div class="face-legend"><span>F · Frente verde</span><span>B · Atrás azul</span><span>R · Derecha roja</span><span>L · Izquierda naranja</span><span>U · Arriba amarilla</span><span>D · Abajo blanca</span></div><p>El curso usa las seis caras exteriores. Puedes girar la cámara sin cambiar qué cara representa cada letra.</p></details>
+ <div class="status"><div class="status-label">Visor</div><div id="status" role="status">Cargando cubo…</div></div>
+ <p class="lesson-footnote">Este recorrido incluye una resolución preparada y ocho prácticas de patrones. Todavía no cubre todos los casos posibles de una mezcla libre. El avance dura mientras la página esté abierta; aún no se guarda en tu cuenta ni desbloquea otros cursos.</p>
+</aside>
+</section>
+<p class="source-note">Referencia para las etapas de aprendizaje: <a href="https://www.rubiks.com/solution-guides" target="_blank" rel="noopener noreferrer">guías oficiales de Rubik’s</a>. Los ejercicios y explicaciones de esta página están preparados para easyRubik.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+
+
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        let scene;
+        let camera;
+        let renderer;
+        let controls;
+
+        let cubies = [];
+
+        let busy = false;
+        let history = [];
+
+        /* =====================================================
+           COLORES
+        ===================================================== */
+
+        const COLORS = {
+
+            white: 0xf2f2f2,
+            yellow: 0xffd500,
+            red: 0xe63946,
+            orange: 0xff7a00,
+            blue: 0x1976d2,
+            green: 0x16a765
+
+        };
+
+        /* =====================================================
+           MOVIMIENTOS
+        ===================================================== */
+
+        const MOVES = {"R": {"axis": "x", "layer": 1, "dir": -1}, "R'": {"axis": "x", "layer": 1, "dir": 1}, "L": {"axis": "x", "layer": -1, "dir": 1}, "L'": {"axis": "x", "layer": -1, "dir": -1}, "U": {"axis": "y", "layer": 1, "dir": -1}, "U'": {"axis": "y", "layer": 1, "dir": 1}, "D": {"axis": "y", "layer": -1, "dir": 1}, "D'": {"axis": "y", "layer": -1, "dir": -1}, "F": {"axis": "z", "layer": 1, "dir": -1}, "F'": {"axis": "z", "layer": 1, "dir": 1}, "B": {"axis": "z", "layer": -1, "dir": 1}, "B'": {"axis": "z", "layer": -1, "dir": -1}};
+
+        /* =====================================================
+           INIT
+        ===================================================== */
+
+        function init() {
+
+            const container =
+                document.getElementById("cube-container");
+
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(
+                42,
+                container.clientWidth /
+                container.clientHeight,
+                0.1,
+                100
+            );
+
+            camera.position.set(
+                6.8,
+                6.2,
+                8.2
+            );
+
+            renderer =
+                new THREE.WebGLRenderer({
+
+                    antialias: true,
+                    alpha: true,
+                    powerPreference: "high-performance"
+
+                });
+
+            renderer.setPixelRatio(
+                Math.min(
+                    window.devicePixelRatio,
+                    2
+                )
+            );
+
+            renderer.setSize(
+                container.clientWidth,
+                container.clientHeight
+            );
+
+            if ("outputColorSpace" in renderer) {
+
+                renderer.outputColorSpace =
+                    THREE.SRGBColorSpace;
+
+            } else {
+
+                renderer.outputEncoding =
+                    THREE.sRGBEncoding;
+
+            }
+
+            renderer.shadowMap.enabled = true;
+
+            container.appendChild(
+                renderer.domElement
+            );
+
+            /* =================================================
+               LIGHTING
+            ================================================= */
+
+            const ambient =
+                new THREE.AmbientLight(
+                    0xffffff,
+                    0.45
+                );
+
+            scene.add(ambient);
+
+            const directional =
+                new THREE.DirectionalLight(
+                    0xffffff,
+                    0.8
+                );
+
+            directional.position.set(
+                5,
+                8,
+                10
+            );
+
+            scene.add(directional);
+
+            const blueLight =
+                new THREE.DirectionalLight(
+                    0x4f9cff,
+                    0.15
+                );
+
+            blueLight.position.set(
+                -5,
+                -3,
+                -5
+            );
+
+            scene.add(blueLight);
+
+            const warmLight =
+                new THREE.DirectionalLight(
+                    0xff9a66,
+                    0.10
+                );
+
+            warmLight.position.set(
+                -6,
+                4,
+                5
+            );
+
+            scene.add(warmLight);
+
+            /* =================================================
+               ORBIT CONTROLS
+            ================================================= */
+
+            if (THREE.OrbitControls) {
+
+                controls =
+                    new THREE.OrbitControls(
+                        camera,
+                        renderer.domElement
+                    );
+
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.08;
+
+                controls.enablePan = false;
+                controls.enableZoom = true;
+
+                controls.minDistance = 5;
+                controls.maxDistance = 14;
+
+                controls.target.set(
+                    0,
+                    0,
+                    0
+                );
+
+                controls.update();
+            }
+
+            createCube();
+
+            window.addEventListener(
+                "resize",
+                onResize
+            );
+
+            /* =================================================
+               MOUSE / TOUCH
+            ================================================= */
+
+            renderer.domElement.addEventListener(
+                "pointerdown",
+                onPointerDown,
+                { capture: true }
+            );
+
+            window.addEventListener(
+                "pointerup",
+                onPointerUp
+            );
+
+            window.addEventListener(
+                "pointercancel",
+                onPointerUp
+            );
+
+            /* =================================================
+               BOTONES DE MOVIMIENTO
+            ================================================= */
+
+            document
+                .querySelectorAll(".move-btn")
+                .forEach(button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            makeMove(
+                                button.dataset.move
+                            );
+
+                        }
+                    );
+
+                });
+
+            /* =================================================
+               BOTÓN SUBMENÚ
+            ================================================= */
+
+            const movesToggle =
+                document.getElementById(
+                    "movesToggle"
+                );
+
+            const movesMenu =
+                document.getElementById(
+                    "movesMenu"
+                );
+
+            movesToggle.addEventListener(
+                "click",
+                () => {
+
+                    const isOpen =
+                        movesMenu.classList.contains(
+                            "open"
+                        );
+
+                    if (isOpen) {
+
+                        movesMenu.classList.remove(
+                            "open"
+                        );
+
+                        movesToggle.classList.remove(
+                            "open"
+                        );
+
+                        movesToggle.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+                    } else {
+
+                        movesMenu.classList.add(
+                            "open"
+                        );
+
+                        movesToggle.classList.add(
+                            "open"
+                        );
+
+                        movesToggle.setAttribute(
+                            "aria-expanded",
+                            "true"
+                        );
+
+                    }
+
+                }
+            );
+
+            /* =================================================
+               ACCIONES
+            ================================================= */
+
+            document
+                .getElementById("scrambleBtn")
+                .addEventListener(
+                    "click",
+                    repeatStage
+                );
+
+            document
+                .getElementById("solveBtn")
+                .addEventListener(
+                    "click",
+                    guidedMove
+                );
+
+            document
+                .getElementById("resetBtn")
+                .addEventListener(
+                    "click",
+                    undoCourseMove
+                );
+
+            updateStatus(
+                "Cubo listo"
+            );
+
+            animate();
+        }
+
+        /* =====================================================
+           CREAR CUBO
+        ===================================================== */
+
+        function createCube() {
+
+            cubies = [];
+
+            const bodyGeometry =
+                new THREE.BoxGeometry(
+                    0.92,
+                    0.92,
+                    0.92
+                );
+
+            for (
+                let x = -1;
+                x <= 1;
+                x++
+            ) {
+
+                for (
+                    let y = -1;
+                    y <= 1;
+                    y++
+                ) {
+
+                    for (
+                        let z = -1;
+                        z <= 1;
+                        z++
+                    ) {
+
+                        createCubie(
+                            x,
+                            y,
+                            z,
+                            bodyGeometry
+                        );
+
+                    }
+
+                }
+
+            }
+        }
+
+        /* =====================================================
+           CREAR CUBIE
+        ===================================================== */
+
+        function createCubie(
+            x,
+            y,
+            z,
+            bodyGeometry
+        ) {
+
+            const bodyMaterial =
+                new THREE.MeshStandardMaterial({
+
+                    color: 0x11151c,
+                    roughness: 0.65,
+                    metalness: 0.05
+
+                });
+
+            const cubie =
+                new THREE.Mesh(
+                    bodyGeometry,
+                    bodyMaterial
+                );
+
+            cubie.position.set(
+                x,
+                y,
+                z
+            );
+
+            cubie.castShadow = true;
+            cubie.receiveShadow = true;
+
+            cubie.userData = {
+
+                home: [x,y,z],
+                pieceType: Math.abs(x) + Math.abs(y) + Math.abs(z),
+                x: x,
+                y: y,
+                z: z
+
+            };
+
+            if (x === 1) {
+
+                addSticker(
+                    cubie,
+                    COLORS.red,
+                    "right"
+                );
+
+            }
+
+            if (x === -1) {
+
+                addSticker(
+                    cubie,
+                    COLORS.orange,
+                    "left"
+                );
+
+            }
+
+            if (y === 1) {
+
+                addSticker(
+                    cubie,
+                    COLORS.yellow,
+                    "up"
+                );
+
+            }
+
+            if (y === -1) {
+
+                addSticker(
+                    cubie,
+                    COLORS.white,
+                    "down"
+                );
+
+            }
+
+            if (z === 1) {
+
+                addSticker(
+                    cubie,
+                    COLORS.green,
+                    "front"
+                );
+
+            }
+
+            if (z === -1) {
+
+                addSticker(
+                    cubie,
+                    COLORS.blue,
+                    "back"
+                );
+
+            }
+
+            scene.add(cubie);
+            cubies.push(cubie);
+        }
+
+        /* =====================================================
+           STICKER
+        ===================================================== */
+
+        function addSticker(
+            cubie,
+            color,
+            face
+        ) {
+
+            const geometry =
+                new THREE.PlaneGeometry(
+                    0.72,
+                    0.72
+                );
+
+            const material =
+                new THREE.MeshBasicMaterial({
+
+                    color: color,
+                    side: THREE.DoubleSide
+
+                });
+
+            const sticker =
+                new THREE.Mesh(
+                    geometry,
+                    material
+                );
+
+            const offset = 0.466;
+
+            if (face === "right") {
+
+                sticker.position.x =
+                    offset;
+
+                sticker.rotation.y =
+                    -Math.PI / 2;
+
+            }
+
+            if (face === "left") {
+
+                sticker.position.x =
+                    -offset;
+
+                sticker.rotation.y =
+                    Math.PI / 2;
+
+            }
+
+            if (face === "up") {
+
+                sticker.position.y =
+                    offset;
+
+                sticker.rotation.x =
+                    -Math.PI / 2;
+
+            }
+
+            if (face === "down") {
+
+                sticker.position.y =
+                    -offset;
+
+                sticker.rotation.x =
+                    Math.PI / 2;
+
+            }
+
+            if (face === "front") {
+
+                sticker.position.z =
+                    offset;
+
+            }
+
+            if (face === "back") {
+
+                sticker.position.z =
+                    -offset;
+
+                sticker.rotation.y =
+                    Math.PI;
+
+            }
+
+            sticker.userData.isSticker = true;
+            sticker.userData.face = face;
+
+            cubie.add(sticker);
+        }
+
+        /* =====================================================
+           MOVIMIENTO DE CAPA
+        ===================================================== */
+
+        function rotateLayer(
+            axis,
+            layer,
+            dir
+        ) {
+
+            return new Promise(resolve => {
+
+                const selected =
+                    cubies.filter(cubie => {
+
+                        return (
+                            cubie.userData[axis] === layer
+                        );
+
+                    });
+
+                if (!selected.length) {
+
+                    resolve();
+                    return;
+
+                }
+
+                const group =
+                    new THREE.Group();
+
+                scene.add(group);
+
+                selected.forEach(
+                    cubie => {
+
+                        group.attach(cubie);
+
+                    }
+                );
+
+                const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : (coach && coach.mode === "demo" ? 650 : 320);
+
+                const start =
+                    performance.now();
+
+                function animateMove(now) {
+
+                    const elapsed =
+                        now - start;
+
+                    const progress =
+                        Math.min(
+                            elapsed / duration,
+                            1
+                        );
+
+                    const eased =
+                        1 -
+                        Math.pow(
+                            1 - progress,
+                            3
+                        );
+
+                    group.rotation[axis] =
+                        dir *
+                        (Math.PI / 2) *
+                        eased;
+
+                    if (progress < 1) {
+
+                        requestAnimationFrame(
+                            animateMove
+                        );
+
+                    } else {
+
+                        group.rotation[axis] =
+                            dir *
+                            (Math.PI / 2);
+
+                        selected.forEach(
+                            cubie => {
+
+                                scene.attach(
+                                    cubie
+                                );
+
+                                cubie.position.x =
+                                    Math.round(
+                                        cubie.position.x
+                                    );
+
+                                cubie.position.y =
+                                    Math.round(
+                                        cubie.position.y
+                                    );
+
+                                cubie.position.z =
+                                    Math.round(
+                                        cubie.position.z
+                                    );
+
+                                cubie.userData.x =
+                                    cubie.position.x;
+
+                                cubie.userData.y =
+                                    cubie.position.y;
+
+                                cubie.userData.z =
+                                    cubie.position.z;
+
+                            }
+                        );
+
+                        scene.remove(group);
+
+                        resolve();
+                    }
+                }
+
+                requestAnimationFrame(
+                    animateMove
+                );
+
+            });
+        }
+
+        /* =====================================================
+           HACER MOVIMIENTO
+        ===================================================== */
+
+        async function performMove(move) {
+
+            const data =
+                MOVES[move];
+
+            if (!data) {
+                return;
+            }
+
+            await rotateLayer(
+                data.axis,
+                data.layer,
+                data.dir
+            );
+        }
+
+        async function makeMove(move, record = true) {
+            if (busy || !MOVES[move] || !courseReady || courseStage < 0 || completedStages === 7) return;
+            busy = true; setButtons(); updateStatus("Girando " + move.replace("'", "′") + "…");
+            try {
+                await performMove(move);
+                if (record) history.push(move);
+            } finally {
+                busy = false; courseAfterMove();
+                updateStatus("Movimiento: " + move.replace("'", "′"));
+            }
+        }
+
+        /* =====================================================
+           MEZCLAR
+        ===================================================== */
+
+        function updateStatus(text) {
+
+            const element =
+                document.getElementById(
+                    "status"
+                );
+
+            if (element) {
+
+                element.textContent =
+                    text;
+
+            }
+        }
+
+        /* =====================================================
+           ESPERAR
+        ===================================================== */
+
+        function wait(ms) {
+
+            return new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        ms
+                    )
+            );
+        }
+
+        /* =====================================================
+           RAYCASTER
+        ===================================================== */
+
+        const raycaster =
+            new THREE.Raycaster();
+
+        const pointer =
+            new THREE.Vector2();
+
+        /* =====================================================
+           EJES DEL MUNDO
+        ===================================================== */
+
+        const worldAxes = {
+
+            x: new THREE.Vector3(
+                1,
+                0,
+                0
+            ),
+
+            y: new THREE.Vector3(
+                0,
+                1,
+                0
+            ),
+
+            z: new THREE.Vector3(
+                0,
+                0,
+                1
+            )
+
+        };
+
+        /* =====================================================
+           ESTADO DEL GESTO
+        ===================================================== */
+
+        let lessonPointerId = null;
+        let gestureActive = false;
+        let gestureHit = null;
+
+        let gestureStartX = 0;
+        let gestureStartY = 0;
+
+        /* =====================================================
+           DETECTAR CUBITO TOCADO
+        ===================================================== */
+
+        function getFaceHit(event) {
+
+            const rect =
+                renderer.domElement
+                    .getBoundingClientRect();
+
+            pointer.x =
+                (
+                    (event.clientX - rect.left)
+                    / rect.width
+                ) * 2 - 1;
+
+            pointer.y =
+                -(
+                    (event.clientY - rect.top)
+                    / rect.height
+                ) * 2 + 1;
+
+            raycaster.setFromCamera(
+                pointer,
+                camera
+            );
+
+            const hits =
+                raycaster.intersectObjects(
+                    cubies,
+                    false
+                );
+
+            return hits.length
+                ? hits[0]
+                : null;
+        }
+
+        /* =====================================================
+           CONVERTIR 3D A PIXELES
+        ===================================================== */
+
+        function toScreenPx(worldPoint) {
+
+            const rect =
+                renderer.domElement
+                    .getBoundingClientRect();
+
+            const projected =
+                worldPoint
+                    .clone()
+                    .project(camera);
+
+            return new THREE.Vector2(
+
+                (projected.x * 0.5 + 0.5)
+                * rect.width,
+
+                (-(projected.y * 0.5) + 0.5)
+                * rect.height
+
+            );
+        }
+
+        /* =====================================================
+           DETERMINAR MOVIMIENTO
+        ===================================================== */
+
+        function determineMove(
+            hit,
+            dx,
+            dy
+        ) {
+
+            const worldNormal =
+                hit.face.normal
+                    .clone()
+                    .transformDirection(
+                        hit.object.matrixWorld
+                    )
+                    .normalize();
+
+            let normalAxisKey = "x";
+
+            let maxComp =
+                Math.abs(
+                    worldNormal.x
+                );
+
+            if (
+                Math.abs(worldNormal.y)
+                > maxComp
+            ) {
+
+                normalAxisKey = "y";
+
+                maxComp =
+                    Math.abs(
+                        worldNormal.y
+                    );
+            }
+
+            if (
+                Math.abs(worldNormal.z)
+                > maxComp
+            ) {
+
+                normalAxisKey = "z";
+
+                maxComp =
+                    Math.abs(
+                        worldNormal.z
+                    );
+            }
+
+            const candidateAxes =
+                ["x", "y", "z"]
+                    .filter(
+                        key =>
+                            key !== normalAxisKey
+                    );
+
+            const cubie =
+                hit.object;
+
+            if (!cubie) {
+                return null;
+            }
+
+            const origin =
+                hit.point.clone();
+
+            const originPx =
+                toScreenPx(
+                    origin
+                );
+
+            const dragVec =
+                new THREE.Vector2(
+                    dx,
+                    dy
+                );
+
+            if (
+                dragVec.lengthSq()
+                < 1e-6
+            ) {
+
+                return null;
+            }
+
+            dragVec.normalize();
+
+            const TEST_ANGLE = 0.2;
+
+            let best = null;
+
+            candidateAxes.forEach(
+                axisKey => {
+
+                    const layer =
+                        cubie.userData[
+                            axisKey
+                        ];
+
+                    [1, -1].forEach(
+                        direction => {
+
+                            const quaternion =
+                                new THREE.Quaternion()
+                                    .setFromAxisAngle(
+
+                                        worldAxes[
+                                            axisKey
+                                        ],
+
+                                        TEST_ANGLE *
+                                        direction
+
+                                    );
+
+                            const testPoint =
+                                origin
+                                    .clone()
+                                    .applyQuaternion(
+                                        quaternion
+                                    );
+
+                            const testPx =
+                                toScreenPx(
+                                    testPoint
+                                );
+
+                            const screenDelta =
+                                new THREE.Vector2(
+
+                                    testPx.x -
+                                    originPx.x,
+
+                                    testPx.y -
+                                    originPx.y
+
+                                );
+
+                            if (
+                                screenDelta.lengthSq()
+                                < 1e-6
+                            ) {
+
+                                return;
+                            }
+
+                            screenDelta.normalize();
+
+                            const score =
+                                dragVec.dot(
+                                    screenDelta
+                                );
+
+                            if (
+                                !best ||
+                                score > best.score
+                            ) {
+
+                                best = {
+
+                                    score,
+                                    axisKey,
+                                    layer,
+                                    direction
+
+                                };
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+            if (
+                !best ||
+                best.score < 0.35
+            ) {
+
+                return null;
+            }
+
+            return Object.keys(
+                MOVES
+            ).find(name => {
+
+                const move =
+                    MOVES[name];
+
+                return (
+
+                    move.axis ===
+                    best.axisKey
+
+                    &&
+
+                    move.layer ===
+                    best.layer
+
+                    &&
+
+                    move.dir ===
+                    best.direction
+
+                );
+
+            }) || null;
+        }
+
+        /* =====================================================
+           POINTER DOWN
+        ===================================================== */
+
+        function onPointerDown(event) {
+
+            if (busy) {
+                return;
+            }
+
+            if (
+                event.button !== 0
+            ) {
+                return;
+            }
+
+            scene.updateMatrixWorld(
+                true
+            );
+
+            const hit =
+                getFaceHit(
+                    event
+                );
+
+            if (
+                !hit ||
+                !hit.face
+            ) {
+                return;
+            }
+
+            if (gestureActive || !event.isPrimary) return;
+            event.stopImmediatePropagation();
+            lessonPointerId = event.pointerId;
+            gestureHit =
+                hit;
+
+            gestureStartX =
+                event.clientX;
+
+            gestureStartY =
+                event.clientY;
+
+            gestureActive =
+                true;
+
+            if (controls) {
+
+                controls.enabled =
+                    false;
+            }
+
+            try {
+
+                renderer.domElement
+                    .setPointerCapture(
+                        event.pointerId
+                    );
+
+            } catch (error) {}
+        }
+
+        /* =====================================================
+           POINTER UP
+        ===================================================== */
+
+        function onPointerUp(event) {
+            if (event.pointerId !== lessonPointerId) return;
+
+            if (
+                !gestureActive
+            ) {
+
+                return;
+            }
+
+            const dx =
+                event.clientX -
+                gestureStartX;
+
+            const dy =
+                event.clientY -
+                gestureStartY;
+
+            gestureActive =
+                false;
+
+            if (controls) {
+
+                controls.enabled =
+                    true;
+            }
+
+            try {
+
+                renderer.domElement
+                    .releasePointerCapture(
+                        event.pointerId
+                    );
+
+            } catch (error) {}
+
+            const distance =
+                Math.hypot(
+                    dx,
+                    dy
+                );
+
+            if (event.type === "pointercancel" || event.type === "lostpointercapture") {
+                gestureHit = null;
+                lessonPointerId = null;
+                return;
+            }
+            lessonPointerId = null;
+            if (distance < 8 && !busy && gestureHit) {
+                lessonPick(gestureHit.object);
+            }
+            if (
+                distance < 20 ||
+                busy
+            ) {
+
+                gestureHit =
+                    null;
+
+                return;
+            }
+
+            if (courseStage < 0 || completedStages === 7) { gestureHit = null; return; }
+            const move =
+                determineMove(
+                    gestureHit,
+                    dx,
+                    dy
+                );
+
+            if (move) {
+
+                makeMove(
+                    move,
+                    true
+                );
+
+            } else {
+
+                updateStatus(
+                    "🤔 No reconocí ese movimiento, inténtalo de nuevo"
+                );
+            }
+
+            gestureHit =
+                null;
+        }
+
+        /* =====================================================
+           RESIZE
+        ===================================================== */
+
+        function onResize() {
+
+            const container =
+                document.getElementById(
+                    "cube-container"
+                );
+
+            camera.aspect =
+                container.clientWidth /
+                container.clientHeight;
+
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(
+                container.clientWidth,
+                container.clientHeight
+            );
+        }
+
+        /* =====================================================
+           ANIMATION
+        ===================================================== */
+
+        function animate() {
+
+            requestAnimationFrame(
+                animate
+            );
+
+            if (controls) {
+
+                controls.update();
+            }
+
+            renderer.render(
+                scene,
+                camera
+            );
+        }
+
+        /* =====================================================
+           START
+        ===================================================== */
+
+
+// Guided beginner course. Progress stays in this page; no account or XP writes.
+const COURSE_SEQUENCES = [["L", "L", "B", "B", "R", "R", "F", "F"], ["R", "U", "R'", "F", "U", "F'", "L", "U", "L'", "B", "U", "B'"], ["U", "R", "U'", "R'", "U'", "F'", "U", "F", "U", "F", "U'", "F'", "U'", "L'", "U", "L", "U", "L", "U'", "L'", "U'", "B'", "U", "B", "U", "B", "U'", "B'", "U'", "R'", "U", "R"], ["F", "R", "U", "R'", "U'", "F'"], ["R", "U", "R'", "U", "R", "U", "U", "R'", "U"], ["U", "R", "U'", "L'", "U", "R'", "U'", "L"], ["R'", "D'", "R", "D", "R'", "D'", "R", "D", "U", "R'", "D'", "R", "D", "R'", "D'", "R", "D", "R'", "D'", "R", "D", "R'", "D'", "R", "D", "U'"]];
+const COURSE_STAGES = [
+ {title:'La cruz blanca',goal:'4 aristas blancas alineadas con sus centros',why:'La cruz es la base. No basta con juntar blancos: el otro color de cada arista debe coincidir con el centro lateral.',tip:'Mantén el blanco abajo y el amarillo arriba. En este ejercicio llevaremos las aristas a la base con medias vueltas. Cada media vuelta son dos giros de 90°.',observe:'Mira la base blanca y comprueba también los cuatro lados. Las esquinas blancas todavía pueden estar desordenadas.',groups:'L2 · B2 · R2 · F2'},
+ {title:'Completa la primera capa',goal:'Cara blanca y primera fila lateral completas',why:'Cada esquina tiene tres colores. Debe quedar entre los tres centros de esos colores; una cara blanca aislada no garantiza una capa correcta.',tip:'Aquí practicarás inserciones cortas de esquinas. La guía cambia de lado manteniendo las letras de las caras originales. En un cubo físico puedes girar el cubo entero y trabajar siempre delante a la derecha.',observe:'Una inserción puede mover piezas de arriba. Comprueba las esquinas blancas y que la primera fila de los lados conserve sus colores.',groups:"R U R′ · F U F′ · L U L′ · B U B′"},
+ {title:'La segunda capa',goal:'Las cuatro aristas del medio en su lugar',why:'Busca aristas sin amarillo. Alinea su color lateral con el centro y colócala entre los dos centros que correspondan.',tip:'La inserción a la derecha es U R U′ R′ U′ F′ U F. Para insertar a la izquierda se usa U′ L′ U L U F U′ F′. En esta práctica haremos cuatro inserciones derechas desde distintos lados.',observe:'Es normal que la primera capa se altere durante una secuencia: al terminar la inserción vuelve a quedar armada. No te detengas a mitad del bloque.',groups:'Cuatro bloques de 8 giros; la guía indica las caras de cada lado.'},
+ {title:'Forma la cruz amarilla',goal:'Cuatro aristas amarillas mirando hacia arriba',why:'Ahora orientamos las aristas de arriba. En esta etapa todavía no necesitan coincidir con los centros laterales.',tip:'Usaremos F R U R′ U′ F′. En este ejercicio la línea amarilla debe quedar de izquierda a derecha al mirar desde el frente verde. En otras mezclas puede hacer falta preparar otra posición o repetir la secuencia.',observe:'Ignora las esquinas por ahora. Busca una cruz amarilla y conserva las dos capas inferiores.',groups:'F R U R′ U′ F′'},
+ {title:'Alinea la cruz amarilla',goal:'Aristas amarillas coincidentes con sus centros laterales',why:'La cruz amarilla ya tiene su orientación. Ahora hay que llevar cada arista al lugar de su segundo color.',tip:'Esta secuencia permuta aristas de arriba. La posición inicial preparada es importante: no es una fórmula que resuelva todas las mezclas con una sola aplicación.',observe:'Revisa el color lateral de cada arista de arriba. Debe coincidir con el centro que tiene debajo.',groups:'R U R′ U R U2 R′ U'},
+ {title:'Coloca las esquinas',goal:'Cada esquina amarilla entre sus tres centros',why:'Una esquina puede estar en el lugar correcto aunque el amarillo mire de lado. Primero atendemos a sus tres colores; después la orientamos.',tip:'En este caso usa U R U′ L′ U R′ U′ L. Observa las esquinas que cambian de lugar y la que se conserva. En otros casos hay que preparar la posición y repetir.',observe:'Comprueba los tres colores de cada esquina superior, sin exigir todavía que el amarillo mire arriba.',groups:'U R U′ L′ U R′ U′ L'},
+ {title:'Termina la cara amarilla',goal:'Las seis caras completas',why:'Solo falta orientar las esquinas. Trabaja en la esquina de arriba, delante a la derecha, conservando siempre el mismo frente.',tip:'Repite R′ D′ R D en bloques completos para orientar la esquina activa. Después usa U para llevar otra esquina a ese mismo lugar. En este caso hay dos bloques para la primera y cuatro para la siguiente; al final ajustamos con U′.',observe:'¡No reinicies si parece desarmarse abajo! Durante estos bloques se altera temporalmente la base. Vuelve a su sitio al completar todos los giros. Girar la cámara para observar no cambia las letras de las caras.',groups:'(R′ D′ R D) × 2 · U · (R′ D′ R D) × 4 · U′'}
+];
+const INTRO = [
+ {title:'Los centros',text:'Hay 6 centros, de un color cada uno. El centro indica el color de su cara al resolver el cubo.',goal:'Haz clic en un centro.',type:1},
+ {title:'Las aristas',text:'Hay 12 aristas, de dos colores cada una. Cada una une dos caras y debe coincidir con ambos centros.',goal:'Haz clic en una arista.',type:2},
+ {title:'Las esquinas',text:'Hay 8 esquinas, de tres colores cada una. Se encuentran donde se unen tres caras.',goal:'Haz clic en una esquina.',type:3}
+];
+const FACE_NAMES = {R:'derecha · centro rojo',L:'izquierda · centro naranja',U:'arriba · centro amarillo',D:'abajo · centro blanco',F:'frente · centro verde',B:'atrás · centro azul'};
+const $ = id => document.getElementById(id);
+let lessonIndex = 0, lessonPassed = false, lessonHintOn = false, lessonSelected = null;
+let courseStage = -1, courseReady = false, stageStarts = [], stageRoutes = [], routeIndex = -1;
+let completedStages = 0;
+const inverseMove = move => move.endsWith("'") ? move.slice(0,-1) : move + "'";
+const rounded = n => Math.round(n) || 0;
+function snapshot() {
+ return cubies.map(c => ({p:c.position.toArray(),q:c.quaternion.toArray(),x:c.userData.x,y:c.userData.y,z:c.userData.z}));
+}
+function restoreSnapshot(state) {
+ state.forEach((s,i) => {
+  const c=cubies[i]; c.position.fromArray(s.p); c.quaternion.fromArray(s.q);
+  Object.assign(c.userData,{x:s.x,y:s.y,z:s.z});
+ });
+ scene.updateMatrixWorld(true);
+}
+function signature() {
+ return cubies.map(c => {
+  const axes=[[1,0,0],[0,1,0],[0,0,1]].flatMap(v=>new THREE.Vector3(...v).applyQuaternion(c.quaternion).toArray().map(rounded));
+  return [...c.position.toArray().map(rounded),...axes].join(',');
+ }).join('|');
+}
+function instantMove(move) {
+ const m=MOVES[move], axis=new THREE.Vector3(m.axis==='x'?1:0,m.axis==='y'?1:0,m.axis==='z'?1:0);
+ const q=new THREE.Quaternion().setFromAxisAngle(axis,m.dir*Math.PI/2);
+ cubies.filter(c=>c.userData[m.axis]===m.layer).forEach(c=>{
+  c.position.applyQuaternion(q).round(); c.quaternion.premultiply(q).normalize();
+  Object.assign(c.userData,{x:c.position.x,y:c.position.y,z:c.position.z});
+ });
+}
+function homeNormals(c) {
+ return c.userData.home.flatMap((v,i)=> v ? [new THREE.Vector3(...[0,1,2].map(j=>j===i?v:0))] : []);
+}
+function atHome(c) { return c.position.toArray().every((v,i)=>Math.abs(v-c.userData.home[i])<0.01); }
+function pieceSolved(c) {
+ return atHome(c) && homeNormals(c).every(n=>n.clone().applyQuaternion(c.quaternion).distanceTo(n)<0.01);
+}
+function progressState() {
+ const bottom=cubies.filter(c=>c.userData.home[1]===-1);
+ const crossPieces=bottom.filter(c=>c.userData.pieceType===2);
+ const middle=cubies.filter(c=>c.userData.home[1]===0 && c.userData.pieceType===2);
+ const yellowEdges=cubies.filter(c=>c.userData.home[1]===1 && c.userData.pieceType===2);
+ const yellowCorners=cubies.filter(c=>c.userData.home[1]===1 && c.userData.pieceType===3);
+ const count=(list,predicate=pieceSolved)=>list.filter(predicate).length;
+ const cross=count(crossPieces),whiteCorners=count(bottom.filter(c=>c.userData.pieceType===3));
+ const first=bottom.every(pieceSolved), second=first && middle.every(pieceSolved);
+ const oriented=count(yellowEdges,c=>new THREE.Vector3(0,1,0).applyQuaternion(c.quaternion).distanceTo(new THREE.Vector3(0,1,0))<0.01);
+ const aligned=count(yellowEdges), positioned=count(yellowCorners,atHome);
+ const all=cubies.every(pieceSolved);
+ return {goals:[cross===4,first,second,second&&oriented===4,second&&aligned===4,second&&aligned===4&&positioned===4,all],
+ counts:[cross,whiteCorners,count(middle),oriented,aligned,positioned,count(yellowCorners)],all};
+}
+function buildCourse() {
+ // Construct one legal training scramble, followed by one continuous solve.
+ const initial=snapshot();
+ COURSE_SEQUENCES.flat().slice().reverse().map(inverseMove).forEach(instantMove);
+ for (let i=0;i<7;i++) {
+  stageStarts[i]=snapshot(); stageRoutes[i]=[signature()];
+  COURSE_SEQUENCES[i].forEach(m=>{instantMove(m);stageRoutes[i].push(signature());});
+  if(!progressState().goals[i]) throw new Error('Invalid training stage '+i);
+ }
+ restoreSnapshot(initial);
+}
+function lessonHighlight() {
+ cubies.forEach(c=>{
+  let target=false;
+  if(lessonHintOn) {
+   const h=c.userData.home,t=c.userData.pieceType;
+   if(courseStage<0) target=t===INTRO[lessonIndex].type;
+   else if(courseStage===0) target=h[1]===-1&&t===2;
+   else if(courseStage===1) target=h[1]===-1&&t===3;
+   else if(courseStage===2) target=h[1]===0&&t===2;
+   else target=h[1]===1&&t===(courseStage<5?2:3);
+  }
+  const selected=c===lessonSelected;
+  c.material.emissive.setHex(selected?0x35d47a:target?0x4f9cff:0x000000);
+  c.material.emissiveIntensity=selected||target?0.8:0;
+ });
+}
+function feedback(text,kind='') { $('lessonFeedback').textContent=text; $('lessonFeedback').dataset.kind=kind; }
+function lessonPick(c) {
+ if(courseStage>=0||lessonPassed||lessonIndex>=3) return;
+ if(c.userData.pieceType===INTRO[lessonIndex].type) {
+  lessonPassed=true;lessonSelected=c;
+  feedback('¡Correcto! Esa pieza tiene '+c.userData.pieceType+' color'+(c.userData.pieceType>1?'es':'')+'.','success');
+  $('lessonNext').disabled=false;
+ } else feedback('Esa pieza tiene '+c.userData.pieceType+' colores. Observa otra pieza o activa la pista.','retry');
+ lessonHighlight();
+}
+function drawPath() {
+ const path=$('coursePath');path.replaceChildren();
+ ['Piezas',...COURSE_STAGES.map(s=>s.title)].forEach((name,i)=>{
+  const node=document.createElement('li');
+  const done=i===0?courseStage>=0:completedStages>=i;
+  node.textContent=(done?'✓ ':String(i+1)+'. ')+name;
+  if((courseStage<0&&i===0)||i===courseStage+1) node.setAttribute('aria-current','step');
+  if(done) node.classList.add('done');
+  path.appendChild(node);
+ });
+ $('courseProgress').value=completedStages;
+ $('courseProgressText').textContent=completedStages+' / 7 etapas de resolución';
+}
+function showIntro() {
+ const item=INTRO[lessonIndex];
+ $('lessonTitle').textContent=item.title;$('lessonCopy').textContent=item.text;$('lessonTask').textContent=item.goal;
+ $('lessonStep').textContent='CONOCE LAS PIEZAS · '+(lessonIndex+1)+' / 3';
+ $('lessonNext').textContent=lessonIndex===2?'Comenzar la cruz blanca →':'Continuar →';
+ $('lessonNext').disabled=true;lessonPassed=false;lessonHintOn=false;lessonSelected=null;
+ feedback('Selecciona una pieza sin arrastrarla. Gira la vista arrastrando el fondo.');
+ $('lessonHint').textContent='Mostrar pista';$('lessonHint').setAttribute('aria-pressed','false');
+ lessonHighlight();drawPath();
+}
+function enterStage(index,prepare=false) {
+ if(busy||gestureActive) return;
+ courseStage=index;lessonIndex=3;lessonHintOn=false;lessonSelected=null;
+ if(prepare) restoreSnapshot(stageStarts[index]);
+ history=[];
+ $('skipIntro').hidden=true;$('practicePanel').hidden=false;$('introControls').hidden=true;
+ $('lessonStep').textContent='ETAPA '+(index+1)+' / 7 · MÉTODO POR CAPAS';
+ const stage=COURSE_STAGES[index];
+ $('lessonTitle').textContent=stage.title;$('lessonCopy').textContent=stage.why;$('lessonTask').textContent=stage.goal;
+ $('stageTip').textContent=stage.tip;$('stageObserve').textContent=stage.observe;$('stageAlgorithm').textContent=stage.groups;
+ $('lessonNext').textContent=index===6?'Finalizar recorrido ✓':'Siguiente etapa →';
+ $('lessonHint').textContent='Mostrar pista';$('lessonHint').setAttribute('aria-pressed','false');
+ $('hintPanel').hidden=true;
+ $('lessonTitle').focus({preventScroll:true});
+ courseCheck();drawPath();lessonHighlight();
+}
+function courseCheck() {
+ if(!courseReady) return;
+ if(courseStage<0) {setButtons();return;}
+ const state=progressState();
+ lessonPassed=state.goals[courseStage];
+ const sig=signature();
+ routeIndex=stageRoutes[courseStage].lastIndexOf(sig);
+ $('pieceCount').textContent=state.counts[courseStage]+' / 4 piezas objetivo';
+ $('lessonNext').disabled=!lessonPassed||busy;
+ if(lessonPassed) feedback('¡Etapa completada! El cubo cumple el objetivo. Revisa los colores y continúa cuando quieras.','success');
+ else if(routeIndex<0) feedback('Has tomado otra ruta. Puedes resolver por tu cuenta, deshacer giros o repetir esta etapa para retomar las pistas.','retry');
+ else feedback('Gira las capas con el mouse o los botones. El objetivo se comprueba después de cada giro.');
+ updateHint();setButtons();
+}
+function updateHint() {
+ if(courseStage<0) return;
+ const sequence=COURSE_SEQUENCES[courseStage];
+ const next=routeIndex>=0&&!lessonPassed?sequence[routeIndex]:null;
+ document.querySelectorAll('.move-btn').forEach(b=>b.classList.toggle('suggested',lessonHintOn&&b.dataset.move===next));
+ $('nextMove').textContent=lessonPassed?'✓':next?next.replace("'",'′'):'—';
+ $('nextExplain').textContent=lessonPassed?'Objetivo conseguido.':next?
+  'Gira la cara '+FACE_NAMES[next[0]]+' un cuarto de vuelta '+(next.endsWith("'")?'antihoraria':'horaria')+', mirándola directamente de frente.':
+  'La pista corresponde al ejercicio preparado. Deshaz tus giros o repite la etapa para volver a esa ruta.';
+ $('routePosition').textContent=routeIndex>=0?'Giro '+Math.min(routeIndex+1,sequence.length)+' de '+sequence.length:'Fuera de la secuencia guiada';
+ const list=$('algorithmChips');list.replaceChildren();
+ sequence.forEach((m,i)=>{
+  const chip=document.createElement('span');chip.textContent=m.replace("'",'′');
+  if(i<routeIndex) chip.className='played';
+  if(i===routeIndex&&!lessonPassed){chip.className='current';chip.setAttribute('aria-current','step');}
+  list.appendChild(chip);
+ });
+}
+function setButtons() {
+ document.querySelectorAll('.move-btn').forEach(b=>b.disabled=busy||courseStage<0||completedStages===7);
+ $('resetBtn').disabled=busy||!history.length||courseStage<0;
+ $('scrambleBtn').disabled=busy||courseStage<0;
+ $('solveBtn').disabled=busy||courseStage<0||lessonPassed||routeIndex<0;
+ $('lessonNext').disabled=busy||!lessonPassed;
+ $('lessonHint').disabled=busy;
+ $('skipIntro').disabled=busy;
+ $('courseAgain').disabled=busy;
+}
+function courseAfterMove() {
+ lessonSelected=null;lessonHighlight();courseCheck();
+}
+async function undoCourseMove() {
+ if(busy||gestureActive||!history.length||courseStage<0) return;
+ busy=true;setButtons();
+ try { await performMove(inverseMove(history.pop())); }
+ finally {busy=false;courseAfterMove();updateStatus('Último giro deshecho');}
+}
+function repeatStage() {
+ if(busy||gestureActive||courseStage<0) return;
+ restoreSnapshot(stageStarts[courseStage]);history=[];courseAfterMove();updateStatus('Etapa preparada de nuevo');
+}
+async function guidedMove() {
+ if(busy||gestureActive||courseStage<0||routeIndex<0||lessonPassed) return;
+ await makeMove(COURSE_SEQUENCES[courseStage][routeIndex]);
+}
+function centerCourseView(bottom=false) {
+ if(gestureActive) return;
+ if(controls) controls.reset();
+ camera.position.set(6.8,bottom?-6.2:6.2,8.2);camera.lookAt(0,0,0);
+ if(controls) controls.update();
+}
+function finishCourse() {
+ if(busy||!progressState().all) return;
+ completedStages=7;drawPath();
+ $('lessonWork').hidden=true;$('lessonFinish').hidden=false;
+ lessonHintOn=false;lessonHighlight();setButtons();
+ $('finishTitle').focus({preventScroll:true});updateStatus('¡Cubo resuelto!');
+}
+function initLesson() {
+ buildCourse();courseReady=true;showIntro();setButtons();
+ // Selection lesson only: keep camera orbit, disable layer dragging until practice.
+ $('lessonNext').addEventListener('click',()=>{
+  if(busy||gestureActive||!lessonPassed) return;
+  if(courseStage<0) {
+   lessonIndex++;
+   if(lessonIndex<3)showIntro();else enterStage(0,true);
+  } else if(courseStage===6)finishCourse();
+  else {completedStages=courseStage+1;enterStage(courseStage+1);}
+ });
+ $('skipIntro').addEventListener('click',()=>enterStage(0,true));
+ $('lessonHint').addEventListener('click',()=>{
+  if(busy) return;
+  lessonHintOn=!lessonHintOn;
+  $('lessonHint').textContent=lessonHintOn?'Ocultar pista':'Mostrar pista';
+  $('lessonHint').setAttribute('aria-pressed',String(lessonHintOn));
+  if(courseStage>=0){$('hintPanel').hidden=!lessonHintOn;updateHint();}
+  lessonHighlight();
+ });
+ $('lessonCenter').addEventListener('click',()=>centerCourseView(false));
+ $('whiteView').addEventListener('click',()=>centerCourseView(true));
+ $('courseAgain').addEventListener('click',()=>{
+  if(busy||gestureActive)return;
+  completedStages=0;$('lessonFinish').hidden=true;$('lessonWork').hidden=false;enterStage(0,true);
+ });
+ renderer.domElement.addEventListener('lostpointercapture',event=>{if(gestureActive)onPointerUp(event);});
+ if(window.ResizeObserver)new ResizeObserver(onResize).observe($('cube-container'));
+}
+
+// Small practice units: identify, watch, follow, recall. A demonstration never earns completion.
+let coach=null, labSaved=null, courseSolvedSnapshot=null;
+const BLOCK_SIZES=[[2,2,2,2],[3,3,3,3],[8,8,8,8],[6],[9],[8],[8,1,16,1]];
+const expandAlg=s=>s.trim().split(/\s+/).flatMap(t=>t.endsWith('2')?[t[0],t[0]]:[t]);
+const PATTERN_CASES=[
+ {name:'Esquina blanca: blanco a la derecha',stage:1,alg:"R U R' U'",target:[1,-1,1],text:'Coloca la esquina sobre su hueco, delante a la derecha. Aquí el blanco mira a la derecha. Practica una vez R U R′ U′ y observa cómo entra.'},
+ {name:'Esquina blanca: blanco arriba',stage:1,alg:"R U R' U' R U R' U' R U R' U'",target:[1,-1,1],text:'La esquina está encima de su hueco, con el blanco arriba. En este caso repite tres bloques completos R U R′ U′. Observa el blanco después de cada bloque.'},
+ {name:'Esquina blanca: blanco al frente',stage:1,alg:"R U R' U' R U R' U' R U R' U' R U R' U' R U R' U'",target:[1,-1,1],text:'El blanco de la esquina mira al frente. Usando el mismo recurso sencillo, este caso necesita cinco bloques R U R′ U′. Hay soluciones más cortas; aquí practicamos un solo bloque repetible.'},
+ {name:'Segunda capa: insertar a la derecha',stage:2,alg:"U R U' R' U' F' U F",target:[1,0,1],text:'La arista no lleva amarillo. Su color frontal coincide con el centro verde y el color de arriba corresponde al centro rojo: debe entrar a la derecha.'},
+ {name:'Segunda capa: insertar a la izquierda',stage:2,alg:"U' L' U L U F U' F'",target:[-1,0,1],text:'La arista no lleva amarillo. Su color frontal coincide con el centro verde y el color de arriba corresponde al centro naranja: debe entrar a la izquierda.'},
+ {name:'Cruz amarilla: línea',stage:3,alg:"F R U R' U' F'",text:'Mira la cara amarilla desde arriba. Las dos aristas amarillas forman una línea de izquierda a derecha. Conserva el verde al frente y practica F R U R′ U′ F′.'},
+ {name:'Cruz amarilla: forma de L',stage:3,alg:"F U R U' R' F'",text:'Las aristas amarillas forman una L hacia atrás y hacia la izquierda, con el verde al frente. Para esta colocación practica F U R U′ R′ F′. Ignora las esquinas.'},
+ {name:'Cruz amarilla: punto',stage:3,alg:"F R U R' U' F' U2 F U R U' R' F'",text:'Solo el centro es amarillo entre las cinco posiciones de la cruz. Primero practica F R U R′ U′ F′; después U2 prepara la L y F U R U′ R′ F′ completa la cruz. Mira cómo cambia el patrón.'}
+];
+const physicalKey=()=>cubies.filter(c=>c.userData.pieceType).map(c=>[...c.position.toArray().map(rounded),...homeNormals(c).flatMap(n=>n.applyQuaternion(c.quaternion).toArray().map(rounded))].join(',')).join('|');
+function targetLabel(c) {
+ const h=c.userData.home;const names=[];
+ if(h[0])names.push(h[0]>0?'rojo':'naranja');if(h[1])names.push(h[1]>0?'amarillo':'blanco');if(h[2])names.push(h[2]>0?'verde':'azul');
+ return (c.userData.pieceType===2?'la arista ':c.userData.pieceType===3?'la esquina ':'el centro ')+names.join(' / ');
+}
+function inStage(c,s) {
+ const h=c.userData.home,t=c.userData.pieceType;
+ return s===0?h[1]===-1&&t===2:s===1?h[1]===-1&&t===3:s===2?h[1]===0&&t===2:h[1]===1&&t===(s<5?2:3);
+}
+function buildBlocks(sequence,sizes,stage,explicitTarget) {
+ const original=snapshot();const blocks=[];let offset=0;
+ for(const size of sizes){
+  const start=snapshot();const seq=sequence.slice(offset,offset+size);offset+=size;
+  const before=cubies.map(pieceSolved);const keys=[physicalKey()];
+  seq.forEach(m=>{instantMove(m);keys.push(physicalKey());});
+  let target=explicitTarget?cubies.findIndex(c=>c.userData.home.every((v,i)=>v===explicitTarget[i])):
+    cubies.findIndex((c,i)=>inStage(c,stage)&&!before[i]&&pieceSolved(c));
+  if(target<0)target=cubies.findIndex(c=>inStage(c,stage));
+  blocks.push({start,end:snapshot(),keys,seq,target});
+ }
+ restoreSnapshot(original);return blocks;
+}
+function currentBlock(){return coach.blocks[coach.index];}
+function startMicroBlock(index){
+ coach.index=index;coach.mode='observe';coach.selected=false;coach.cursor=0;
+ restoreSnapshot(currentBlock().start);history=[];lessonPassed=false;lessonHintOn=false;
+ $('microCoach').hidden=false;coachRender();
+}
+const oldEnterStage=enterStage;
+enterStage=function(index,prepare=false){
+ if(busy||gestureActive)return;
+ coach=null;oldEnterStage(index,prepare);
+ coach={index:0,mode:'observe',blocks:buildBlocks(COURSE_SEQUENCES[index],BLOCK_SIZES[index],index),lab:false};
+ startMicroBlock(0);
+};
+const oldPick=lessonPick;
+lessonPick=function(c){
+ if(!coach){oldPick(c);return;}
+ if(coach.mode!=='observe')return;
+ if(c===cubies[currentBlock().target]){
+  coach.selected=true;feedback('¡Esa es! Observa sus colores antes de ver cómo se mueve.','success');coachRender(false);
+ }else feedback('Busca '+targetLabel(cubies[currentBlock().target])+'. El borde azul señala la pieza objetivo.','retry');
+};
+const oldHighlight=lessonHighlight;
+lessonHighlight=function(){
+ oldHighlight();if(!coach)return;
+ cubies.forEach((c,i)=>{const target=i===currentBlock().target;c.material.emissive.setHex(target?0x4f9cff:0);c.material.emissiveIntensity=target?0.8:0;});
+};
+function drawYellowPattern(){
+ const up=new THREE.Vector3(0,1,0);const cells=Array(9).fill(false);
+ cubies.filter(c=>c.userData.home[1]===1).forEach(c=>{
+  if(new THREE.Vector3(0,1,0).applyQuaternion(c.quaternion).distanceTo(up)<0.01&&Math.abs(c.position.y-1)<0.01){
+   const i=(rounded(c.position.z)+1)*3+rounded(c.position.x)+1;cells[i]=true;
+  }
+ });
+ $('topPattern').replaceChildren();
+ cells.forEach((yellow,i)=>{const cell=document.createElement('span');cell.className=yellow?'yellow':'';cell.setAttribute('aria-label',(yellow?'Amarillo':'Otro color')+' posición '+(i+1));$('topPattern').appendChild(cell);});
+ const edges=[1,3,5,7].filter(i=>cells[i]);let name='Patrón en transición';
+ if(edges.length===0)name='Punto: ninguna arista amarilla arriba';
+ if(edges.length===2)name=edges.includes(1)&&edges.includes(7)||edges.includes(3)&&edges.includes(5)?'Línea: dos aristas opuestas':'L: dos aristas vecinas';
+ if(edges.length===4)name='Cruz: cuatro aristas amarillas arriba';
+ $('patternName').textContent=name;
+}
+function coachRender(changeFeedback=true){
+ if(!coach)return;
+ const b=currentBlock(),mode=coach.mode;
+ $('microCount').textContent=(coach.lab?'PRÁCTICA DE PATRÓN':'MICROPASO '+(coach.index+1)+' / '+coach.blocks.length);
+ const names={observe:'1 · Reconoce la pieza',demo:'2 · Observa los giros',ready:'3 · Hazlo con ayuda',guided:'3 · Hazlo con ayuda',guidedDone:'4 · Ahora repítelo tú',recall:'4 · Practica sin la secuencia',blockDone:'¡Micropaso aprendido!',complete:'¡Etapa aprendida!'};
+ $('microTitle').textContent=names[mode];
+ $('microTarget').textContent=targetLabel(cubies[b.target]);
+ const next=mode==='guided'?b.seq[coach.cursor]:null;
+ $('microMove').textContent=next?next.replace("'",'′'):mode==='recall'?'Tú':mode==='observe'?'◎':'✓';
+ $('microDirection').textContent=next?(next.endsWith("'")?'↶ Antihorario':'↷ Horario')+' · '+FACE_NAMES[next[0]]:'Blanco abajo · Amarillo arriba · Verde al frente';
+ $('microInstructions').textContent=mode==='observe'?'Haz clic en la pieza con borde azul. Comprueba sus colores y dónde debería terminar.':
+  mode==='guided'?'Gira solo la cara indicada con el mouse o su botón. Si intentas otro giro, te explicaré cuál toca sin desarmar el ejercicio.':
+  mode==='recall'?'Repite el bloque que acabas de practicar. Ahora puedes probar giros libremente y deshacer. Comprobaré el resultado real del cubo.':
+  mode==='guidedDone'?'Ya seguiste los giros. Ahora devolveremos solo este ejercicio a su inicio para que lo repitas sin ver la secuencia.':
+  mode==='blockDone'?'La pieza y el resto del bloque quedaron como debían. Avanza al siguiente micropaso.':
+  mode==='complete'?'Terminaste todos los bloques y el cubo cumple el objetivo de esta etapa.':
+  mode==='ready'?'La demostración volvió al inicio. Te toca hacer los mismos giros, uno por uno.':'Mira la cara que gira y sigue la pieza azul. Al terminar volveremos al inicio para que practiques.';
+ const showSequence=['guided','demo','ready'].includes(mode);
+ $('microSequence').textContent=showSequence?b.seq.map(m=>m.replace("'",'′')).join('  '):'';
+ $('coachAction').hidden=['guided','recall','complete'].includes(mode);
+ $('coachAction').textContent={observe:'Ver demostración lenta',demo:'Demostración…',ready:'Practicar con ayuda',guidedDone:'Repetir sin ayuda',blockDone:'Siguiente micropaso →'}[mode]||'Continuar';
+ $('coachAction').disabled=busy||(mode==='observe'&&!coach.selected);
+ $('coachRetry').hidden=!['guided','recall','guidedDone'].includes(mode);
+ $('coachHelp').hidden=mode!=='recall';$('coachLook').hidden=!next;
+ $('hintPanel').hidden=true;$('lessonHint').hidden=true;
+ const algorithm=$('stageAlgorithm').closest('details');if(algorithm)algorithm.hidden=true;
+ $('lessonNext').hidden=!!coach.lab;
+ lessonPassed=mode==='complete'&&progressState().goals[courseStage];
+ $('lessonNext').disabled=!lessonPassed||busy;
+ $('pieceCount').textContent=progressState().counts[courseStage]+' / 4 piezas objetivo';
+ document.querySelectorAll('.move-btn').forEach(button=>{button.disabled=busy||!['guided','recall'].includes(mode);button.classList.toggle('suggested',button.dataset.move===next);});
+ $('solveBtn').disabled=true;$('resetBtn').disabled=busy||!history.length||!['guided','recall'].includes(mode);
+ $('scrambleBtn').textContent='Repetir micropaso';$('scrambleBtn').disabled=busy;
+ $('patternLabOpen').disabled=busy;$('labReturn').disabled=busy;
+ $('coachRetry').disabled=busy;$('coachHelp').disabled=busy;$('coachLook').disabled=busy;
+ if(changeFeedback&&mode==='observe')feedback('Primero identifica la pieza. Después practicaremos un bloque de '+b.seq.length+' giros.');
+ lessonHighlight();drawYellowPattern();
+}
+const oldCheck=courseCheck;
+courseCheck=function(){oldCheck();if(coach){coachRender(false);if(coach.mode==='recall')feedback('Tu turno: repite el bloque. Puedes usar Deshacer o pedir ayuda si te pierdes.');}};
+const oldSetButtons=setButtons;
+setButtons=function(){oldSetButtons();if(coach)coachRender(false);};
+const oldMake=makeMove;
+makeMove=async function(move,record=true){
+ if(!coach)return oldMake(move,record);
+ if(busy||!MOVES[move]||!['guided','recall'].includes(coach.mode))return;
+ const b=currentBlock();
+ if(coach.mode==='guided'&&move!==b.seq[coach.cursor]){
+  feedback('Ese giro es '+move.replace("'",'′')+'. Ahora toca '+b.seq[coach.cursor].replace("'",'′')+'. Mira el botón resaltado o pulsa «Ver cara del giro».','retry');return;
+ }
+ await oldMake(move,record);
+ const key=physicalKey();
+ if(coach.mode==='guided'){
+  coach.cursor=b.keys.lastIndexOf(key);
+  if(coach.cursor===b.seq.length){coach.mode='guidedDone';feedback('¡Bien! Completaste el bloque con ayuda. Ahora vamos a practicarlo de memoria.','success');}
+ }else if(key===b.keys[b.keys.length-1]){
+  restoreSnapshot(b.end);
+  coach.mode=coach.index===coach.blocks.length-1?'complete':'blockDone';
+  feedback(coach.mode==='complete'?'¡Lo hiciste sin la secuencia! Objetivo de la etapa comprobado.':'¡Correcto! Repetiste el bloque sin la secuencia.','success');
+ }
+ coachRender(false);
+};
+const oldUndo=undoCourseMove;
+undoCourseMove=async function(){
+ if(!coach)return oldUndo();
+ if(busy||!['guided','recall'].includes(coach.mode))return;
+ await oldUndo();if(coach.mode==='guided')coach.cursor=Math.max(0,currentBlock().keys.lastIndexOf(physicalKey()));coachRender(false);
+};
+const oldRepeat=repeatStage;
+repeatStage=function(){if(!coach)return oldRepeat();if(!busy&&!gestureActive)startMicroBlock(coach.index);};
+async function demonstrateBlock(){
+ if(busy||gestureActive||!coach.selected)return;
+ const b=currentBlock();coach.mode='demo';busy=true;coachRender(false);
+ try{
+  for(let i=0;i<b.seq.length;i++){
+   $('microMove').textContent=b.seq[i].replace("'",'′');
+   $('microDirection').textContent='Giro '+(i+1)+' / '+b.seq.length+' · '+FACE_NAMES[b.seq[i][0]];
+   await performMove(b.seq[i]);drawYellowPattern();await wait(220);
+  }
+ }finally{
+  restoreSnapshot(b.start);history=[];coach.mode='ready';busy=false;coachRender();
+  feedback('La demostración terminó y el ejercicio volvió a su inicio. Ahora te toca.');
+ }
+}
+function showNextFace(){
+ if(!coach||busy||gestureActive||coach.mode!=='guided')return;
+ const face=currentBlock().seq[coach.cursor][0];
+ const poses={R:[8,.15,0],L:[-8,.15,0],U:[0,8,.1],D:[0,-8,.1],F:[0,.15,8],B:[0,.15,-8]};
+ camera.position.fromArray(poses[face]);camera.lookAt(0,0,0);if(controls)controls.update();
+}
+function startPattern(){
+ if(busy||gestureActive||!courseReady||completedStages===7)return;
+ if(labSaved)return;
+ const p=PATTERN_CASES[Number($('patternSelect').value)];if(!p)return;
+ labSaved={state:snapshot(),coach,courseStage,lessonIndex,lessonPassed,completedStages,history:history.slice(),texts:{}};
+ for(const id of ['lessonStep','lessonTitle','lessonCopy','lessonTask','stageTip','stageObserve','stageAlgorithm'])labSaved.texts[id]=$(id).textContent;
+ restoreSnapshot(courseSolvedSnapshot);const seq=expandAlg(p.alg);seq.slice().reverse().map(inverseMove).forEach(instantMove);
+ courseStage=p.stage;history=[];
+ coach={index:0,mode:'observe',lab:true,blocks:buildBlocks(seq,[seq.length],p.stage,p.target)};
+ $('lessonStep').textContent='TALLER DE PATRONES';$('lessonTitle').textContent=p.name;$('lessonCopy').textContent=p.text;
+ $('lessonTask').textContent='Reconoce el caso, observa y repite el algoritmo.';$('stageTip').textContent='Práctica independiente: al volver recuperas tu cubo y el punto exacto del curso.';
+ $('stageObserve').textContent='Usa «Vista de referencia» antes de empezar. La colocación inicial forma parte del algoritmo.';
+ $('practicePanel').hidden=false;$('introControls').hidden=true;$('microCoach').hidden=false;
+ $('labReturn').hidden=false;$('patternLabOpen').hidden=true;centerCourseView();startMicroBlock(0);
+}
+function returnFromPattern(){
+ if(!labSaved||busy||gestureActive)return;
+ const saved=labSaved;labSaved=null;restoreSnapshot(saved.state);coach=saved.coach;courseStage=saved.courseStage;
+ lessonIndex=saved.lessonIndex;lessonPassed=saved.lessonPassed;completedStages=saved.completedStages;history=saved.history;
+ for(const [id,text] of Object.entries(saved.texts))$(id).textContent=text;
+ $('labReturn').hidden=true;$('patternLabOpen').hidden=false;$('lessonNext').hidden=false;
+ $('practicePanel').hidden=courseStage<0;$('introControls').hidden=courseStage>=0;$('microCoach').hidden=!coach;
+ $('lessonHint').hidden=!!coach;drawPath();
+ if(coach)coachRender();else{lessonHighlight();setButtons();feedback('Volviste al punto donde dejaste el curso.');}
+}
+const oldInitLesson=initLesson;
+initLesson=function(){
+ courseSolvedSnapshot=snapshot();oldInitLesson();drawYellowPattern();
+ PATTERN_CASES.forEach((p,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=p.name;$('patternSelect').appendChild(option);});
+ $('patternSelect').value='0';
+ $('coachAction').addEventListener('click',async()=>{
+  if(busy||gestureActive||!coach)return;
+  if(coach.mode==='observe')await demonstrateBlock();
+  else if(coach.mode==='ready'){coach.mode='guided';coach.cursor=0;coachRender();feedback('Haz el primer giro con el mouse o el botón resaltado.');}
+  else if(coach.mode==='guidedDone'){restoreSnapshot(currentBlock().start);history=[];coach.mode='recall';coachRender();feedback('Tu turno sin la secuencia. Puedes equivocarte y usar Deshacer.');}
+  else if(coach.mode==='blockDone')startMicroBlock(coach.index+1);
+ });
+ $('coachRetry').addEventListener('click',()=>{if(busy||gestureActive)return;restoreSnapshot(currentBlock().start);history=[];coach.cursor=0;coachRender();feedback('Bloque reiniciado. Inténtalo otra vez.');});
+ $('coachHelp').addEventListener('click',()=>{if(busy||gestureActive)return;restoreSnapshot(currentBlock().start);history=[];coach.cursor=0;coach.mode='guided';coachRender();feedback('Volvemos a practicar con ayuda. Después podrás repetir sin ella.');});
+ $('coachLook').addEventListener('click',showNextFace);
+ $('patternLabOpen').addEventListener('click',startPattern);$('labReturn').addEventListener('click',returnFromPattern);
+};
+
+try {
+ if (!window.THREE || !THREE.OrbitControls) throw new Error('No se cargaron las librerías 3D');
+ init(); initLesson();
+} catch (error) {
+ updateStatus('No se pudo iniciar el cubo. Comprueba tu conexión y recarga.');
+ feedback('El visor no está disponible. Recarga la página para comenzar.');
+ document.querySelectorAll('button').forEach(b=>b.disabled=true);
+ console.error(error);
+}
+
+</script>
+</body>
+</html>

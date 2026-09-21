@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>easyRubik · Megaminx</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;color:var(--text);min-height:100vh}body::before{content:"";position:fixed;inset:0;pointer-events:none}.page{position:relative;margin-inline:auto}.header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-soft)}.brand{display:flex;align-items:center;font-family:Sora,Inter,sans-serif;font-weight:800}.header-info h1{font-family:Sora,Inter,sans-serif}.simulator-layout{display:grid}.puzzle-card{position:relative;overflow:hidden}#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;outline:none}#stage:active{cursor:grabbing}.puzzle-label{position:absolute;z-index:2;border:1px solid var(--border);border-radius:8px;background:#10141de0;pointer-events:none;color:var(--muted)}.interaction-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:#10141de0;color:var(--muted);border:1px solid var(--border);pointer-events:none}.controls-card{border:1px solid var(--border)}.controls-title{margin:0 0 16px}.control-button{padding:10px 12px;border:1px solid var(--border);background:#202530;color:var(--text);font-family:inherit;font-weight:700;cursor:pointer}.control-button:disabled{opacity:.45;cursor:default}.status-box{margin:18px 0;padding:14px;border:1px solid var(--border)}.status-label{color:var(--muted);text-transform:uppercase;margin-bottom:7px}#status{margin:0;line-height:1.6}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.secondary{margin-top:9px}.movements{border:1px solid #2c405e;border-radius:12px;margin-bottom:18px;background:#20253080}.movements summary{padding:14px;cursor:pointer;font-size:13px;font-weight:700}.move-content{padding:0 14px 14px}.move-content label{display:block;color:var(--muted);font-size:12px;margin:4px 0 8px}.face-controls{display:flex;gap:8px}.face-controls select{min-width:0;flex:1;background:#161d2a;color:var(--text);border:1px solid #354969;border-radius:8px;padding:10px}.face-controls button{min-width:44px;font-size:20px}.help{font-size:12px;line-height:1.8;color:var(--muted);border-top:1px solid var(--border-soft);padding-top:16px}.help strong{color:var(--text)}.help p{margin:0 0 10px}#btnStop{width:100%;margin-top:9px;color:#ffadb5}.viewer-head h2{font-family:Sora,Inter,sans-serif}#stage:focus-visible{outline:2px solid #75b5ff;outline-offset:-4px}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+:root{--text:#f4f7fc;--muted:#929caf;--muted-2:#929caf;--border:rgba(255,255,255,.10);--border-soft:rgba(255,255,255,.07)}
+body{background:radial-gradient(ellipse at 0 0,rgba(53,111,185,.23),transparent 43%),radial-gradient(ellipse at 100% 40%,rgba(133,42,60,.18),transparent 42%),#090c11;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+body::before{opacity:1;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:49px 49px}
+.page{width:calc(100% - 64px);max-width:1360px;padding:0 0 38px}.header{height:88px;padding:0;margin:0 0 28px}.brand{gap:8px}.brand-mark{font-size:0;width:13px;height:13px;min-width:13px;border:0;border-radius:4px;background:linear-gradient(135deg,#ff9782,#ffdb54 48%,#66bcff);box-shadow:none}.brand-name{font-size:19px;letter-spacing:-.6px}.brand-name span{color:#7bb8ff}.nav-back{color:#83bdff;border:1px solid #354969;border-radius:10px;padding:10px 14px;background:#141720;font-size:13px;text-decoration:none}
+.header-info{text-align:left;margin-bottom:28px}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 11px;border:1px solid #253d5a;border-radius:30px;color:#80baff;background:rgba(26,54,85,.2);font-size:11px;font-weight:700;letter-spacing:0;text-transform:none}.eyebrow:before{content:"";width:5px;height:5px;border-radius:50%;background:#58a3ff}.header-info h1{font-size:clamp(40px,5vw,64px);font-weight:850;line-height:1.08;letter-spacing:-3px;margin:14px 0 15px;background:linear-gradient(110deg,#cee5ff,#4a97ff);background-clip:text;-webkit-background-clip:text;color:transparent}.hero-description{max-width:700px;color:var(--muted);font-size:15px;line-height:1.8;margin:0}
+.simulator-layout{grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}.puzzle-area{min-width:0;border:1px solid var(--border);border-radius:21px;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}.puzzle-card{min-height:0;height:560px;border:0;border-radius:0;background:transparent;box-shadow:none}.cube-glow,.puzzle-card::before{display:none}.puzzle-label{font-size:10px;padding:6px 8px;top:14px;left:16px}.puzzle-label .dot{background:#58a3ff}
+.viewer-head{padding:20px 22px;min-height:78px;border-bottom:1px solid var(--border-soft);display:flex;justify-content:space-between;align-items:center}.viewer-head h2{font-size:17px;margin:0 0 4px}.viewer-head p{font-size:11px;color:var(--muted);margin:0}.viewer-badge{font-size:10px;color:#80baff;border:1px solid #253c5b;background:#131e2c;border-radius:6px;padding:6px 8px}.interaction-hint{max-width:calc(100% - 30px);width:max-content;white-space:normal;text-align:center;border-radius:10px;padding:7px 12px;font-size:11px;line-height:1.6}
+.controls-card{min-width:0;min-height:638px;padding:24px;border-radius:21px;box-shadow:none;background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}.controls-title{font-size:17px}.controls-subtitle{font-size:12px;line-height:1.6}.mega-badge{background:#131e2c;border-color:#253c5b;color:#80baff}.back-button{font-size:11px;padding:10px;border-radius:10px;background:transparent}.status-box{border-radius:11px;background:rgba(0,0,0,.1)}.status-label{font-size:9px;letter-spacing:1px}.status-box #status{font-size:12px}.control-section-title{font-size:11px}.control-button{border-radius:11px;min-height:44px;font-size:12px}.control-button .icon{font-size:14px}#btnScramble{background:linear-gradient(110deg,#80baff,#4b98ff);color:#061729;border:0}#btnSolve{background:linear-gradient(110deg,#48de8b,#21c46a);color:#062216;border:0}.control-button[hidden]{display:none}.info-panel{background:rgba(0,0,0,.1);border-radius:12px}.info-text strong{font-size:12px}.info-text span{font-size:11px}
+a:focus-visible,button:focus-visible{outline:2px solid #75b5ff;outline-offset:4px}
+@media(max-width:1000px){.simulator-layout{grid-template-columns:minmax(0,1fr) 310px;gap:16px}.controls-card{padding:18px}}
+@media(max-width:760px){.page{width:calc(100% - 32px)}.header{height:72px;flex-direction:row}.simulator-layout{grid-template-columns:1fr}.controls-card{min-height:0}.puzzle-card{height:480px}.brand-name{font-size:17px}.nav-back{font-size:11px}.header-info h1{letter-spacing:-2px}}
+@media(max-width:420px){.puzzle-card{height:390px}.interaction-hint{font-size:10px}}
+
+/* Keep pointer interactions from changing the page's geometry. */
+html{overflow-y:scroll;scrollbar-gutter:stable both-edges}
+.stop-slot{height:53px;flex:none}
+.status-box{min-width:0}
+.status-box #status{height:4.8em;min-height:4.8em;max-height:4.8em;overflow-y:auto;overflow-wrap:anywhere;scrollbar-gutter:stable}
+#stage{user-select:none;-webkit-user-select:none;overscroll-behavior:contain}
+#moveCount{display:inline-block;min-width:4ch;font-variant-numeric:tabular-nums;text-align:right}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="header">
+  <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">easy <span>Rubik</span></span></div>
+  <a class="nav-back" href="{% url 'selector' %}">← Volver al selector</a>
+</header>
+<div class="header-info">
+  <div class="eyebrow">Aprende. Practica. Resuelve.</div>
+  <h1>Megaminx</h1>
+  <p class="hero-description">Explora sus doce caras. Arrastra una pieza para girar su cara, mezcla el puzzle y practica a tu ritmo.</p>
+</div>
+<main class="simulator-layout">
+<section class="puzzle-area" aria-label="Simulador Megaminx">
+  <div class="viewer-head"><div><h2>Simulador Megaminx</h2><p>Interactúa con el puzzle</p></div><span class="viewer-badge">12 caras</span></div>
+  <div class="puzzle-card">
+    <canvas id="stage" tabindex="0" aria-label="Megaminx 3D. Arrastra una cara para girarla; usa los controles de movimientos como alternativa." aria-describedby="mouseHelp"></canvas>
+    <div class="puzzle-label">Movimientos <strong id="moveCount">0</strong></div>
+    <div class="interaction-hint">Arrastra y suelta para girar · arrastra el fondo para cambiar la vista</div>
+  </div>
+</section>
+<aside class="controls-card" aria-label="Controles del Megaminx">
+  <h2 class="controls-title">Controles</h2>
+  <details class="movements">
+    <summary>↻ &nbsp; Movimientos</summary>
+    <div class="move-content">
+      <label for="faceSelect">Selecciona una cara para verla de frente</label>
+      <div class="face-controls">
+        <select id="faceSelect" aria-label="Cara del Megaminx"></select>
+        <button type="button" class="control-button" data-turn="1" aria-label="Girar cara 72 grados en sentido antihorario" title="Antihorario">↶</button>
+        <button type="button" class="control-button" data-turn="-1" aria-label="Girar cara 72 grados en sentido horario" title="Horario">↷</button>
+      </div>
+    </div>
+  </details>
+  <div class="actions">
+    <button id="btnScramble" type="button" class="control-button">Mezclar</button>
+    <button id="btnSolve" type="button" class="control-button" title="Deshacer todos los movimientos de esta sesión">Resolver</button>
+  </div>
+  <div class="actions secondary">
+    <button id="btnUndo" type="button" class="control-button">Deshacer</button>
+    <button id="btnReset" type="button" class="control-button">Reiniciar</button>
+  </div>
+  <div class="stop-slot"><button id="btnStop" type="button" class="control-button" hidden>Detener</button></div>
+  <div class="status-box"><div class="status-label">Estado</div><p id="status" role="status" aria-live="polite">Cargando Megaminx…</p></div>
+  <button id="btnCenter" type="button" class="control-button">Centrar vista</button>
+  <div class="help" id="mouseHelp">
+    <p><strong>Mouse:</strong> arrastra una pieza y suelta para completar el giro. En el centro, arrastra hacia un lado. Vuelve al punto inicial antes de soltar para cancelar. Arrastra el fondo, usa el botón derecho o mantén Shift para rotar la vista. Rueda para zoom.</p>
+    <p><strong>Teclado:</strong> con el visor enfocado, usa ← y → para girar la cara seleccionada.</p>
+    <p><strong>Resolver</strong> deshace los movimientos realizados en esta sesión hasta volver al inicio.</p>
+  </div>
+</aside>
+</main>
+<noscript>Activa JavaScript para utilizar el simulador.</noscript>
+</div>
+<script>
+window.easyRubikMegaLoadError = function () {
+  document.getElementById('status').textContent = 'No se pudo iniciar static/megaminx/megaminx.js. Comprueba la ruta, pega el código completo y recarga con Ctrl + F5.';
+};
+window.easyRubikMegaCheckLoad = function () {
+  const status = document.getElementById('status');
+  if (!window.easyRubikMegaminx && status && status.textContent.includes('Cargando')) {
+    window.easyRubikMegaLoadError();
+  }
+};
+</script>
+<script src="{% static 'megaminx/megaminx.js' %}?v=3" defer onerror="easyRubikMegaLoadError()" onload="easyRubikMegaCheckLoad()"></script>
+</body>
+</html>

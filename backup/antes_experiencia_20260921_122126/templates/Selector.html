@@ -1015,7 +1015,7 @@
 @media(max-width:700px){.player-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.puzzle-spotlight{gap:15px;padding:18px}.puzzle-art{width:110px}.player-head{padding:24px 20px 18px}.xp-card-top{flex-wrap:wrap}.xp-level{margin-left:0}.puzzle-summary h3{font-size:23px}}
 @media(max-width:380px){.player-grid{grid-template-columns:1fr}.puzzle-art{width:75px}.rubik-face{width:65px;height:65px}.puzzle-summary h3{font-size:20px}}
 @media(prefers-reduced-motion:reduce){.rubik-art{transition:none}}
-.master-rubik{display:block;color:#f6cf73;font-weight:800;font-size:12px;letter-spacing:.03em;margin-top:12px;text-shadow:0 0 18px #f2be4344}.xp-card[data-level="30"]{border-color:#e5ba57;--cube-accent:#f5cc70;background:linear-gradient(125deg,#bd903018,#ffffff02)}#spotLevel.master-rubik{color:#f6cf73;font-size:16px;font-weight:800}</style>
+</style>
 </head>
 
 
@@ -1615,7 +1615,7 @@
 {% for xp in experiencias %}
 <a class="xp-card" data-level="{{ xp.nivel }}" data-xp="{{ xp.experiencia }}" data-left="{{ xp.faltante }}" data-name="{{ xp.get_tipo_display }}" href="{% if xp.tipo == '3x3' %}{% url 'simulador' %}{% elif xp.tipo == '4x4' %}{% url 'cuatro_por_cuatro' %}{% elif xp.tipo == '5x5' %}{% url 'cinco_por_cinco' %}{% elif xp.tipo == '6x6' %}{% url 'seis_por_seis' %}{% elif xp.tipo == 'mirror' %}{% url 'mirror' %}{% elif xp.tipo == 'megaminx' %}{% url 'megaminx' %}{% else %}{% url 'pyraminx' %}{% endif %}" data-cube="{{ xp.tipo }}">
 <div class="xp-card-top"><span class="cube-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><strong>{{ xp.get_tipo_display }}</strong><span class="xp-level">NV. <b>{{ xp.nivel }}</b> / 30</span></div>
-<div class="xp-track" role="progressbar" aria-label="Progreso de {{ xp.get_tipo_display }}" aria-valuenow="{{ xp.porcentaje }}" aria-valuemin="0" aria-valuemax="100"><div class="xp-fill" data-progress="{{ xp.porcentaje }}"></div></div><div class="xp-caption"><span>{{ xp.experiencia }} XP</span><span>{% if xp.nivel == 30 %}Nivel máximo{% else %}Faltan {{ xp.faltante }} XP{% endif %}</span></div>{% if xp.nivel == 30 %}<span class="master-rubik">★ Maestro Rubik</span>{% else %}<span class="xp-practice">Explorar progreso →</span>{% endif %}</a>
+<div class="xp-track" role="progressbar" aria-label="Progreso de {{ xp.get_tipo_display }}" aria-valuenow="{{ xp.porcentaje }}" aria-valuemin="0" aria-valuemax="100"><div class="xp-fill" data-progress="{{ xp.porcentaje }}"></div></div><div class="xp-caption"><span>{{ xp.experiencia }} XP</span><span>{% if xp.nivel == 30 %}Nivel máximo{% else %}Faltan {{ xp.faltante }} XP{% endif %}</span></div><span class="xp-practice">Explorar progreso →</span></a>
 {% endfor %}</div><div class="player-foot"><p>Cada cubo tiene su propio recorrido.</p><a class="player-edit" href="{% url 'perfil' %}">Personalizar perfil →</a></div></section>
 <section class="player-panel" id="panelAccount" role="tabpanel" aria-labelledby="tabAccount" hidden><div class="player-panel-title"><div><h3>Los datos de tu cuenta</h3><span>Tu nombre de jugador también es tu usuario de acceso.</span></div></div><dl class="player-data"><div><dt>Nombre</dt><dd>{{ perfil_jugador.nombre|default:"Sin completar" }} {{ perfil_jugador.apellido }}</dd></div><div><dt>Correo electrónico</dt><dd>{{ perfil_jugador.email|default:"Sin completar" }}</dd></div><div><dt>Sexo</dt><dd>{{ perfil_jugador.get_sexo_display }}</dd></div><div><dt>En easyRubik desde</dt><dd>{{ perfil_jugador.fecha_registro|date:"d M Y" }}</dd></div></dl><a class="player-edit" href="{% url 'perfil' %}">Editar mis datos →</a></section>
 </dialog>
@@ -1629,8 +1629,7 @@
   cards.forEach(c=>{if(c===card)c.setAttribute('aria-current','true');else c.removeAttribute('aria-current');});
   spot.hidden=false;
   document.getElementById('spotName').textContent=card.dataset.name;
-  document.getElementById('spotLevel').textContent=Number(card.dataset.level)===30?'★ Maestro Rubik · Nivel 30':'Nivel '+card.dataset.level+' de 30';
-  document.getElementById('spotLevel').classList.toggle('master-rubik',Number(card.dataset.level)===30);
+  document.getElementById('spotLevel').textContent='Nivel '+card.dataset.level+' de 30';
   document.getElementById('spotXP').textContent=card.dataset.xp+' XP · '+(Number(card.dataset.level)===30?'Nivel máximo':card.dataset.left+' XP para el siguiente nivel');
   document.getElementById('spotLink').href=card.href;
   spot.style.setProperty('--spot-color',getComputedStyle(card).getPropertyValue('--cube-accent'));

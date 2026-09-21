@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import IntegrityError, transaction
 from django.shortcuts import render, redirect
-from .experiencia import render_simulador
+
 from .models import Perfil, ExperienciaCubo
 
 
@@ -106,7 +106,7 @@ def home(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect("elegir_modo")
+        return redirect("selector")
 
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
@@ -120,7 +120,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect("elegir_modo")
+            return redirect("selector")
 
         return render(
             request,
@@ -137,7 +137,7 @@ def login_view(request):
 
 def registro_view(request):
     if request.user.is_authenticated:
-        return redirect("elegir_modo")
+        return redirect("selector")
 
     if request.method == "POST":
         # Conservamos los datos si hay un error.
@@ -242,7 +242,7 @@ def registro_view(request):
             )
 
         login(request, user)
-        return redirect("elegir_modo")
+        return redirect("selector")
 
     return render(
         request,
@@ -369,44 +369,32 @@ def selector(request):
 # =========================================================
 
 def simulador(request):
-    return render_simulador(request, "Home.html", "3x3")
+    return render(request, "Home.html")
 
 
 def cuatro_por_cuatro(request):
-    return render_simulador(request, "CuatroPorCuatro.html", "4x4")
+    return render(request, "CuatroPorCuatro.html")
 
 
 def desafio(request):
-    return render_simulador(request, "desafio.html", "3x3")
+    return render(request, "desafio.html")
 
 
 def cinco_por_cinco(request):
-    return render_simulador(request, "CincoPorCinco.html", "5x5")
+    return render(request, "CincoPorCinco.html")
 
 
 def megaminx(request):
-    return render_simulador(request, "Megaminx.html", "megaminx")
+    return render(request, "Megaminx.html")
 
 
 def pyraminx(request):
-    return render_simulador(request, "Pyraminx.html", "pyraminx")
+    return render(request, "Pyraminx.html")
 
 
 def mirror(request):
-    return render_simulador(request, "mirror.html", "mirror")
+    return render(request, "mirror.html")
 
 
 def seis_por_seis(request):
-    return render_simulador(request, "SeisPorSeis.html", "6x6")
-
-@login_required(login_url="login")
-def ElegirModo(request):
-    return render(request, "ElegirModo.html")
-
-@login_required(login_url="login")
-def aprender(request):
-    return render(request, "Aprender.html")
-
-@login_required(login_url="login")
-def curso_3x3(request):
-    return render(request, "Curso3x3.html")
+    return render(request, "SeisPorSeis.html")

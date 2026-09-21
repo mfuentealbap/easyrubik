@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EasyRubik - Simulador 4×4×4</title>
+
+    <style>
+*{box-sizing:border-box}
+:root{color-scheme:dark;--text:#f4f7fc;--muted:#929caf;--line:rgba(255,255,255,.10)}
+body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 0 0,rgba(53,111,185,.23),transparent 43%),radial-gradient(ellipse at 100% 40%,rgba(133,42,60,.18),transparent 42%),#090c11}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:49px 49px}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}a:focus-visible,button:focus-visible{outline:2px solid #75b5ff;outline-offset:4px}
+.topbar{border-bottom:1px solid rgba(255,255,255,.04)}.nav,.page{width:calc(100% - 64px);max-width:1360px;margin:auto}.nav{height:88px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:8px;font-size:19px;font-weight:850;letter-spacing:-.6px}.brand i{width:13px;height:13px;border-radius:4px;background:linear-gradient(135deg,#ff9782,#ffdb54 48%,#66bcff)}.brand span{color:#7bb8ff}.nav-back{color:#83bdff;border:1px solid #354969;border-radius:10px;padding:10px 14px;background:#141720;font-size:13px}
+.page{padding:28px 0 38px}.hero{margin-bottom:28px}.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid #253d5a;border-radius:30px;padding:6px 11px;color:#80baff;background:rgba(26,54,85,.2);font-size:11px;font-weight:700}.eyebrow:before{content:"";width:5px;height:5px;border-radius:50%;background:#58a3ff}
+.hero h1{font-size:clamp(40px,5vw,64px);line-height:1.08;letter-spacing:-3px;margin:14px 0 15px;font-weight:850}.hero h1 span{background:linear-gradient(110deg,#cee5ff,#4a97ff);background-clip:text;-webkit-background-clip:text;color:transparent}.hero p{max-width:700px;color:var(--muted);font-size:15px;line-height:1.8;margin:0}
+.simulator-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:stretch}
+.cube-section,.controls-panel{min-width:0;border:1px solid var(--line);border-radius:21px;background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.018));overflow:hidden}
+.viewer-head{padding:20px 22px;min-height:78px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.07)}.viewer-head h2{font-size:17px;margin:0 0 4px;letter-spacing:-.3px}.viewer-head p{font-size:11px;color:var(--muted);margin:0}.badge{font-size:10px;font-weight:700;color:#80baff;background:#131e2c;border:1px solid #253c5b;padding:6px 8px;border-radius:6px}
+.cube-card{width:100%;display:flex;align-items:center;justify-content:center}.cube-container{width:100%;max-width:560px;aspect-ratio:1/1;cursor:grab;touch-action:none}.cube-container:active{cursor:grabbing}.cube-container canvas{display:block;width:100%;height:100%}
+.cube-help{width:fit-content;max-width:calc(100% - 30px);margin:0 auto 18px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(9,12,17,.5);padding:7px 12px;font-size:11px;line-height:1.6;text-align:center;color:var(--muted)}.cube-help strong{color:#cbd5e1;font-weight:500}
+.controls-panel{padding:24px}.panel-title{margin-bottom:19px}.panel-title h2{font-size:17px;letter-spacing:-.3px;margin:0 0 6px}.panel-title p{font-size:12px;line-height:1.6;color:var(--muted);margin:0}
+button{border:1px solid var(--line);border-radius:9px;background:#202633;color:var(--text);font-size:12px;font-weight:700;padding:11px 6px}button:hover{background:#304665}button:disabled{opacity:.45;cursor:wait}.toggle-buttons{margin-bottom:18px}.toggle-buttons button{width:100%;text-align:left;padding:16px;border:1px solid #2b3c57;border-radius:14px;background:rgba(100,121,158,.10)}.hidden{display:none}#backupControls{margin-bottom:20px}#backupControls h2{font-size:12px;color:var(--muted);margin:0 0 10px}.move-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.move-buttons button{min-width:0}
+.special-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.special-buttons button{padding:13px 4px;font-size:11px;border-radius:11px}#scrambleBtn{background:linear-gradient(110deg,#80baff,#4b98ff);color:#061729;border:0}#solveBtn{background:linear-gradient(110deg,#48de8b,#21c46a);color:#062216;border:0}#resetBtn{background:rgba(255,255,255,.045)}.special-buttons button:hover{filter:brightness(1.1)}.back-selector{grid-column:1/-1;text-align:center;font-size:11px;color:var(--muted);padding:12px 0 2px}
+#status{margin-top:18px;border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:12px 14px;background:rgba(0,0,0,.1);font-size:12px;font-weight:600;line-height:1.6}#status:before{content:"ESTADO";display:block;margin-bottom:5px;font-size:9px;letter-spacing:1px;color:var(--muted);font-weight:500}.footer{margin-top:22px;text-align:center;color:var(--muted);font-size:11px}
+@media(max-width:1000px){.simulator-layout{grid-template-columns:minmax(0,1fr) 310px;gap:16px}.controls-panel{padding:18px}}
+@media(max-width:760px){.nav,.page{width:calc(100% - 32px)}.nav{height:72px}.simulator-layout{grid-template-columns:1fr}.hero h1{letter-spacing:-2px}.cube-container{max-width:480px}.nav-back{font-size:11px}.brand{font-size:17px}}
+
+.wide-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.wide-buttons button{min-width:0;padding:11px 5px}
+.move-section{margin-bottom:18px}.moves-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 9px}.central-label{margin-top:18px}
+.moves-menu{margin-top:2px}.moves-toggle{width:100%;min-height:64px;padding:12px 15px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:1px solid #2b3c57;border-radius:14px;background:rgba(100,121,158,.10)}.moves-toggle-content{display:block}.moves-toggle-title{display:block;font-size:13px;font-weight:600}.moves-toggle-subtitle{display:block;margin-top:4px;color:var(--muted);font-size:11px;font-weight:400;line-height:1.6}.moves-arrow{flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;border:1px solid #2b4765;border-radius:8px;color:#80baff;font-size:18px}.moves-toggle[aria-expanded="true"] .moves-arrow{transform:rotate(180deg)}
+.moves-panel{max-height:0;overflow:hidden;opacity:0;margin-top:0}.moves-panel.open{max-height:none;opacity:1;margin-top:14px}
+</style>
+</head>
+
+
+<body>
+<div class="topbar"><nav class="nav" aria-label="Navegación principal">
+<a class="brand" href="{% url 'selector' %}"><i aria-hidden="true"></i>easy <span>Rubik</span></a>
+<a class="nav-back" href="{% url 'selector' %}">← Volver al selector</a>
+</nav></div>
+
+<div class="page">
+
+
+    <header class="hero">
+<div class="eyebrow">Aprende. Practica. Resuelve.</div>
+<h1>Cubo <span>4×4×4</span></h1>
+<p>Practica los movimientos del cubo Rubik de forma interactiva. Usa los botones o interactúa directamente con el cubo para aprender paso a paso.</p>
+</header>
+
+
+    <div class="simulator-layout">
+
+
+        <!-- =====================================================
+             IZQUIERDA: CUBO
+        ====================================================== -->
+
+        <section class="cube-section">
+<div class="viewer-head"><div><h2>Simulador 4×4×4</h2><p>Interactúa con el cubo</p></div><span class="badge">4 × 4</span></div>
+
+            <div class="cube-card">
+
+                <div
+                    class="cube-container"
+                    id="cubeContainer">
+                </div>
+
+            </div>
+
+
+            <div class="cube-help">
+
+                <strong>
+                    Arrastra una cara
+                </strong>
+
+                para moverla.
+
+                <br>
+
+                Arrastra el espacio alrededor
+                para girar la vista.
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DERECHA: CONTROLES
+        ====================================================== -->
+
+        <section class="controls-panel">
+
+
+            <div class="panel-title">
+
+                <h2>
+                    Controles
+                </h2>
+
+                <p>
+                    Controla el cubo y practica tus movimientos.
+                </p>
+
+            </div>
+
+
+            <div class="moves">
+
+
+                <!-- =================================================
+                     BOTÓN ANTIGUO DE RESPALDO
+                ================================================== -->
+
+                <div class="toggle-buttons">
+
+                    <button
+                        onclick="toggleButtons()"
+                        id="toggleBtn">
+
+                        🎛️ Mostrar botones de respaldo
+
+                    </button>
+
+                </div>
+
+
+                <!-- =================================================
+                     MOVIMIENTOS
+                ================================================== -->
+
+                <div
+                    id="backupControls"
+                    class="hidden">
+
+
+                    <!-- =================================================
+                         SUBMENÚ PRINCIPAL
+                    ================================================== -->
+
+                    <div class="moves-menu">
+
+                        <button
+                            class="moves-toggle"
+                            id="movesToggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="movesPanel">
+
+                            <span class="moves-toggle-content">
+
+                                <span class="moves-toggle-title">
+                                    Mostrar movimientos
+                                </span>
+
+                                <span class="moves-toggle-subtitle">
+                                    Caras exteriores · Dos capas · Capas centrales
+                                </span>
+
+                            </span>
+
+                            <span class="moves-arrow">
+                                ⌄
+                            </span>
+
+                        </button>
+
+
+                        <div
+                            class="moves-panel"
+                            id="movesPanel">
+
+
+                            <!-- =================================================
+                                 CAPAS EXTERIORES
+                            ================================================== -->
+
+                            <div class="move-section">
+
+                                <div class="moves-label">
+                                    Movimientos exteriores
+                                </div>
+
+
+                                <div
+                                    class="move-buttons"
+                                    id="moveButtons">
+
+
+                                    <button data-move="R">
+                                        R
+                                    </button>
+
+                                    <button data-move="Rprime">
+                                        R'
+                                    </button>
+
+
+                                    <button data-move="L">
+                                        L
+                                    </button>
+
+                                    <button data-move="Lprime">
+                                        L'
+                                    </button>
+
+
+                                    <button data-move="U">
+                                        U
+                                    </button>
+
+                                    <button data-move="Uprime">
+                                        U'
+                                    </button>
+
+
+                                    <button data-move="D">
+                                        D
+                                    </button>
+
+                                    <button data-move="Dprime">
+                                        D'
+                                    </button>
+
+
+                                    <button data-move="F">
+                                        F
+                                    </button>
+
+                                    <button data-move="Fprime">
+                                        F'
+                                    </button>
+
+
+                                    <button data-move="B">
+                                        B
+                                    </button>
+
+                                    <button data-move="Bprime">
+                                        B'
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================================
+                                 MOVIMIENTOS DE DOS CAPAS
+                            ================================================== -->
+
+                            <div class="move-section">
+
+                                <div class="moves-label">
+                                    Movimientos de dos capas
+                                </div>
+
+
+                                <div
+                                    class="wide-buttons"
+                                    id="wideButtons">
+
+
+                                    <button data-move="Rw">
+                                        Rw
+                                    </button>
+
+                                    <button data-move="RwPrime">
+                                        Rw'
+                                    </button>
+
+
+                                    <button data-move="Lw">
+                                        Lw
+                                    </button>
+
+                                    <button data-move="LwPrime">
+                                        Lw'
+                                    </button>
+
+
+                                    <button data-move="Uw">
+                                        Uw
+                                    </button>
+
+                                    <button data-move="UwPrime">
+                                        Uw'
+                                    </button>
+
+
+                                    <button data-move="Dw">
+                                        Dw
+                                    </button>
+
+                                    <button data-move="DwPrime">
+                                        Dw'
+                                    </button>
+
+
+                                    <button data-move="Fw">
+                                        Fw
+                                    </button>
+
+                                    <button data-move="FwPrime">
+                                        Fw'
+                                    </button>
+
+
+                                    <button data-move="Bw">
+                                        Bw
+                                    </button>
+
+                                    <button data-move="BwPrime">
+                                        Bw'
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================================
+                                 CAPAS CENTRALES
+                            ================================================== -->
+
+                            <div class="move-section">
+
+                                <div class="moves-label central-label">
+                                    Capas centrales del 4×4
+                                </div>
+
+
+                                <div
+                                    class="wide-buttons"
+                                    id="centralButtons">
+
+
+                                    <button data-move="Mx1">
+                                        Mx1
+                                    </button>
+
+                                    <button data-move="Mx1Prime">
+                                        Mx1'
+                                    </button>
+
+
+                                    <button data-move="Mx2">
+                                        Mx2
+                                    </button>
+
+                                    <button data-move="Mx2Prime">
+                                        Mx2'
+                                    </button>
+
+
+                                    <button data-move="My1">
+                                        My1
+                                    </button>
+
+                                    <button data-move="My1Prime">
+                                        My1'
+                                    </button>
+
+
+                                    <button data-move="My2">
+                                        My2
+                                    </button>
+
+                                    <button data-move="My2Prime">
+                                        My2'
+                                    </button>
+
+
+                                    <button data-move="Mz1">
+                                        Mz1
+                                    </button>
+
+                                    <button data-move="Mz1Prime">
+                                        Mz1'
+                                    </button>
+
+
+                                    <button data-move="Mz2">
+                                        Mz2
+                                    </button>
+
+                                    <button data-move="Mz2Prime">
+                                        Mz2'
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     BOTONES ESPECIALES
+                ================================================== -->
+
+                <div class="special-buttons">
+
+
+                    <button id="scrambleBtn">
+                        Mezclar
+                    </button>
+
+
+                    <button id="solveBtn">
+                        🔄 Resolver
+                    </button>
+
+
+                    <button id="resetBtn">
+                        ↻ Reiniciar
+                    </button>
+
+
+                    <a
+                        href="{% url 'selector' %}"
+                        class="back-selector">
+
+                        ← Volver al selector
+
+                    </a>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     ESTADO
+                ================================================== -->
+
+                <div id="status" role="status" aria-live="polite">
+                    ✅ Cubo resuelto
+                </div>
+
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <div class="footer">
+        easyRubik · Aprende jugando 🧩
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     THREE.JS
+============================================================ -->
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+
+<script>
+
+
+/* =========================================================
+   CHEQUEO DE SEGURIDAD
+========================================================= */
+
+if (
+    typeof THREE === "undefined"
+) {
+
+    document.getElementById(
+        "cubeContainer"
+    ).innerHTML =
+        '<p style="color:#f87171;padding:20px;text-align:center;">' +
+        '⚠️ No se pudo cargar Three.js.' +
+        '</p>';
+
+    throw new Error(
+        "Three.js no se cargó correctamente."
+    );
+}
+
+
+/* =========================================================
+   ESCENA
+========================================================= */
+
+const container =
+    document.getElementById(
+        "cubeContainer"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+
+const scene =
+    new THREE.Scene();
+
+
+const camera =
+    new THREE.PerspectiveCamera(
+        45,
+        1,
+        0.1,
+        100
+    );
+
+
+camera.position.set(
+    5.2,
+    5,
+    7.5
+);
+
+
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true
+    });
+
+
+container.appendChild(
+    renderer.domElement
+);
+
+
+function resizeRenderer() {
+
+    const size =
+        container.clientWidth;
+
+    renderer.setSize(
+        size,
+        size
+    );
+
+    camera.aspect = 1;
+
+    camera.updateProjectionMatrix();
+}
+
+
+resizeRenderer();
+
+
+window.addEventListener(
+    "resize",
+    resizeRenderer
+);
+
+
+/* =========================================================
+   ORBIT CONTROLS
+========================================================= */
+
+const controls =
+    new THREE.OrbitControls(
+        camera,
+        renderer.domElement
+    );
+
+
+controls.enablePan = false;
+
+controls.minDistance = 6;
+
+controls.maxDistance = 13;
+
+
+/* =========================================================
+   LUCES
+========================================================= */
+
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        0.75
+    )
+);
+
+
+const dirLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        0.55
+    );
+
+
+dirLight.position.set(
+    7,
+    10,
+    7
+);
+
+
+scene.add(
+    dirLight
+);
+
+
+/* =========================================================
+   COLORES
+========================================================= */
+
+const COLOR_HEX = {
+
+    U: 0xf8fafc,
+
+    D: 0xfacc15,
+
+    F: 0x22c55e,
+
+    B: 0x3b82f6,
+
+    R: 0xef4444,
+
+    L: 0xf97316
+
+};
+
+
+const BLACK = 0x0a0a0a;
+
+
+/* =========================================================
+   CONFIGURACIÓN DEL 4×4
+========================================================= */
+
+const SPACING = 1.02;
+
+const SIZE = 0.93;
+
+const POSITIONS = [
+    -1.5,
+    -0.5,
+     0.5,
+     1.5
+];
+
+
+let cubies = [];
+
+let cubeGroupObjects = [];
+
+
+/* =========================================================
+   CONSTRUIR CUBO 4×4×4
+========================================================= */
+
+function buildCube() {
+
+    cubeGroupObjects.forEach(
+        obj => scene.remove(obj)
+    );
+
+    cubeGroupObjects = [];
+
+    cubies = [];
+
+
+    for (
+        let xi = 0;
+        xi < 4;
+        xi++
+    ) {
+
+        for (
+            let yi = 0;
+            yi < 4;
+            yi++
+        ) {
+
+            for (
+                let zi = 0;
+                zi < 4;
+                zi++
+            ) {
+
+                const x =
+                    POSITIONS[xi];
+
+                const y =
+                    POSITIONS[yi];
+
+                const z =
+                    POSITIONS[zi];
+
+
+                const materials = [
+
+                    /* RIGHT */
+
+                    new THREE.MeshLambertMaterial({
+                        color:
+                            x === 1.5
+                                ? COLOR_HEX.R
+                                : BLACK
+                    }),
+
+
+                    /* LEFT */
+
+                    new THREE.MeshLambertMaterial({
+                        color:
+                            x === -1.5
+                                ? COLOR_HEX.L
+                                : BLACK
+                    }),
+
+
+                    /* UP */
+
+                    new THREE.MeshLambertMaterial({
+                        color:
+                            y === 1.5
+                                ? COLOR_HEX.U
+                                : BLACK
+                    }),
+
+
+                    /* DOWN */
+
+                    new THREE.MeshLambertMaterial({
+                        color:
+                            y === -1.5
+                                ? COLOR_HEX.D
+                                : BLACK
+                    }),
+
+
+                    /* FRONT */
+
+                    new THREE.MeshLambertMaterial({
+                        color:
+                            z === 1.5
+                                ? COLOR_HEX.F
+                                : BLACK
+                    }),
+
+
+                    /* BACK */
+
+                    new THREE.MeshLambertMaterial({
+                        color:
+                            z === -1.5
+                                ? COLOR_HEX.B
+                                : BLACK
+                    })
+
+                ];
+
+
+                const geometry =
+                    new THREE.BoxGeometry(
+                        SIZE,
+                        SIZE,
+                        SIZE
+                    );
+
+
+                const edges =
+                    new THREE.EdgesGeometry(
+                        geometry
+                    );
+
+
+                const line =
+                    new THREE.LineSegments(
+                        edges,
+                        new THREE.LineBasicMaterial({
+                            color: 0x000000
+                        })
+                    );
+
+
+                const mesh =
+                    new THREE.Mesh(
+                        geometry,
+                        materials
+                    );
+
+
+                mesh.position.set(
+                    x * SPACING,
+                    y * SPACING,
+                    z * SPACING
+                );
+
+
+                mesh.add(line);
+
+
+                scene.add(mesh);
+
+                cubeGroupObjects.push(mesh);
+
+
+                cubies.push({
+
+                    x,
+                    y,
+                    z,
+
+                    mesh
+
+                });
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   MOVIMIENTOS
+========================================================= */
+
+const MOVES = {
+
+
+    /* =====================================================
+       CAPAS EXTERIORES
+    ===================================================== */
+
+    R: {
+        axis: "x",
+        layers: [1.5],
+        direction: 1
+    },
+
+    Rprime: {
+        axis: "x",
+        layers: [1.5],
+        direction: -1
+    },
+
+    L: {
+        axis: "x",
+        layers: [-1.5],
+        direction: -1
+    },
+
+    Lprime: {
+        axis: "x",
+        layers: [-1.5],
+        direction: 1
+    },
+
+    U: {
+        axis: "y",
+        layers: [1.5],
+        direction: 1
+    },
+
+    Uprime: {
+        axis: "y",
+        layers: [1.5],
+        direction: -1
+    },
+
+    D: {
+        axis: "y",
+        layers: [-1.5],
+        direction: -1
+    },
+
+    Dprime: {
+        axis: "y",
+        layers: [-1.5],
+        direction: 1
+    },
+
+    F: {
+        axis: "z",
+        layers: [1.5],
+        direction: -1
+    },
+
+    Fprime: {
+        axis: "z",
+        layers: [1.5],
+        direction: 1
+    },
+
+    B: {
+        axis: "z",
+        layers: [-1.5],
+        direction: 1
+    },
+
+    Bprime: {
+        axis: "z",
+        layers: [-1.5],
+        direction: -1
+    },
+
+
+    /* =====================================================
+       MOVIMIENTOS DE DOS CAPAS
+    ===================================================== */
+
+    Rw: {
+        axis: "x",
+        layers: [0.5, 1.5],
+        direction: 1
+    },
+
+    RwPrime: {
+        axis: "x",
+        layers: [0.5, 1.5],
+        direction: -1
+    },
+
+    Lw: {
+        axis: "x",
+        layers: [-1.5, -0.5],
+        direction: -1
+    },
+
+    LwPrime: {
+        axis: "x",
+        layers: [-1.5, -0.5],
+        direction: 1
+    },
+
+    Uw: {
+        axis: "y",
+        layers: [0.5, 1.5],
+        direction: 1
+    },
+
+    UwPrime: {
+        axis: "y",
+        layers: [0.5, 1.5],
+        direction: -1
+    },
+
+    Dw: {
+        axis: "y",
+        layers: [-1.5, -0.5],
+        direction: -1
+    },
+
+    DwPrime: {
+        axis: "y",
+        layers: [-1.5, -0.5],
+        direction: 1
+    },
+
+    Fw: {
+        axis: "z",
+        layers: [0.5, 1.5],
+        direction: -1
+    },
+
+    FwPrime: {
+        axis: "z",
+        layers: [0.5, 1.5],
+        direction: 1
+    },
+
+    Bw: {
+        axis: "z",
+        layers: [-1.5, -0.5],
+        direction: 1
+    },
+
+    BwPrime: {
+        axis: "z",
+        layers: [-1.5, -0.5],
+        direction: -1
+    },
+
+
+    /* =====================================================
+       CAPAS CENTRALES DEL 4×4
+    ===================================================== */
+
+    Mx1: {
+        axis: "x",
+        layers: [-0.5],
+        direction: 1
+    },
+
+    Mx1Prime: {
+        axis: "x",
+        layers: [-0.5],
+        direction: -1
+    },
+
+    Mx2: {
+        axis: "x",
+        layers: [0.5],
+        direction: 1
+    },
+
+    Mx2Prime: {
+        axis: "x",
+        layers: [0.5],
+        direction: -1
+    },
+
+    My1: {
+        axis: "y",
+        layers: [-0.5],
+        direction: 1
+    },
+
+    My1Prime: {
+        axis: "y",
+        layers: [-0.5],
+        direction: -1
+    },
+
+    My2: {
+        axis: "y",
+        layers: [0.5],
+        direction: 1
+    },
+
+    My2Prime: {
+        axis: "y",
+        layers: [0.5],
+        direction: -1
+    },
+
+    Mz1: {
+        axis: "z",
+        layers: [-0.5],
+        direction: 1
+    },
+
+    Mz1Prime: {
+        axis: "z",
+        layers: [-0.5],
+        direction: -1
+    },
+
+    Mz2: {
+        axis: "z",
+        layers: [0.5],
+        direction: 1
+    },
+
+    Mz2Prime: {
+        axis: "z",
+        layers: [0.5],
+        direction: -1
+    }
+
+};
+
+
+/* =========================================================
+   INVERSOS
+========================================================= */
+
+const INVERSE = {
+
+    R: "Rprime",
+    Rprime: "R",
+
+    L: "Lprime",
+    Lprime: "L",
+
+    U: "Uprime",
+    Uprime: "U",
+
+    D: "Dprime",
+    Dprime: "D",
+
+    F: "Fprime",
+    Fprime: "F",
+
+    B: "Bprime",
+    Bprime: "B",
+
+
+    Rw: "RwPrime",
+    RwPrime: "Rw",
+
+    Lw: "LwPrime",
+    LwPrime: "Lw",
+
+    Uw: "UwPrime",
+    UwPrime: "Uw",
+
+    Dw: "DwPrime",
+    DwPrime: "Dw",
+
+    Fw: "FwPrime",
+    FwPrime: "Fw",
+
+    Bw: "BwPrime",
+    BwPrime: "Bw",
+
+
+    /* CAPAS CENTRALES X */
+
+    Mx1: "Mx1Prime",
+    Mx1Prime: "Mx1",
+
+    Mx2: "Mx2Prime",
+    Mx2Prime: "Mx2",
+
+
+    /* CAPAS CENTRALES Y */
+
+    My1: "My1Prime",
+    My1Prime: "My1",
+
+    My2: "My2Prime",
+    My2Prime: "My2",
+
+
+    /* CAPAS CENTRALES Z */
+
+    Mz1: "Mz1Prime",
+    Mz1Prime: "Mz1",
+
+    Mz2: "Mz2Prime",
+    Mz2Prime: "Mz2"
+
+};
+
+
+/* =========================================================
+   EJES
+========================================================= */
+
+const AXIS_VECTORS = {
+
+    x:
+        new THREE.Vector3(
+            1,
+            0,
+            0
+        ),
+
+    y:
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+
+    z:
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        )
+
+};
+
+
+/* =========================================================
+   FORMATEAR MOVIMIENTO
+========================================================= */
+
+function formatMove(move) {
+
+    return move.replace(
+        "Prime",
+        "'"
+    );
+
+}
+
+
+/* =========================================================
+   GIRAR CAPA
+========================================================= */
+
+function rotateLayer(
+    axis,
+    layers,
+    direction
+) {
+
+    return new Promise(resolve => {
+
+        const group =
+            new THREE.Group();
+
+        scene.add(group);
+
+
+        const selected =
+            cubies.filter(
+                c =>
+                    layers.some(
+                        layer =>
+                            Math.abs(
+                                c[axis] - layer
+                            ) < 0.01
+                    )
+            );
+
+
+        selected.forEach(
+            c =>
+                group.attach(c.mesh)
+        );
+
+
+        const axisVec =
+            AXIS_VECTORS[axis];
+
+
+        const targetAngle =
+            direction *
+            (Math.PI / 2);
+
+
+        const duration = 220;
+
+        const start =
+            performance.now();
+
+
+        function step() {
+
+            const now =
+                performance.now();
+
+
+            const t =
+                Math.min(
+                    1,
+                    (now - start) /
+                    duration
+                );
+
+
+            group.quaternion.setFromAxisAngle(
+                axisVec,
+                targetAngle * t
+            );
+
+
+            if (t < 1) {
+
+                requestAnimationFrame(
+                    step
+                );
+
+            } else {
+
+                selected.forEach(c => {
+
+                    scene.attach(
+                        c.mesh
+                    );
+
+
+                    c.mesh.position.set(
+
+                        Math.round(
+                            c.mesh.position.x /
+                            SPACING * 2
+                        ) / 2 * SPACING,
+
+                        Math.round(
+                            c.mesh.position.y /
+                            SPACING * 2
+                        ) / 2 * SPACING,
+
+                        Math.round(
+                            c.mesh.position.z /
+                            SPACING * 2
+                        ) / 2 * SPACING
+
+                    );
+
+
+                    c.x =
+                        Math.round(
+                            c.mesh.position.x /
+                            SPACING * 2
+                        ) / 2;
+
+
+                    c.y =
+                        Math.round(
+                            c.mesh.position.y /
+                            SPACING * 2
+                        ) / 2;
+
+
+                    c.z =
+                        Math.round(
+                            c.mesh.position.z /
+                            SPACING * 2
+                        ) / 2;
+
+                });
+
+
+                scene.remove(group);
+
+                resolve();
+
+            }
+
+        }
+
+
+        requestAnimationFrame(
+            step
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   HISTORIAL
+========================================================= */
+
+let moveHistory = [];
+
+let isBusy = false;
+
+
+/* =========================================================
+   HACER MOVIMIENTO
+========================================================= */
+
+async function performMove(
+    moveName,
+    recordHistory = true
+) {
+
+    const move =
+        MOVES[moveName];
+
+
+    if (!move)
+        return;
+
+
+    status.textContent =
+        "Movimiento: " +
+        formatMove(moveName);
+
+
+    await rotateLayer(
+        move.axis,
+        move.layers,
+        move.direction
+    );
+
+
+    if (recordHistory) {
+
+        moveHistory.push(
+            moveName
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   HACER MOVIMIENTO
+========================================================= */
+
+async function makeMove(
+    moveName,
+    recordHistory = true
+) {
+
+    if (isBusy)
+        return;
+
+
+    isBusy = true;
+
+    setBusy(true);
+
+
+    await performMove(
+        moveName,
+        recordHistory
+    );
+
+
+    isBusy = false;
+
+    setBusy(false);
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+const scrambleBtn =
+    document.getElementById(
+        "scrambleBtn"
+    );
+
+
+const solveBtn =
+    document.getElementById(
+        "solveBtn"
+    );
+
+
+const resetBtn =
+    document.getElementById(
+        "resetBtn"
+    );
+
+
+const moveButtons =
+    document.getElementById(
+        "moveButtons"
+    );
+
+
+const wideButtons =
+    document.getElementById(
+        "wideButtons"
+    );
+
+
+const centralButtons =
+    document.getElementById(
+        "centralButtons"
+    );
+
+
+const backupControls =
+    document.getElementById(
+        "backupControls"
+    );
+
+
+const toggleBtn =
+    document.getElementById(
+        "toggleBtn"
+    );
+
+
+/* =========================================================
+   NUEVO SUBMENÚ
+========================================================= */
+
+const movesToggle =
+    document.getElementById(
+        "movesToggle"
+    );
+
+
+const movesPanel =
+    document.getElementById(
+        "movesPanel"
+    );
+
+
+movesToggle.addEventListener(
+    "click",
+    () => {
+
+        const isOpen =
+            movesPanel.classList.toggle(
+                "open"
+            );
+
+
+        movesToggle.setAttribute(
+            "aria-expanded",
+            isOpen
+                ? "true"
+                : "false"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   ESTADO OCUPADO
+========================================================= */
+
+function setBusy(busy) {
+
+    scrambleBtn.disabled =
+        busy;
+
+    solveBtn.disabled =
+        busy;
+
+    resetBtn.disabled =
+        busy;
+
+
+    moveButtons
+        .querySelectorAll("button")
+        .forEach(
+            b =>
+                b.disabled = busy
+        );
+
+
+    wideButtons
+        .querySelectorAll("button")
+        .forEach(
+            b =>
+                b.disabled = busy
+        );
+
+
+    centralButtons
+        .querySelectorAll("button")
+        .forEach(
+            b =>
+                b.disabled = busy
+        );
+
+}
+
+
+/* =========================================================
+   BOTONES EXTERIORES
+========================================================= */
+
+moveButtons.addEventListener(
+    "click",
+    event => {
+
+        const btn =
+            event.target.closest(
+                "button"
+            );
+
+
+        if (!btn || isBusy)
+            return;
+
+
+        makeMove(
+            btn.dataset.move,
+            true
+        );
+
+    }
+);
+
+
+/* =========================================================
+   BOTONES WIDE
+========================================================= */
+
+wideButtons.addEventListener(
+    "click",
+    event => {
+
+        const btn =
+            event.target.closest(
+                "button"
+            );
+
+
+        if (!btn || isBusy)
+            return;
+
+
+        makeMove(
+            btn.dataset.move,
+            true
+        );
+
+    }
+);
+
+
+/* =========================================================
+   BOTONES CENTRALES
+========================================================= */
+
+centralButtons.addEventListener(
+    "click",
+    event => {
+
+        const btn =
+            event.target.closest(
+                "button"
+            );
+
+
+        if (!btn || isBusy)
+            return;
+
+
+        makeMove(
+            btn.dataset.move,
+            true
+        );
+
+    }
+);
+
+
+/* =========================================================
+   MOSTRAR / OCULTAR BOTONES DE RESPALDO
+========================================================= */
+
+function toggleButtons() {
+
+    backupControls.classList.toggle(
+        "hidden"
+    );
+
+
+    toggleBtn.textContent =
+        backupControls.classList.contains(
+            "hidden"
+        )
+
+            ? "🎛️ Mostrar botones de respaldo"
+
+            : "🎛️ Ocultar botones de respaldo";
+
+}
+
+
+/* =========================================================
+   MEZCLAR
+========================================================= */
+
+async function scramble() {
+
+    if (isBusy)
+        return;
+
+
+    isBusy = true;
+
+    setBusy(true);
+
+
+    status.textContent =
+        "🔀 Mezclando...";
+
+
+    const possibleMoves =
+        Object.keys(MOVES);
+
+
+    for (
+        let i = 0;
+        i < 30;
+        i++
+    ) {
+
+        const randomMove =
+            possibleMoves[
+                Math.floor(
+                    Math.random() *
+                    possibleMoves.length
+                )
+            ];
+
+
+        await performMove(
+            randomMove,
+            true
+        );
+
+    }
+
+
+    status.textContent =
+        "🌀 Cubo mezclado — prueba Resolver";
+
+
+    isBusy = false;
+
+    setBusy(false);
+
+}
+
+
+/* =========================================================
+   RESOLVER
+========================================================= */
+
+async function solveCube() {
+
+    if (isBusy)
+        return;
+
+
+    if (
+        moveHistory.length === 0
+    ) {
+
+        status.textContent =
+            "El cubo ya está resuelto";
+
+        return;
+
+    }
+
+
+    isBusy = true;
+
+    setBusy(true);
+
+
+    status.textContent =
+        "🔄 Resolviendo...";
+
+
+    while (
+        moveHistory.length > 0
+    ) {
+
+        const last =
+            moveHistory.pop();
+
+
+        await performMove(
+            INVERSE[last],
+            false
+        );
+
+    }
+
+
+    status.textContent =
+        "✅ Cubo resuelto";
+
+
+    isBusy = false;
+
+    setBusy(false);
+
+}
+
+
+/* =========================================================
+   REINICIAR
+========================================================= */
+
+function resetCube() {
+
+    if (isBusy)
+        return;
+
+
+    buildCube();
+
+
+    moveHistory = [];
+
+
+    status.textContent =
+        "✅ Cubo resuelto";
+
+}
+
+
+scrambleBtn.addEventListener(
+    "click",
+    scramble
+);
+
+
+solveBtn.addEventListener(
+    "click",
+    solveCube
+);
+
+
+resetBtn.addEventListener(
+    "click",
+    resetCube
+);
+
+
+/* =========================================================
+   GESTOS
+========================================================= */
+
+const raycaster =
+    new THREE.Raycaster();
+
+
+const pointer =
+    new THREE.Vector2();
+
+
+const worldAxes = {
+
+    x:
+        new THREE.Vector3(
+            1,
+            0,
+            0
+        ),
+
+    y:
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+
+    z:
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        )
+
+};
+
+
+let gestureActive = false;
+
+let gestureHit = null;
+
+let gestureStartX = 0;
+
+let gestureStartY = 0;
+
+
+/* =========================================================
+   DETECTAR CUBITO
+========================================================= */
+
+function getFaceHit(event) {
+
+    const rect =
+        renderer.domElement
+        .getBoundingClientRect();
+
+
+    pointer.x =
+        (
+            (event.clientX - rect.left)
+            /
+            rect.width
+        ) * 2 - 1;
+
+
+    pointer.y =
+        -(
+            (event.clientY - rect.top)
+            /
+            rect.height
+        ) * 2 + 1;
+
+
+    raycaster.setFromCamera(
+        pointer,
+        camera
+    );
+
+
+    const meshes =
+        cubies.map(
+            c =>
+                c.mesh
+        );
+
+
+    const hits =
+        raycaster.intersectObjects(
+            meshes
+        );
+
+
+    return hits.length
+        ? hits[0]
+        : null;
+
+}
+
+
+/* =========================================================
+   PASAR A PIXELES
+========================================================= */
+
+function toScreenPx(
+    worldPoint
+) {
+
+    const rect =
+        renderer.domElement
+        .getBoundingClientRect();
+
+
+    const v =
+        worldPoint
+        .clone()
+        .project(camera);
+
+
+    return new THREE.Vector2(
+
+        (v.x * 0.5 + 0.5)
+        *
+        rect.width,
+
+        (-(v.y * 0.5) + 0.5)
+        *
+        rect.height
+
+    );
+
+}
+
+
+/* =========================================================
+   DETERMINAR MOVIMIENTO
+========================================================= */
+
+function determineMove(
+    hit,
+    dx,
+    dy
+) {
+
+    const worldNormal =
+        hit.face.normal
+            .clone()
+            .transformDirection(
+                hit.object.matrixWorld
+            )
+            .normalize();
+
+
+    let normalAxisKey = "x";
+
+
+    let maxComp =
+        Math.abs(
+            worldNormal.x
+        );
+
+
+    if (
+        Math.abs(worldNormal.y)
+        > maxComp
+    ) {
+
+        normalAxisKey = "y";
+
+        maxComp =
+            Math.abs(
+                worldNormal.y
+            );
+
+    }
+
+
+    if (
+        Math.abs(worldNormal.z)
+        > maxComp
+    ) {
+
+        normalAxisKey = "z";
+
+        maxComp =
+            Math.abs(
+                worldNormal.z
+            );
+
+    }
+
+
+    const candidateAxes =
+        ["x","y","z"]
+        .filter(
+            k =>
+                k !== normalAxisKey
+        );
+
+
+    const cubieObj =
+        cubies.find(
+            c =>
+                c.mesh === hit.object
+        );
+
+
+    if (!cubieObj)
+        return null;
+
+
+    const origin =
+        hit.point.clone();
+
+
+    const originPx =
+        toScreenPx(
+            origin
+        );
+
+
+    const dragVec =
+        new THREE.Vector2(
+            dx,
+            dy
+        );
+
+
+    if (
+        dragVec.lengthSq()
+        < 1e-6
+    )
+        return null;
+
+
+    dragVec.normalize();
+
+
+    const TEST_ANGLE = 0.2;
+
+
+    let best = null;
+
+
+    candidateAxes.forEach(
+        axisKey => {
+
+
+            let layer;
+
+
+            if (axisKey === "x") {
+
+                layer = cubieObj.x;
+
+            }
+
+
+            if (axisKey === "y") {
+
+                layer = cubieObj.y;
+
+            }
+
+
+            if (axisKey === "z") {
+
+                layer = cubieObj.z;
+
+            }
+
+
+            if (
+                layer === undefined
+            )
+                return;
+
+
+            [1,-1].forEach(
+                direction => {
+
+
+                    const q =
+                        new THREE.Quaternion()
+                        .setFromAxisAngle(
+
+                            worldAxes[
+                                axisKey
+                            ],
+
+                            TEST_ANGLE *
+                            direction
+
+                        );
+
+
+                    const testPoint =
+                        origin.clone()
+                        .applyQuaternion(q);
+
+
+                    const testPx =
+                        toScreenPx(
+                            testPoint
+                        );
+
+
+                    const screenDelta =
+                        new THREE.Vector2(
+
+                            testPx.x -
+                            originPx.x,
+
+                            testPx.y -
+                            originPx.y
+
+                        );
+
+
+                    if (
+                        screenDelta.lengthSq()
+                        < 1e-6
+                    )
+                        return;
+
+
+                    screenDelta.normalize();
+
+
+                    const score =
+                        dragVec.dot(
+                            screenDelta
+                        );
+
+
+                    if (
+                        !best ||
+                        score > best.score
+                    ) {
+
+                        best = {
+
+                            score,
+
+                            axisKey,
+
+                            layer,
+
+                            direction
+
+                        };
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    if (
+        !best ||
+        best.score < 0.35
+    ) {
+
+        return null;
+
+    }
+
+
+    return Object.keys(
+        MOVES
+    ).find(name => {
+
+        const m =
+            MOVES[name];
+
+
+        return (
+
+            m.axis ===
+            best.axisKey &&
+
+            m.layers.length === 1 &&
+
+            Math.abs(
+                m.layers[0] -
+                best.layer
+            ) < 0.01 &&
+
+            m.direction ===
+            best.direction
+
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   POINTER DOWN
+========================================================= */
+
+renderer.domElement.addEventListener(
+    "pointerdown",
+    event => {
+
+        if (isBusy)
+            return;
+
+
+        const hit =
+            getFaceHit(event);
+
+
+        if (
+            hit &&
+            hit.face
+        ) {
+
+            gestureHit = hit;
+
+
+            gestureStartX =
+                event.clientX;
+
+
+            gestureStartY =
+                event.clientY;
+
+
+            gestureActive = true;
+
+
+            controls.enabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   POINTER UP
+========================================================= */
+
+window.addEventListener(
+    "pointerup",
+    event => {
+
+        if (!gestureActive)
+            return;
+
+
+        gestureActive = false;
+
+
+        controls.enabled =
+            true;
+
+
+        const dx =
+            event.clientX -
+            gestureStartX;
+
+
+        const dy =
+            event.clientY -
+            gestureStartY;
+
+
+        const distance =
+            Math.hypot(
+                dx,
+                dy
+            );
+
+
+        if (
+            distance < 20 ||
+            isBusy
+        ) {
+
+            gestureHit = null;
+
+            return;
+
+        }
+
+
+        const move =
+            determineMove(
+                gestureHit,
+                dx,
+                dy
+            );
+
+
+        if (move) {
+
+            makeMove(
+                move,
+                true
+            );
+
+        } else {
+
+            status.textContent =
+                "🤔 No reconocí ese movimiento, inténtalo de nuevo";
+
+        }
+
+
+        gestureHit = null;
+
+    }
+);
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    controls.update();
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+/* =========================================================
+   INICIO
+========================================================= */
+
+buildCube();
+
+animate();
+
+
+</script>
+
+</body>
+</html>

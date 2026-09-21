@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -171,11 +169,6 @@ class ExperienciaCubo(models.Model):
         default=0,
     )
 
-    # Tiempo acumulado que todavía no alcanza para sumar un punto.
-    resto_practica_ms = models.PositiveIntegerField(
-        default=0,
-    )
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -229,35 +222,4 @@ class ExperienciaCubo(models.Model):
             f"{self.usuario.username} - "
             f"{self.get_tipo_display()} - "
             f"Nivel {self.nivel}"
-        )
-
-
-class SesionPractica(models.Model):
-    # Una sesión de experiencia vigente por usuario.
-    usuario = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="sesion_practica",
-    )
-
-    token = models.UUIDField(
-        default=uuid.uuid4,
-        editable=False,
-    )
-
-    tipo = models.CharField(
-        max_length=20,
-        choices=ExperienciaCubo.TIPOS,
-    )
-
-    ultimo_pulso = models.DateTimeField()
-
-    secuencia = models.PositiveIntegerField(
-        default=0,
-    )
-
-    def __str__(self):
-        return (
-            f"{self.usuario.username} - "
-            f"{self.get_tipo_display()}"
         )
