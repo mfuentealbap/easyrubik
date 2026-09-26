@@ -18,6 +18,7 @@ urlpatterns = [
     # Perfil y selector
     path("perfil/", views.perfil_view, name="perfil"),
     path("selector/", views.selector, name="selector"),
+    path("premium/", views.premium, name="premium"),
 
     # Experiencia por práctica
     path(

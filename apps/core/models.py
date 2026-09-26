@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Perfil(models.Model):
@@ -52,8 +53,6 @@ class Perfil(models.Model):
         default="cubo",
     )
 
-    # Conservamos estos campos y los datos existentes.
-    # La experiencia de cada cubo se guarda en ExperienciaCubo.
     puntaje_total = models.PositiveIntegerField(
         default=0,
     )
@@ -171,7 +170,6 @@ class ExperienciaCubo(models.Model):
         default=0,
     )
 
-    # Tiempo acumulado que todavía no alcanza para sumar un punto.
     resto_practica_ms = models.PositiveIntegerField(
         default=0,
     )
@@ -186,12 +184,10 @@ class ExperienciaCubo(models.Model):
 
     @staticmethod
     def umbral(nivel):
-        """Experiencia total necesaria para alcanzar un nivel."""
         return 50 * nivel * (nivel - 1)
 
     @property
     def nivel(self):
-        """Calcula el nivel actual, con un máximo de 30."""
         return max(
             numero
             for numero in range(1, 31)
@@ -200,7 +196,6 @@ class ExperienciaCubo(models.Model):
 
     @property
     def porcentaje(self):
-        """Progreso entre el nivel actual y el siguiente."""
         actual = self.nivel
 
         if actual == 30:
@@ -216,7 +211,6 @@ class ExperienciaCubo(models.Model):
 
     @property
     def faltante(self):
-        """Experiencia que falta para subir de nivel."""
         actual = self.nivel
 
         if actual == 30:
@@ -233,7 +227,6 @@ class ExperienciaCubo(models.Model):
 
 
 class SesionPractica(models.Model):
-    # Una sesión de experiencia vigente por usuario.
     usuario = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -261,3 +254,51 @@ class SesionPractica(models.Model):
             f"{self.usuario.username} - "
             f"{self.get_tipo_display()}"
         )
+
+
+class Suscripcion(models.Model):
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="suscripcion",
+    )
+
+    premium = models.BooleanField(
+        default=False,
+    )
+
+    fecha_inicio = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    fecha_fin = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    proveedor = models.CharField(
+        max_length=30,
+        blank=True,
+        default="",
+    )
+
+    id_suscripcion_externa = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+    )
+
+    @property
+    def esta_activa(self):
+        if not self.premium:
+            return False
+
+        if self.fecha_fin and self.fecha_fin < timezone.now():
+            return False
+
+        return True
+
+    def __str__(self):
+        estado = "Premium" if self.esta_activa else "Gratis"
+        return f"{self.usuario.username} - {estado}"

@@ -3,33 +3,1631 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Elige tu camino · easyRubik</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-:root{--bg:#090b11;--text:#f8fafc;--muted:#98a4b8;--blue:#4f9cff;--line:#ffffff14}*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,system-ui,sans-serif;background:radial-gradient(ellipse at 0 0,#203b6055,transparent 55%),radial-gradient(ellipse at 100% 65%,#4f233533,transparent 55%),var(--bg)}body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(#ffffff04 1px,transparent 1px),linear-gradient(90deg,#ffffff04 1px,transparent 1px);background-size:48px 48px}.page{max-width:1160px;margin:auto;padding:0 28px;position:relative}nav{min-height:88px;display:flex;justify-content:space-between;align-items:center;gap:20px;border-bottom:1px solid var(--line)}a{color:inherit;text-decoration:none}.brand{display:flex;gap:9px;align-items:center;font:800 20px Sora,system-ui;letter-spacing:-.05em}.brand span{color:#78b5ff}.brand-icon{width:14px;height:14px;background:linear-gradient(135deg,#ff4d5a,#ffd43b 45%,#4f9cff);border-radius:4px}.back{font-size:12px;color:#a6b7cd;border:1px solid #35455e;border-radius:10px;padding:11px 15px}.hero{padding:55px 0 32px;max-width:750px}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#87beff;background:#589fff0c;border:1px solid #589fff30;border-radius:30px;padding:7px 11px;font-size:11px;font-weight:600}.eyebrow:before{content:"";width:6px;height:6px;background:#61a6ff;border-radius:50%;box-shadow:0 0 12px #61a6ff}.hello{color:#9cafc7;font-size:13px;margin:22px 0 9px;overflow-wrap:anywhere}.hero h1{font:800 clamp(32px,4.8vw,55px)/1.15 Sora,system-ui;letter-spacing:-.055em;margin:0 0 17px}.hero h1 span{color:#77b2ff}.hero p:last-child{color:var(--muted);max-width:590px;font-size:14px;line-height:1.8;margin:0}.modes{display:grid;grid-template-columns:1fr 1fr;gap:23px;margin-bottom:30px}.mode{--accent:#81b7ff;display:flex;flex-direction:column;position:relative;border:1px solid #ffffff19;border-radius:24px;padding:27px;background:linear-gradient(145deg,#172132b3,#10151eb3);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}.mode.learn{--accent:#a999ff;background:linear-gradient(145deg,#222039a3,#11141fb3)}.mode:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 20px 55px #0004}.mode-top{display:flex;justify-content:space-between;gap:10px;align-items:center;color:#9bb0cb;font-size:10px;letter-spacing:.12em;text-transform:uppercase}.tag{border:1px solid #ffffff16;background:#ffffff04;padding:6px 9px;border-radius:8px;letter-spacing:0;text-transform:none;color:var(--accent)}.art{height:160px;position:relative;display:flex;align-items:center;justify-content:center;margin:14px 0 18px;background:radial-gradient(ellipse,#579cff15,transparent 70%)}.cube{width:91px;height:91px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:5px;background:#090e18;border:1px solid #ffffff30;border-radius:8px;transform:rotate(-14deg) skewY(7deg);box-shadow:12px -12px 0 #283954,13px -13px 0 #4e688d,0 25px 30px #0005;transition:transform .4s}.cube i{background:#70adff;border-radius:2px;box-shadow:inset 0 2px #ffffff35}.cube i:nth-child(3n){background:#f28091}.cube i:nth-child(4n){background:#64d4b1}.mode:hover .cube{transform:rotate(2deg) skewY(-4deg)}.orbit-label{position:absolute;font-size:10px;color:#9bb5d8;border:1px solid #5c81b844;border-radius:9px;padding:7px 10px;background:#121d2a;right:6%;bottom:16px}.lesson-path{display:flex;align-items:center;gap:11px}.lesson-path:before{content:"";position:absolute;width:175px;height:2px;background:linear-gradient(90deg,#a999ff,#465271)}.step{position:relative;display:grid;place-items:center;width:48px;height:48px;border-radius:15px;border:1px solid #52607b;background:#1c2536;color:#8794aa;font-weight:700;box-shadow:0 8px 20px #0004}.step:first-child{background:#a999ff;color:#1a1137;border-color:#c2b7ff;transform:translateY(-19px)}.step:nth-child(2){border-color:#a999ff;color:#c6bcff}.step:last-child{transform:translateY(19px)}.step svg{width:19px;height:19px}.learn .art{background:radial-gradient(ellipse,#ab87ff15,transparent 70%)}.mode h2{font:700 clamp(22px,2.7vw,29px) Sora,system-ui;letter-spacing:-.04em;margin:0 0 12px}.description{font-size:13px;color:#a2afc3;line-height:1.8;margin:0 0 20px;min-height:70px}.features{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:25px}.features span{font-size:10px;color:#b5c4d9;background:#ffffff04;border:1px solid #ffffff0e;border-radius:7px;padding:7px 9px}.cta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 17px;background:var(--accent);color:#0c182b;border-radius:12px;font-size:12px;font-weight:700}.cta b{font-size:19px;font-weight:400}.note{font-size:11px;color:#8397b2;line-height:1.7;margin:14px 0 0}.foot{display:flex;gap:20px;justify-content:space-between;border-top:1px solid var(--line);padding:20px 0 30px;color:#75869e;font-size:11px;line-height:1.8}.mode:focus-visible,.back:focus-visible,.brand:focus-visible{outline:3px solid #a3cbff;outline-offset:5px}@media(max-width:720px){.modes{grid-template-columns:1fr}.hero{padding-top:34px}.page{padding-inline:18px}.mode{padding:23px}.description{min-height:0}.art{height:135px}.foot{flex-direction:column;gap:5px}}@media(prefers-reduced-motion:reduce){.mode,.cube{transition:none}.mode:hover{transform:none}}
+
+:root{
+    --bg:#070a11;
+    --text:#f8fafc;
+    --muted:#9aa8bd;
+
+    --blue:#4f9cff;
+    --cyan:#38d9ff;
+    --green:#45e6a8;
+
+    --purple:#9b7cff;
+    --pink:#ff6ba8;
+    --yellow:#ffd84d;
+
+    --line:#ffffff14;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+
+    color:var(--text);
+
+    font-family:
+        Inter,
+        system-ui,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 5% 10%,
+            rgba(40,128,255,.28),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 95% 70%,
+            rgba(255,65,140,.15),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 55% 100%,
+            rgba(140,70,255,.13),
+            transparent 40%
+        ),
+        #070a11;
+
+    overflow-x:hidden;
+}
+
+
+/* GRID */
+
+body::before{
+    content:"";
+
+    position:fixed;
+    inset:0;
+
+    pointer-events:none;
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.035) 1px,
+            transparent 1px
+        );
+
+    background-size:48px 48px;
+
+    mask-image:
+        radial-gradient(
+            circle at center,
+            black,
+            transparent 90%
+        );
+}
+
+
+/* GLOW */
+
+body::after{
+    content:"";
+
+    position:fixed;
+
+    width:500px;
+    height:500px;
+
+    border-radius:50%;
+
+    background:#4f9cff;
+
+    filter:blur(180px);
+
+    opacity:.06;
+
+    left:50%;
+    top:-320px;
+
+    transform:translateX(-50%);
+
+    pointer-events:none;
+}
+
+
+.page{
+    width:100%;
+    max-width:1160px;
+
+    margin:auto;
+
+    padding:0 28px;
+
+    position:relative;
+    z-index:1;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+nav{
+    min-height:88px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:20px;
+
+    border-bottom:1px solid var(--line);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+
+    gap:9px;
+
+    font:
+        800 20px
+        Sora,
+        system-ui;
+
+    letter-spacing:-.05em;
+}
+
+.brand span{
+    background:
+        linear-gradient(
+            90deg,
+            #58a6ff,
+            #6de4ff
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+}
+
+.brand-icon{
+    width:15px;
+    height:15px;
+
+    border-radius:4px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff4d5a,
+            #ffd43b 40%,
+            #44dc9f 67%,
+            #4f9cff
+        );
+
+    box-shadow:
+        0 0 16px
+        rgba(79,156,255,.45);
+}
+
+.nav-actions{
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+}
+
+.back{
+    font-size:12px;
+
+    color:#bfd2ed;
+
+    border:
+        1px solid
+        #40516c;
+
+    background:
+        rgba(255,255,255,.025);
+
+    border-radius:10px;
+
+    padding:11px 15px;
+
+    transition:
+        border .2s,
+        transform .2s,
+        background .2s;
+}
+
+.back:hover{
+    transform:translateY(-2px);
+
+    border-color:#62a6ff;
+
+    background:
+        rgba(79,156,255,.08);
+}
+
+
+/* =========================
+   BOTÓN HAZTE PREMIUM
+========================= */
+
+.premium-button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:7px;
+
+    padding:11px 15px;
+
+    border-radius:10px;
+
+    border:
+        1px solid
+        rgba(255,216,77,.40);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,216,77,.16),
+            rgba(255,174,77,.09)
+        );
+
+    color:#ffe28a;
+
+    font-size:12px;
+    font-weight:800;
+
+    box-shadow:
+        0 10px 30px
+        rgba(255,200,70,.08);
+
+    transition:.2s;
+}
+
+.premium-button:hover{
+    transform:translateY(-2px);
+
+    border-color:#ffd84d;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,216,77,.25),
+            rgba(255,174,77,.15)
+        );
+
+    box-shadow:
+        0 14px 34px
+        rgba(255,200,70,.16);
+}
+
+
+/* =========================
+   PREMIUM ACTIVO
+========================= */
+
+.premium-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:7px;
+
+    padding:11px 15px;
+
+    border-radius:10px;
+
+    border:
+        1px solid
+        rgba(255,215,80,.65);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,215,80,.24),
+            rgba(255,168,48,.12)
+        );
+
+    color:#ffd95a;
+
+    font-size:12px;
+    font-weight:900;
+
+    letter-spacing:.7px;
+
+    text-shadow:
+        0 0 12px
+        rgba(255,208,80,.30);
+
+    box-shadow:
+        0 0 22px
+        rgba(255,190,50,.12),
+        inset 0 1px
+        rgba(255,255,255,.08);
+
+    transition:
+        transform .2s,
+        border-color .2s,
+        background .2s,
+        box-shadow .2s;
+}
+
+.premium-status:hover{
+    transform:translateY(-2px);
+
+    border-color:#ffe27a;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,215,80,.32),
+            rgba(255,168,48,.18)
+        );
+
+    box-shadow:
+        0 12px 34px
+        rgba(255,190,50,.20);
+}
+
+.premium-status:focus-visible{
+    outline:
+        3px solid
+        #ffe27a;
+
+    outline-offset:5px;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    padding:55px 0 37px;
+
+    max-width:760px;
+}
+
+.eyebrow{
+    display:inline-flex;
+    align-items:center;
+
+    gap:8px;
+
+    color:#9fd1ff;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(79,156,255,.11),
+            rgba(55,216,255,.06)
+        );
+
+    border:
+        1px solid
+        rgba(85,165,255,.34);
+
+    border-radius:30px;
+
+    padding:7px 12px;
+
+    font-size:11px;
+    font-weight:600;
+}
+
+.eyebrow::before{
+    content:"";
+
+    width:6px;
+    height:6px;
+
+    background:#61c7ff;
+
+    border-radius:50%;
+
+    box-shadow:
+        0 0 14px
+        #61c7ff;
+}
+
+.hello{
+    color:#9cafc7;
+
+    font-size:13px;
+
+    margin:
+        22px
+        0
+        9px;
+}
+
+.hero h1{
+    font:
+        800 clamp(36px,4.8vw,58px)/1.12
+        Sora,
+        system-ui;
+
+    letter-spacing:-.055em;
+
+    margin:
+        0
+        0
+        19px;
+}
+
+.hero h1 span{
+    background:
+        linear-gradient(
+            90deg,
+            #58a6ff,
+            #61dcff,
+            #8d85ff,
+            #e184ff
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+}
+
+.hero p:last-child{
+    color:var(--muted);
+
+    max-width:610px;
+
+    font-size:14px;
+    line-height:1.8;
+
+    margin:0;
+}
+
+
+/* =========================
+   MODOS
+========================= */
+
+.modes{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:23px;
+
+    margin-bottom:30px;
+}
+
+.mode{
+    --accent:#65b3ff;
+    --accent2:#38e1cf;
+
+    display:flex;
+    flex-direction:column;
+
+    position:relative;
+
+    border:
+        1px solid
+        rgba(110,173,255,.25);
+
+    border-radius:24px;
+
+    padding:27px;
+
+    background:
+        radial-gradient(
+            circle at 30% 0%,
+            rgba(72,155,255,.18),
+            transparent 45%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(21,34,54,.97),
+            rgba(11,17,29,.96)
+        );
+
+    overflow:hidden;
+
+    isolation:isolate;
+
+    transition:
+        transform .3s ease,
+        border-color .3s ease,
+        box-shadow .3s ease;
+}
+
+.mode::before{
+    content:"";
+
+    position:absolute;
+
+    width:240px;
+    height:240px;
+
+    right:-130px;
+    top:-130px;
+
+    border-radius:50%;
+
+    background:
+        var(--accent);
+
+    filter:blur(90px);
+
+    opacity:.15;
+
+    z-index:-1;
+}
+
+.mode.learn{
+    --accent:#a38aff;
+    --accent2:#ff75af;
+
+    border-color:
+        rgba(175,125,255,.27);
+
+    background:
+        radial-gradient(
+            circle at 25% 0%,
+            rgba(145,87,255,.2),
+            transparent 48%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(34,28,59,.97),
+            rgba(13,16,29,.96)
+        );
+}
+
+.mode:not(.locked):hover{
+    transform:
+        translateY(-8px);
+
+    border-color:
+        var(--accent);
+
+    box-shadow:
+        0 30px 65px
+        rgba(0,0,0,.35);
+}
+
+.mode-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:10px;
+
+    color:#a7b9d0;
+
+    font-size:10px;
+
+    letter-spacing:.12em;
+
+    text-transform:uppercase;
+}
+
+.tag{
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--accent) 42%,
+            transparent
+        );
+
+    background:
+        color-mix(
+            in srgb,
+            var(--accent) 10%,
+            transparent
+        );
+
+    padding:7px 10px;
+
+    border-radius:8px;
+
+    letter-spacing:0;
+
+    text-transform:none;
+
+    color:
+        color-mix(
+            in srgb,
+            var(--accent) 85%,
+            white
+        );
+}
+
+
+/* =========================
+   VISUAL
+========================= */
+
+.art{
+    height:175px;
+
+    position:relative;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin:
+        14px
+        0
+        18px;
+
+    border-radius:18px;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(71,164,255,.2),
+            transparent 66%
+        );
+}
+
+.learn .art{
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(158,112,255,.22),
+            transparent 67%
+        );
+}
+
+
+/* CUBO */
+
+.cube{
+    width:96px;
+    height:96px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:4px;
+
+    padding:6px;
+
+    background:#070b12;
+
+    border:
+        1px solid
+        rgba(255,255,255,.3);
+
+    border-radius:9px;
+
+    transform:
+        rotate(-14deg)
+        skewY(7deg);
+
+    box-shadow:
+        12px -12px 0 #26384f,
+        13px -13px 0 #536d90,
+        0 25px 35px rgba(0,0,0,.55),
+        0 0 35px rgba(72,156,255,.18);
+
+    transition:.4s;
+}
+
+.cube i{
+    border-radius:3px;
+
+    background:#4f9cff;
+
+    box-shadow:
+        inset 0 2px
+        rgba(255,255,255,.35);
+}
+
+.cube i:nth-child(1){
+    background:#ff4057;
+}
+
+.cube i:nth-child(2){
+    background:#ffd43b;
+}
+
+.cube i:nth-child(3){
+    background:#45d99a;
+}
+
+.cube i:nth-child(4){
+    background:#5ca9ff;
+}
+
+.cube i:nth-child(5){
+    background:#fff;
+}
+
+.cube i:nth-child(6){
+    background:#ff8a3d;
+}
+
+.cube i:nth-child(7){
+    background:#45d99a;
+}
+
+.cube i:nth-child(8){
+    background:#5ca9ff;
+}
+
+.cube i:nth-child(9){
+    background:#ff4057;
+}
+
+.mode:not(.locked):hover .cube{
+    transform:
+        rotate(2deg)
+        skewY(-4deg)
+        scale(1.05);
+}
+
+.orbit-label{
+    position:absolute;
+
+    font-size:10px;
+
+    color:#c1dcff;
+
+    border:
+        1px solid
+        rgba(94,155,232,.34);
+
+    border-radius:9px;
+
+    padding:7px 10px;
+
+    background:
+        rgba(13,29,47,.85);
+
+    right:6%;
+    bottom:14px;
+
+    backdrop-filter:blur(10px);
+}
+
+
+/* =========================
+   LECCIONES
+========================= */
+
+.lesson-path{
+    display:flex;
+    align-items:center;
+
+    gap:16px;
+
+    position:relative;
+}
+
+.lesson-path::before{
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:3px;
+
+    left:-6px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #b08cff,
+            #d777ff,
+            #56627a
+        );
+}
+
+.step{
+    position:relative;
+
+    display:grid;
+    place-items:center;
+
+    width:52px;
+    height:52px;
+
+    border-radius:16px;
+
+    border:
+        1px solid
+        #5d6385;
+
+    background:#1a2234;
+
+    color:#929db1;
+
+    font-weight:700;
+
+    box-shadow:
+        0 10px 25px
+        rgba(0,0,0,.35);
+
+    z-index:2;
+}
+
+.step:first-child{
+    background:
+        linear-gradient(
+            135deg,
+            #a980ff,
+            #dc77ff
+        );
+
+    color:#1e1035;
+
+    border-color:#d5bbff;
+
+    transform:
+        translateY(-19px);
+}
+
+.step:nth-child(2){
+    border-color:#b18cff;
+
+    color:#d1c3ff;
+
+    background:
+        rgba(149,113,255,.12);
+}
+
+.step:last-child{
+    transform:
+        translateY(19px);
+}
+
+.step svg{
+    width:19px;
+    height:19px;
+}
+
+
+/* =========================
+   TEXTO
+========================= */
+
+.mode h2{
+    font:
+        700 clamp(22px,2.7vw,29px)
+        Sora,
+        system-ui;
+
+    letter-spacing:-.04em;
+
+    margin:
+        0
+        0
+        12px;
+}
+
+.description{
+    font-size:13px;
+
+    color:#a9b7ca;
+
+    line-height:1.8;
+
+    margin:
+        0
+        0
+        20px;
+
+    min-height:70px;
+}
+
+.features{
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-bottom:25px;
+}
+
+.features span{
+    font-size:10px;
+
+    color:#c4d1e4;
+
+    background:
+        rgba(255,255,255,.035);
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    border-radius:7px;
+
+    padding:7px 9px;
+}
+
+
+/* CTA */
+
+.cta{
+    margin-top:auto;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:12px;
+
+    padding:15px 18px;
+
+    background:
+        linear-gradient(
+            100deg,
+            var(--accent),
+            var(--accent2)
+        );
+
+    color:#071321;
+
+    border-radius:12px;
+
+    font-size:12px;
+    font-weight:800;
+
+    transition:.25s;
+}
+
+.cta b{
+    font-size:20px;
+
+    font-weight:400;
+}
+
+.note{
+    font-size:11px;
+
+    color:#8397b2;
+
+    line-height:1.7;
+
+    margin:
+        14px
+        0
+        0;
+}
+
+
+/* =========================
+   APRENDIZAJE PREMIUM BLOQUEADO
+========================= */
+
+.mode.learn.locked{
+    cursor:default;
+
+    border-color:
+        rgba(255,216,77,.30);
+}
+
+.mode.learn.locked .art,
+.mode.learn.locked .description,
+.mode.learn.locked .features{
+    opacity:.62;
+}
+
+.mode.learn.locked .tag{
+    color:#ffe28a;
+
+    border-color:
+        rgba(255,216,77,.38);
+
+    background:
+        rgba(255,216,77,.08);
+}
+
+.mode.learn.locked .cta{
+    background:
+        linear-gradient(
+            100deg,
+            #ffd84d,
+            #ffad4d
+        );
+
+    color:#271900;
+}
+
+.premium-note{
+    color:#d9c68d;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.foot{
+    display:flex;
+
+    gap:20px;
+
+    justify-content:space-between;
+
+    border-top:
+        1px solid
+        var(--line);
+
+    padding:
+        20px
+        0
+        30px;
+
+    color:#75869e;
+
+    font-size:11px;
+
+    line-height:1.8;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:720px){
+
+    .modes{
+        grid-template-columns:1fr;
+    }
+
+    .hero{
+        padding-top:34px;
+    }
+
+    .page{
+        padding-inline:18px;
+    }
+
+    .mode{
+        padding:23px;
+    }
+
+    .description{
+        min-height:0;
+    }
+
+    .art{
+        height:145px;
+    }
+
+    .foot{
+        flex-direction:column;
+        gap:5px;
+    }
+
+}
+
+@media(max-width:560px){
+
+    nav{
+        align-items:flex-start;
+
+        padding:
+            16px
+            0;
+    }
+
+    .nav-actions{
+        justify-content:flex-end;
+    }
+
+    .premium-button,
+    .premium-status,
+    .back{
+        padding:
+            9px
+            11px;
+
+        font-size:10px;
+    }
+
+}
+
 </style>
 </head>
+
+
 <body>
+
 <div class="page">
-<nav aria-label="Navegación principal"><a class="brand" href="{% url 'home' %}"><i class="brand-icon" aria-hidden="true"></i>easy<span>Rubik</span></a><a class="back" href="{% url 'home' %}">← Volver al inicio</a></nav>
-<main>
-<header class="hero"><span class="eyebrow">Aprende. Practica. Resuelve.</span><p class="hello">Hola, {{ request.user.username }} 👋</p><h1>¿Qué quieres<br><span>hacer hoy?</span></h1><p>Explora a tu ritmo o aprende desde el primer movimiento. Elige tu camino; puedes cambiar cuando quieras.</p></header>
-<div class="modes">
-<a class="mode" href="{% url 'selector' %}" aria-labelledby="freeTitle">
-<div class="mode-top"><span>01 · A tu ritmo</span><span class="tag">Explora sin límites</span></div>
-<div class="art" aria-hidden="true"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="orbit-label">Gira · Mezcla · Experimenta</span></div>
-<h2 id="freeTitle">Práctica libre</h2><p class="description">Elige tu puzzle, prueba movimientos y practica con el simulador. Tú decides qué resolver y a qué velocidad.</p><div class="features"><span>Todos tus simuladores</span><span>Experiencia por cubo</span></div><span class="cta">Ir a los simuladores <b aria-hidden="true">↗</b></span><p class="note">Tu experiencia sigue creciendo mientras practicas.</p>
-</a>
-<a class="mode learn" href="{% url 'aprender' %}" aria-labelledby="learnTitle">
-<div class="mode-top"><span>02 · Paso a paso</span><span class="tag">Empieza con el 3×3</span></div>
-<div class="art" aria-hidden="true"><div class="lesson-path"><span class="step">1</span><span class="step">2</span><span class="step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg></span></div></div>
-<h2 id="learnTitle">Aprender a resolver</h2><p class="description">Aprende con explicaciones y práctica guiada. Comienza por el 3×3×3 y construye una base para los cubos más grandes.</p><div class="features"><span>Lecciones guiadas</span><span>Avanza por objetivos</span></div><span class="cta">Elegir qué aprender <b aria-hidden="true">↗</b></span><p class="note">Completa el curso de 3×3 para desbloquear 4×4, 5×5 y 6×6.</p>
-</a>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav aria-label="Navegación principal">
+
+        <a
+            class="brand"
+            href="{% url 'home' %}"
+        >
+
+            <i
+                class="brand-icon"
+                aria-hidden="true"
+            ></i>
+
+            easy<span>Rubik</span>
+
+        </a>
+
+
+        <div class="nav-actions">
+
+
+            {% if es_premium %}
+
+            <a
+                class="premium-status"
+                href="{% url 'premium' %}"
+            >
+                ⭐ PREMIUM
+            </a>
+
+            {% else %}
+
+            <a
+                class="premium-button"
+                href="{% url 'premium' %}"
+            >
+                ⭐ Hazte Premium
+            </a>
+
+            {% endif %}
+
+
+            <a
+                class="back"
+                href="{% url 'home' %}"
+            >
+                ← Volver al inicio
+            </a>
+
+
+        </div>
+
+    </nav>
+
+
+
+    <main>
+
+
+        <!-- =========================
+             HERO
+        ========================== -->
+
+        <header class="hero">
+
+            <span class="eyebrow">
+                Aprende · Practica · Resuelve
+            </span>
+
+
+            <p class="hello">
+                Hola, {{ request.user.username }} 👋
+            </p>
+
+
+            <h1>
+                ¿Qué quieres<br>
+                <span>hacer hoy?</span>
+            </h1>
+
+
+            <p>
+                Explora a tu ritmo o aprende desde el primer movimiento.
+                Elige tu camino y conviértete paso a paso en un verdadero
+                maestro del cubo.
+            </p>
+
+        </header>
+
+
+
+        <div class="modes">
+
+
+            <!-- =========================
+                 PRÁCTICA LIBRE
+            ========================== -->
+
+            <a
+                class="mode"
+                href="{% url 'selector' %}"
+                aria-labelledby="freeTitle"
+            >
+
+
+                <div class="mode-top">
+
+                    <span>
+                        01 · A tu ritmo
+                    </span>
+
+                    <span class="tag">
+                        Explora sin límites
+                    </span>
+
+                </div>
+
+
+
+                <div
+                    class="art"
+                    aria-hidden="true"
+                >
+
+                    <div class="cube">
+
+                        <i></i>
+                        <i></i>
+                        <i></i>
+
+                        <i></i>
+                        <i></i>
+                        <i></i>
+
+                        <i></i>
+                        <i></i>
+                        <i></i>
+
+                    </div>
+
+
+                    <span class="orbit-label">
+                        Gira · Mezcla · Experimenta
+                    </span>
+
+                </div>
+
+
+
+                <h2 id="freeTitle">
+                    Práctica libre
+                </h2>
+
+
+                <p class="description">
+                    Elige tu puzzle, prueba movimientos y practica con
+                    el simulador. Tú decides qué resolver, cómo hacerlo
+                    y a qué velocidad.
+                </p>
+
+
+
+                <div class="features">
+
+                    <span>
+                        Simulador 3×3
+                    </span>
+
+                    <span>
+                        Practica a tu ritmo
+                    </span>
+
+                    <span>
+                        Experimenta
+                    </span>
+
+                </div>
+
+
+
+                <span class="cta">
+
+                    Ir a los simuladores
+
+                    <b aria-hidden="true">
+                        ↗
+                    </b>
+
+                </span>
+
+
+                <p class="note">
+                    Explora los puzzles disponibles para tu plan
+                    y mejora con cada intento.
+                </p>
+
+
+            </a>
+
+
+
+            <!-- =========================
+                 APRENDER
+            ========================== -->
+
+
+            {% if es_premium %}
+
+
+            <a
+                class="mode learn"
+                href="{% url 'aprender' %}"
+                aria-labelledby="learnTitle"
+            >
+
+
+                <div class="mode-top">
+
+                    <span>
+                        02 · Paso a paso
+                    </span>
+
+                    <span class="tag">
+                        Premium activo ✓
+                    </span>
+
+                </div>
+
+
+
+                <div
+                    class="art"
+                    aria-hidden="true"
+                >
+
+                    <div class="lesson-path">
+
+                        <span class="step">
+                            1
+                        </span>
+
+                        <span class="step">
+                            2
+                        </span>
+
+                        <span class="step">
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.6"
+                            >
+
+                                <rect
+                                    x="5"
+                                    y="10"
+                                    width="14"
+                                    height="11"
+                                    rx="3"
+                                />
+
+                                <path
+                                    d="M8 10V7a4 4 0 0 1 8 0v3"
+                                />
+
+                                <path
+                                    d="M12 14v3"
+                                />
+
+                            </svg>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <h2 id="learnTitle">
+                    Aprender a resolver
+                </h2>
+
+
+                <p class="description">
+                    Aprende con explicaciones claras, práctica interactiva
+                    y objetivos guiados. Empieza con el 3×3×3 y domina
+                    el cubo desde cero.
+                </p>
+
+
+
+                <div class="features">
+
+                    <span>
+                        Lecciones guiadas
+                    </span>
+
+                    <span>
+                        Progreso por objetivos
+                    </span>
+
+                    <span>
+                        Paso a paso
+                    </span>
+
+                </div>
+
+
+
+                <span class="cta">
+
+                    Comenzar aprendizaje
+
+                    <b aria-hidden="true">
+                        ↗
+                    </b>
+
+                </span>
+
+
+                <p class="note">
+                    Sigue tu progreso y aprende a resolver
+                    el cubo paso a paso.
+                </p>
+
+
+            </a>
+
+
+            {% else %}
+
+
+            <div
+                class="mode learn locked"
+                aria-labelledby="learnTitle"
+                aria-disabled="true"
+            >
+
+
+                <div class="mode-top">
+
+                    <span>
+                        02 · Paso a paso
+                    </span>
+
+                    <span class="tag">
+                        🔒 Premium
+                    </span>
+
+                </div>
+
+
+
+                <div
+                    class="art"
+                    aria-hidden="true"
+                >
+
+                    <div class="lesson-path">
+
+                        <span class="step">
+                            1
+                        </span>
+
+                        <span class="step">
+                            2
+                        </span>
+
+                        <span class="step">
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.6"
+                            >
+
+                                <rect
+                                    x="5"
+                                    y="10"
+                                    width="14"
+                                    height="11"
+                                    rx="3"
+                                />
+
+                                <path
+                                    d="M8 10V7a4 4 0 0 1 8 0v3"
+                                />
+
+                                <path
+                                    d="M12 14v3"
+                                />
+
+                            </svg>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <h2 id="learnTitle">
+                    Aprender a resolver
+                </h2>
+
+
+                <p class="description">
+                    Aprende con explicaciones claras, práctica interactiva
+                    y objetivos guiados. Empieza con el 3×3×3 y domina
+                    el cubo desde cero.
+                </p>
+
+
+
+                <div class="features">
+
+                    <span>
+                        Lecciones guiadas
+                    </span>
+
+                    <span>
+                        Progreso por objetivos
+                    </span>
+
+                    <span>
+                        Paso a paso
+                    </span>
+
+                </div>
+
+
+
+                <span class="cta">
+
+                    🔒 Requiere Premium
+
+                    <b aria-hidden="true">
+                        ★
+                    </b>
+
+                </span>
+
+
+                <p class="note premium-note">
+                    Hazte Premium para acceder al modo
+                    aprendizaje completo.
+                </p>
+
+
+            </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </main>
+
+
+
+    <footer class="foot">
+
+        <span>
+            Dos formas de avanzar.<br>
+            El mismo objetivo: dominar el cubo.
+        </span>
+
+        <span>
+            Tu progreso de aprendizaje y práctica<br>
+            se guarda por separado.
+        </span>
+
+    </footer>
+
+
 </div>
-</main>
-<footer class="foot"><span>Dos formas de avanzar. El mismo espíritu de resolver.</span><span>Tu progreso de aprendizaje y tu experiencia se guardan por separado.</span></footer>
-</div>
+
 </body>
 </html>
