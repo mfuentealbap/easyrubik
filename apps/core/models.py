@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-
+from .modelos_pago import PagoPremium
 
 class Perfil(models.Model):
     SEXOS = [
@@ -294,7 +294,7 @@ class Suscripcion(models.Model):
         if not self.premium:
             return False
 
-        if self.fecha_fin and self.fecha_fin < timezone.now():
+        if self.fecha_fin and self.fecha_fin <= timezone.now():
             return False
 
         return True
@@ -302,3 +302,5 @@ class Suscripcion(models.Model):
     def __str__(self):
         estado = "Premium" if self.esta_activa else "Gratis"
         return f"{self.usuario.username} - {estado}"
+
+    

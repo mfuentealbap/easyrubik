@@ -1,6 +1,43 @@
+# Entornos virtuales
 .venv/
+venv/
+env/
+
+# Caché de Python
 __pycache__/
 *.py[cod]
-db.sqlite3
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Variables privadas
 .env
+.env.*
+!.env.example
+
+# Bases de datos y respaldos locales
+db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+*.sql
+*.dump
+*.backup
+*.bak
+
+# Archivos generados y subidos por usuarios
+/staticfiles/
+/media/
+
+# Registros
+*.log
+
+# Editor y sistema
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Comprimidos
+*.zip
+*.rar
+*.7z

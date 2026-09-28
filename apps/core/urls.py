@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, experiencia
+from . import views, experiencia, pagos
 
 
 urlpatterns = [
@@ -20,6 +20,26 @@ urlpatterns = [
     path("selector/", views.selector, name="selector"),
     path("premium/", views.premium, name="premium"),
 
+    # Iniciar el pago de Premium
+    path(
+        "premium/pagar/",
+        pagos.iniciar,
+        name="pago_iniciar",
+    ),
+
+    # Consultar el resultado de una compra
+    path(
+        "premium/resultado/<uuid:orden_id>/",
+        pagos.resultado,
+        name="pago_resultado",
+    ),
+
+    # Recibir confirmaciones de Mercado Pago
+    path(
+        "pagos/mercadopago/webhook/",
+        pagos.webhook,
+        name="mp_webhook",
+    ),
     # Experiencia por práctica
     path(
         "experiencia/iniciar/",

@@ -1,0 +1,48 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Claves y configuración privada
+.env
+.env.*
+!.env.example
+
+# Git
+.git/
+.github/
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editor
+.vscode/
+.idea/
+
+# Archivos locales
+*.log
+*.sqlite3
+*.sqlite3-journal
+.DS_Store
+Thumbs.db
+
+# Copias de seguridad
+*.bak
+*.backup
+*.dump
+*.sql
+*.zip
+*.rar
+*.7z
+
+# Archivos generados o subidos por usuarios
+staticfiles/
+media/
+
+# Resultados de pruebas
+.coverage
+htmlcov/
