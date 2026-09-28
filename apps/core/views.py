@@ -1539,7 +1539,7 @@ def simulador(request):
 
     # El 3x3 es gratuito.
 
-    return render_simulador(request, "Home.html", "3x3")
+    return render_simulador(request, "home.html", "3x3")
 
 
 
