@@ -18,7 +18,7 @@ class PagoPremium(models.Model):
     )
 
     monto = models.PositiveIntegerField(
-        default=2000,
+        default=1990,
     )
 
     moneda = models.CharField(

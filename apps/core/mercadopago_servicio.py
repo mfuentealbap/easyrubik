@@ -29,7 +29,7 @@ from .models import PagoPremium, Suscripcion
 logger = logging.getLogger(__name__)
 
 CHILE = ZoneInfo("America/Santiago")
-PRECIO = 2000
+PRECIO = 1990
 
 
 class ErrorMercadoPago(Exception):
@@ -269,8 +269,11 @@ def crear_checkout(usuario):
             return None
 
         # Reutilizar una compra reciente ante doble clic.
+        # Debe corresponder al precio y la moneda actuales.
         orden = PagoPremium.objects.filter(
             usuario=usuario,
+            monto=PRECIO,
+            moneda="CLP",
             aplicado=False,
             requiere_revision=False,
             vendedor_id=vendedor,
