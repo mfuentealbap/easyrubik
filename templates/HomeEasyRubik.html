@@ -1,989 +1,2260 @@
 <!DOCTYPE html>
+
 <html lang="es">
 
+
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
 
     <title>easyRubik — Aprende, practica y resuelve</title>
 
+
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+
+
     <link
+
         href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+
         rel="stylesheet">
+
+
 
     <style>
 
+
+
         /* =========================================================
+
            VARIABLES
+
         ========================================================= */
 
+
+
         :root {
+
             --bg: #090b11;
+
             --bg-2: #0f121a;
+
             --panel: #141821;
+
             --panel-2: #191e29;
 
+
+
             --text: #f8fafc;
+
             --muted: #8f98aa;
+
+
 
             --border: rgba(255,255,255,.08);
 
+
+
             --blue: #4f9cff;
+
             --blue-light: #7bb7ff;
 
+
+
             --red: #ff4d5a;
+
             --yellow: #ffd43b;
+
             --green: #35d47a;
+
             --orange: #ff8a3d;
+
             --white: #f8fafc;
 
+
+
             --radius: 22px;
+
         }
 
 
+
+
+
         /* =========================================================
+
            RESET
+
         ========================================================= */
+
+
 
         * {
+
             box-sizing: border-box;
+
             margin: 0;
+
             padding: 0;
+
         }
+
+
 
         html {
+
             scroll-behavior: smooth;
+
         }
+
+
 
         body {
+
             min-height: 100vh;
+
             background:
+
                 radial-gradient(
+
                     circle at 15% 15%,
+
                     rgba(79,156,255,.12),
+
                     transparent 30%
+
                 ),
+
                 radial-gradient(
+
                     circle at 85% 75%,
+
                     rgba(255,77,90,.08),
+
                     transparent 30%
+
                 ),
+
                 var(--bg);
 
+
+
             color: var(--text);
+
             font-family: "Inter", sans-serif;
 
+
+
             overflow-x: hidden;
+
         }
 
+
+
         a {
+
             text-decoration: none;
+
             color: inherit;
+
         }
+
+
+
 
 
         /* =========================================================
+
            BACKGROUND
+
         ========================================================= */
 
+
+
         .background-grid {
+
             position: fixed;
+
             inset: 0;
+
+
 
             pointer-events: none;
 
+
+
             background-image:
+
                 linear-gradient(
+
                     rgba(255,255,255,.025) 1px,
+
                     transparent 1px
+
                 ),
+
                 linear-gradient(
+
                     90deg,
+
                     rgba(255,255,255,.025) 1px,
+
                     transparent 1px
+
                 );
+
+
 
             background-size: 55px 55px;
 
+
+
             mask-image: linear-gradient(
+
                 to bottom,
+
                 black,
+
                 transparent 85%
+
             );
 
+
+
             z-index: -2;
+
         }
+
+
+
 
 
         .glow {
+
             position: fixed;
 
+
+
             width: 450px;
+
             height: 450px;
 
+
+
             border-radius: 50%;
+
+
 
             filter: blur(100px);
 
+
+
             opacity: .12;
+
+
 
             pointer-events: none;
 
+
+
             z-index: -1;
+
         }
+
+
 
         .glow-blue {
+
             background: var(--blue);
 
+
+
             top: -180px;
+
             left: -150px;
+
         }
+
+
 
         .glow-red {
+
             background: var(--red);
 
+
+
             right: -180px;
+
             bottom: -150px;
+
         }
+
+
+
 
 
         /* =========================================================
+
            NAVBAR
+
         ========================================================= */
 
+
+
         nav {
+
             width: min(1180px, calc(100% - 40px));
 
+
+
             margin: 0 auto;
+
+
 
             height: 82px;
 
+
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
+
         }
+
+
+
 
 
         .logo {
+
             display: flex;
+
             align-items: center;
+
             gap: 11px;
+
+
 
             font-family: "Sora", sans-serif;
 
+
+
             font-size: 1.2rem;
+
             font-weight: 800;
+
         }
+
+
+
 
 
         .logo-cube {
+
             width: 14px;
+
             height: 14px;
+
+
 
             border-radius: 4px;
 
+
+
             background:
+
                 linear-gradient(
+
                     135deg,
+
                     var(--red) 0 33%,
+
                     var(--yellow) 33% 66%,
+
                     var(--blue) 66%
+
                 );
 
+
+
             box-shadow:
+
                 0 0 18px rgba(79,156,255,.35);
 
+
+
             transform: rotate(10deg);
+
         }
+
+
+
 
 
         .logo span {
+
             color: var(--blue);
+
         }
+
+
+
 
 
         .nav-links {
+
             display: flex;
+
             align-items: center;
+
             gap: 30px;
+
+
 
             color: var(--muted);
 
+
+
             font-size: .92rem;
+
         }
+
+
 
         .nav-links a {
+
             transition: .2s ease;
+
         }
 
+
+
         .nav-links a:hover {
+
             color: white;
+
         }
+
+
+
 
 
         .nav-login {
+
             padding: 10px 17px;
 
+
+
             border: 1px solid var(--border);
+
+
 
             border-radius: 10px;
 
+
+
             color: white;
 
+
+
             transition: .2s ease;
+
         }
 
+
+
         .nav-login:hover {
+
             background: rgba(255,255,255,.06);
+
             border-color: rgba(255,255,255,.15);
+
         }
+
+
+
 
 
         /* =========================================================
+
            HERO
+
         ========================================================= */
 
+
+
         .hero {
+
             width: min(1180px, calc(100% - 40px));
+
+
 
             min-height: calc(100vh - 82px);
 
+
+
             margin: 0 auto;
+
+
 
             display: grid;
 
+
+
             grid-template-columns: 1fr 1fr;
 
+
+
             align-items: center;
+
+
 
             gap: 70px;
 
+
+
             padding: 50px 0 100px;
+
         }
+
+
+
 
 
         .hero-content {
+
             position: relative;
+
         }
+
+
+
 
 
         .eyebrow {
+
             display: inline-flex;
 
+
+
             align-items: center;
+
+
 
             gap: 9px;
 
+
+
             padding: 8px 13px;
+
+
 
             margin-bottom: 25px;
 
+
+
             border: 1px solid rgba(79,156,255,.2);
+
+
 
             border-radius: 999px;
 
+
+
             background: rgba(79,156,255,.07);
+
+
 
             color: var(--blue-light);
 
+
+
             font-size: .78rem;
+
+
 
             font-weight: 600;
 
+
+
             animation: fadeUp .7s ease both;
+
         }
+
+
+
 
 
         .eyebrow-dot {
+
             width: 7px;
+
             height: 7px;
 
+
+
             border-radius: 50%;
+
+
 
             background: var(--green);
 
+
+
             box-shadow:
+
                 0 0 10px var(--green);
 
+
+
             animation: pulse 2s infinite;
+
         }
+
+
+
 
 
         h1 {
+
             font-family: "Sora", sans-serif;
 
+
+
             font-size: clamp(
+
                 3rem,
+
                 6vw,
+
                 5.4rem
+
             );
+
+
 
             line-height: .98;
 
+
+
             letter-spacing: -0.055em;
+
+
 
             max-width: 650px;
 
+
+
             margin-bottom: 28px;
 
+
+
             animation: fadeUp .8s .08s ease both;
+
         }
+
+
+
 
 
         h1 .gradient {
+
             background:
+
                 linear-gradient(
+
                     100deg,
+
                     #ffffff,
+
                     #8bbdff 45%,
+
                     #4f9cff
+
                 );
 
+
+
             -webkit-background-clip: text;
+
             background-clip: text;
 
+
+
             color: transparent;
+
         }
+
+
+
 
 
         .hero-description {
+
             max-width: 540px;
+
+
 
             color: var(--muted);
 
+
+
             font-size: 1.08rem;
+
+
 
             line-height: 1.75;
 
+
+
             margin-bottom: 35px;
 
+
+
             animation: fadeUp .8s .16s ease both;
+
         }
 
 
+
+
+
         /* =========================================================
+
            BUTTONS
+
         ========================================================= */
 
+
+
         .actions {
+
             display: flex;
 
+
+
             align-items: center;
+
+
 
             gap: 14px;
 
+
+
             flex-wrap: wrap;
 
+
+
             animation: fadeUp .8s .24s ease both;
+
         }
+
+
+
 
 
         .btn {
+
             display: inline-flex;
 
+
+
             align-items: center;
+
             justify-content: center;
+
+
 
             gap: 10px;
 
+
+
             padding: 15px 22px;
+
+
 
             border-radius: 13px;
 
+
+
             font-family: "Sora", sans-serif;
+
+
 
             font-size: .9rem;
 
+
+
             font-weight: 700;
 
+
+
             transition:
+
                 transform .2s ease,
+
                 box-shadow .2s ease,
+
                 background .2s ease;
+
         }
+
+
+
 
 
         .btn-primary {
+
             color: #06101d;
 
+
+
             background:
+
                 linear-gradient(
+
                     135deg,
+
                     #7bb7ff,
+
                     #4f9cff
+
                 );
 
+
+
             box-shadow:
+
                 0 10px 30px rgba(79,156,255,.22);
+
         }
+
+
+
 
 
         .btn-primary:hover {
+
             transform: translateY(-3px);
 
+
+
             box-shadow:
+
                 0 15px 40px rgba(79,156,255,.35);
+
         }
+
+
+
 
 
         .btn-secondary {
+
             color: white;
+
+
 
             border: 1px solid var(--border);
 
+
+
             background: rgba(255,255,255,.035);
+
         }
+
+
+
 
 
         .btn-secondary:hover {
+
             transform: translateY(-3px);
 
+
+
             background: rgba(255,255,255,.07);
+
         }
+
+
+
 
 
         .arrow {
+
             font-size: 1.1rem;
+
         }
 
 
+
+
+
         /* =========================================================
+
            CUBE AREA
+
         ========================================================= */
 
+
+
         .cube-area {
+
             position: relative;
+
+
 
             min-height: 560px;
 
+
+
             display: flex;
 
+
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+
+
+
+        .cube-glow {
+
+            position: absolute;
+
+
+
+            width: 360px;
+
+            height: 360px;
+
+
+
+            border-radius: 50%;
+
+
+
+            background: rgba(79,156,255,.18);
+
+
+
+            filter: blur(80px);
+
+        }
+
+
+
+
+
+        .cube-platform {
+
+            position: absolute;
+
+
+
+            width: 390px;
+
+            height: 90px;
+
+
+
+            bottom: 80px;
+
+
+
+            border-radius: 50%;
+
+
+
+            background:
+
+                radial-gradient(
+
+                    ellipse,
+
+                    rgba(79,156,255,.24),
+
+                    transparent 70%
+
+                );
+
+
+
+            filter: blur(5px);
+
+        }
+
+
+
+
+
+        
+        /* =========================================================
+           HOME PUZZLE CAROUSEL
+        ========================================================= */
+
+        .puzzle-carousel {
+            position: relative;
+            width: 100%;
+            min-height: 460px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1100px;
+            z-index: 2;
+        }
+
+        .puzzle-stage {
+            position: relative;
+            width: 330px;
+            height: 330px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition:
+                opacity .32s ease,
+                transform .32s ease,
+                filter .32s ease;
+        }
+
+        .puzzle-stage.is-changing {
+            opacity: 0;
+            transform: scale(.86) rotate(-4deg);
+            filter: blur(4px);
+        }
+
+        .home-puzzle {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        /* -------------------------
+           NxN RUBIK + MIRROR
+        ------------------------- */
 
-        .cube-glow {
-            position: absolute;
-
-            width: 360px;
-            height: 360px;
-
-            border-radius: 50%;
-
-            background: rgba(79,156,255,.18);
-
-            filter: blur(80px);
-        }
-
-
-        .cube-platform {
-            position: absolute;
-
-            width: 390px;
-            height: 90px;
-
-            bottom: 80px;
-
-            border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    ellipse,
-                    rgba(79,156,255,.24),
-                    transparent 70%
-                );
-
-            filter: blur(5px);
-        }
-
-
-        /* =========================================================
-           3D RUBIK CUBE
-        ========================================================= */
-
-        .rubik {
+        .rubik-carousel-cube {
             position: relative;
-
-            width: 270px;
-            height: 270px;
-
+            width: 250px;
+            height: 250px;
             transform-style: preserve-3d;
-
             transform:
                 rotateX(-22deg)
                 rotateY(-34deg)
                 rotateZ(5deg);
-
-            animation: cubeFloat 5s ease-in-out infinite;
-
-            z-index: 2;
+            animation: puzzleFloat 5s ease-in-out infinite;
         }
 
+        .carousel-face {
+            --n: 3;
+            --gap: 6px;
 
-        .face {
             position: absolute;
-
-            width: 270px;
-            height: 270px;
-
+            width: 250px;
+            height: 250px;
             display: grid;
-
-            grid-template-columns: repeat(3, 1fr);
-
-            gap: 7px;
-
-            padding: 8px;
-
+            grid-template-columns: repeat(var(--n), 1fr);
+            grid-template-rows: repeat(var(--n), 1fr);
+            gap: var(--gap);
+            padding: 7px;
             background: #08090d;
-
             border-radius: 14px;
-
             box-shadow:
-                inset 0 0 0 2px #05060a;
+                inset 0 0 0 2px #05060a,
+                0 0 0 1px rgba(255,255,255,.025);
         }
 
+        .carousel-face.n4 { --gap: 5px; }
+        .carousel-face.n5 { --gap: 4px; }
+        .carousel-face.n6 { --gap: 3px; }
 
-        .face div {
-            border-radius: 7px;
-
+        .carousel-sticker {
+            min-width: 0;
+            min-height: 0;
+            border-radius: clamp(2px, calc(8px - (var(--n) * .7px)), 7px);
             box-shadow:
-                inset 0 0 0 2px rgba(0,0,0,.18),
-                inset 0 -4px 8px rgba(0,0,0,.12);
+                inset 0 0 0 2px rgba(0,0,0,.14),
+                inset 0 -4px 9px rgba(0,0,0,.16),
+                0 1px 2px rgba(255,255,255,.08);
         }
 
+        .carousel-front { transform: translateZ(125px); }
+        .carousel-back { transform: rotateY(180deg) translateZ(125px); }
+        .carousel-right { transform: rotateY(90deg) translateZ(125px); }
+        .carousel-left { transform: rotateY(-90deg) translateZ(125px); }
+        .carousel-top { transform: rotateX(90deg) translateZ(125px); }
+        .carousel-bottom { transform: rotateX(-90deg) translateZ(125px); }
 
-        .front {
-            transform: translateZ(135px);
-        }
+        .sticker-white { background: linear-gradient(145deg, #ffffff, #dce3ec); }
+        .sticker-yellow { background: linear-gradient(145deg, #ffe868, #f5c400); }
+        .sticker-red { background: linear-gradient(145deg, #ff6570, #dc2634); }
+        .sticker-orange { background: linear-gradient(145deg, #ffad67, #f26815); }
+        .sticker-blue { background: linear-gradient(145deg, #61a8ff, #1f65d8); }
+        .sticker-green { background: linear-gradient(145deg, #58e497, #119e55); }
 
-
-        .back {
-            transform: rotateY(180deg)
-                       translateZ(135px);
-        }
-
-
-        .right {
-            transform:
-                rotateY(90deg)
-                translateZ(135px);
-        }
-
-
-        .left {
-            transform:
-                rotateY(-90deg)
-                translateZ(135px);
-        }
-
-
-        .top {
-            transform:
-                rotateX(90deg)
-                translateZ(135px);
-        }
-
-
-        .bottom {
-            transform:
-                rotateX(-90deg)
-                translateZ(135px);
-        }
-
-
-        /* Colores del cubo */
-
-        .white {
-            background: #f5f5f5;
-        }
-
-        .yellow {
-            background: #ffd92f;
-        }
-
-        .red {
-            background: #ef4444;
-        }
-
-        .orange {
-            background: #ff7a2f;
-        }
-
-        .blue {
-            background: #3685f5;
-        }
-
-        .green {
-            background: #22c875;
-        }
-
-
-        /* =========================================================
-           FLOATING BADGES
-        ========================================================= */
-
-        .floating-card {
-            position: absolute;
-
-            padding: 12px 15px;
-
-            border: 1px solid rgba(255,255,255,.09);
-
-            border-radius: 14px;
-
-            background:
-                rgba(20,24,33,.8);
-
-            backdrop-filter: blur(15px);
-
+        /* Mirror */
+        .rubik-carousel-cube.mirror-cube .carousel-face {
+            background: #17191f;
             box-shadow:
-                0 20px 50px rgba(0,0,0,.3);
-
-            font-size: .78rem;
-
-            z-index: 5;
+                inset 0 0 0 2px #0b0d11,
+                0 0 25px rgba(245,190,74,.08);
         }
 
-
-        .floating-card strong {
-            display: block;
-
-            font-family: "Sora", sans-serif;
-
-            font-size: .95rem;
-
-            margin-bottom: 3px;
-        }
-
-
-        .floating-card small {
-            color: var(--muted);
-        }
-
-
-        .card-one {
-            top: 90px;
-            right: 20px;
-
-            animation: floatOne 4s ease-in-out infinite;
-        }
-
-
-        .card-two {
-            left: 0;
-            bottom: 140px;
-
-            animation: floatTwo 4.5s ease-in-out infinite;
-        }
-
-
-        .mini-colors {
-            display: flex;
-
-            gap: 4px;
-
-            margin-bottom: 7px;
-        }
-
-
-        .mini-colors i {
-            width: 9px;
-            height: 9px;
-
-            border-radius: 2px;
-        }
-
-
-        /* =========================================================
-           FEATURES
-        ========================================================= */
-
-        .features {
-            width: min(1180px, calc(100% - 40px));
-
-            margin: -20px auto 100px;
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 18px;
-        }
-
-
-        .feature {
-            padding: 25px;
-
-            border: 1px solid var(--border);
-
-            border-radius: var(--radius);
-
+        .rubik-carousel-cube.mirror-cube .carousel-sticker {
             background:
                 linear-gradient(
                     145deg,
-                    rgba(255,255,255,.045),
-                    rgba(255,255,255,.018)
+                    #fff3bc 0%,
+                    #d8aa43 36%,
+                    #8d681f 68%,
+                    #f7d873 100%
                 );
-
-            transition:
-                transform .25s ease,
-                border-color .25s ease,
-                background .25s ease;
+            border: 1px solid rgba(255,255,255,.22);
+            box-shadow:
+                inset 2px 2px 5px rgba(255,255,255,.3),
+                inset -4px -5px 10px rgba(62,39,2,.28);
         }
 
+        .rubik-carousel-cube.mirror-cube .carousel-sticker:nth-child(3n + 1) {
+            filter: brightness(.86);
+        }
 
-        .feature:hover {
-            transform: translateY(-6px);
+        .rubik-carousel-cube.mirror-cube .carousel-sticker:nth-child(3n + 2) {
+            filter: brightness(1.08);
+        }
 
-            border-color:
-                rgba(79,156,255,.25);
+        /* -------------------------
+           PYRAMINX
+        ------------------------- */
 
+        .pyraminx-home {
+            position: relative;
+            width: 275px;
+            height: 260px;
+            transform-style: preserve-3d;
+            animation: shapeFloat 5s ease-in-out infinite;
+        }
+
+        .pyr-face {
+            position: absolute;
+            width: 250px;
+            height: 225px;
+            left: 12px;
+            top: 15px;
+            clip-path: polygon(50% 0, 100% 100%, 0 100%);
+            filter: drop-shadow(0 18px 24px rgba(0,0,0,.28));
+        }
+
+        .pyr-face.front-face {
+            z-index: 3;
             background:
-                rgba(255,255,255,.055);
+                linear-gradient(60deg, transparent 48.7%, #10141b 49%, #10141b 51%, transparent 51.3%),
+                linear-gradient(-60deg, transparent 48.7%, #10141b 49%, #10141b 51%, transparent 51.3%),
+                linear-gradient(0deg, transparent 65.7%, #10141b 66%, #10141b 68%, transparent 68.3%),
+                linear-gradient(135deg, #4ee496, #19b765);
         }
 
-
-        .feature-icon {
-            width: 45px;
-            height: 45px;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            margin-bottom: 18px;
-
-            border-radius: 13px;
-
-            font-size: 1.25rem;
-
-            background: rgba(79,156,255,.1);
-
-            border: 1px solid rgba(79,156,255,.15);
+        .pyr-face.side-face {
+            z-index: 2;
+            transform: translateX(36px) translateY(8px) rotateY(48deg);
+            transform-origin: left center;
+            background:
+                linear-gradient(60deg, transparent 48.7%, #10141b 49%, #10141b 51%, transparent 51.3%),
+                linear-gradient(-60deg, transparent 48.7%, #10141b 49%, #10141b 51%, transparent 51.3%),
+                linear-gradient(0deg, transparent 65.7%, #10141b 66%, #10141b 68%, transparent 68.3%),
+                linear-gradient(135deg, #ff6570, #d82c39);
         }
 
-
-        .feature h3 {
-            font-family: "Sora", sans-serif;
-
-            font-size: 1rem;
-
-            margin-bottom: 8px;
+        .pyr-tip {
+            position: absolute;
+            z-index: 5;
+            width: 64px;
+            height: 57px;
+            left: 105px;
+            top: 15px;
+            clip-path: polygon(50% 0, 100% 100%, 0 100%);
+            background: linear-gradient(135deg, #ffe868, #f4c600);
+            filter: drop-shadow(0 6px 7px rgba(0,0,0,.2));
         }
 
+        /* -------------------------
+           MEGAMINX
+        ------------------------- */
 
-        .feature p {
-            color: var(--muted);
-
-            font-size: .87rem;
-
-            line-height: 1.6;
+        .megaminx-home {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            animation: shapeFloat 5s ease-in-out infinite;
         }
+
+        .mega-face {
+            position: absolute;
+            width: 116px;
+            height: 110px;
+            clip-path:
+                polygon(
+                    50% 0%,
+                    98% 35%,
+                    80% 94%,
+                    20% 94%,
+                    2% 35%
+                );
+            background:
+                conic-gradient(
+                    from -18deg,
+                    #5aa3ff 0 20%,
+                    #ffcb3b 20% 40%,
+                    #42da84 40% 60%,
+                    #ff6b75 60% 80%,
+                    #f6f7fb 80% 100%
+                );
+            filter: drop-shadow(0 12px 14px rgba(0,0,0,.25));
+        }
+
+        .mega-face::after {
+            content: "";
+            position: absolute;
+            inset: 30px;
+            clip-path:
+                polygon(
+                    50% 0%,
+                    98% 35%,
+                    80% 94%,
+                    20% 94%,
+                    2% 35%
+                );
+            background: #ff914d;
+            box-shadow: 0 0 0 4px #11151d;
+        }
+
+        .mega-center { left: 92px; top: 93px; z-index: 5; transform: scale(1.05); }
+        .mega-one { left: 92px; top: 3px; transform: scale(.72) rotate(180deg); }
+        .mega-two { left: 174px; top: 65px; transform: scale(.72) rotate(72deg); }
+        .mega-three { left: 145px; top: 158px; transform: scale(.72) rotate(144deg); }
+        .mega-four { left: 38px; top: 158px; transform: scale(.72) rotate(216deg); }
+        .mega-five { left: 10px; top: 65px; transform: scale(.72) rotate(288deg); }
 
 
         /* =========================================================
-           BOTTOM CTA
+           SPECIAL PUZZLE PREVIEWS
+           Mirror / Megaminx / Pyraminx
+           Renderizados en canvas con geometría basada en los motores reales.
         ========================================================= */
 
-        .bottom-section {
+        .home-puzzle-canvas {
+            width: 310px;
+            height: 310px;
+            display: block;
+            max-width: 100%;
+            object-fit: contain;
+            animation: shapeFloat 5s ease-in-out infinite;
+            filter:
+                drop-shadow(0 30px 28px rgba(0,0,0,.28))
+                drop-shadow(0 0 30px rgba(79,156,255,.07));
+        }
+
+        .home-puzzle-canvas.mirror-preview {
+            filter:
+                drop-shadow(0 34px 30px rgba(0,0,0,.32))
+                drop-shadow(0 0 28px rgba(220,228,240,.09));
+        }
+
+        .home-puzzle-canvas.megaminx-preview {
+            width: 320px;
+            height: 320px;
+        }
+
+        .home-puzzle-canvas.pyraminx-preview {
+            width: 310px;
+            height: 310px;
+        }
+
+        @media (max-width: 600px) {
+            .home-puzzle-canvas,
+            .home-puzzle-canvas.pyraminx-preview {
+                width: 285px;
+                height: 285px;
+            }
+
+            .home-puzzle-canvas.megaminx-preview {
+                width: 292px;
+                height: 292px;
+            }
+        }
+
+        /* -------------------------
+           CONTROLS
+        ------------------------- */
+
+        .puzzle-arrow-btn {
+            position: absolute;
+            top: 50%;
+            width: 43px;
+            height: 43px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 13px;
+            background: rgba(15,18,26,.78);
+            backdrop-filter: blur(14px);
+            color: #f8fafc;
+            font-family: "Sora", sans-serif;
+            font-size: 1.65rem;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 8;
+            box-shadow: 0 14px 35px rgba(0,0,0,.22);
+            transition:
+                transform .2s ease,
+                border-color .2s ease,
+                background .2s ease;
+        }
+
+        .puzzle-arrow-btn.prev {
+            left: -2px;
+            transform: translateY(-50%);
+        }
+
+        .puzzle-arrow-btn.next {
+            right: -2px;
+            transform: translateY(-50%);
+        }
+
+        .puzzle-arrow-btn:hover {
+            transform: translateY(-50%) scale(1.08);
+            border-color: rgba(79,156,255,.45);
+            background: rgba(23,29,42,.94);
+        }
+
+        .puzzle-dots {
+            position: absolute;
+            left: 50%;
+            bottom: 21px;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            z-index: 9;
+        }
+
+        .puzzle-dot {
+            width: 7px;
+            height: 7px;
+            padding: 0;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(255,255,255,.25);
+            cursor: pointer;
+            transition:
+                width .25s ease,
+                background .25s ease,
+                transform .2s ease;
+        }
+
+        .puzzle-dot:hover {
+            transform: scale(1.25);
+        }
+
+        .puzzle-dot.active {
+            width: 23px;
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--blue),
+                    var(--blue-light)
+                );
+        }
+
+        @keyframes puzzleFloat {
+            0%, 100% {
+                transform:
+                    translateY(0)
+                    rotateX(-22deg)
+                    rotateY(-34deg)
+                    rotateZ(5deg);
+            }
+
+            50% {
+                transform:
+                    translateY(-15px)
+                    rotateX(-18deg)
+                    rotateY(-28deg)
+                    rotateZ(3deg);
+            }
+        }
+
+        @keyframes shapeFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(-6deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(-2deg);
+            }
+        }
+
+
+/* =========================================================
+
+           FLOATING BADGES
+
+        ========================================================= */
+
+
+
+        .floating-card {
+
+            position: absolute;
+
+
+
+            padding: 12px 15px;
+
+
+
+            border: 1px solid rgba(255,255,255,.09);
+
+
+
+            border-radius: 14px;
+
+
+
+            background:
+
+                rgba(20,24,33,.8);
+
+
+
+            backdrop-filter: blur(15px);
+
+
+
+            box-shadow:
+
+                0 20px 50px rgba(0,0,0,.3);
+
+
+
+            font-size: .78rem;
+
+
+
+            z-index: 5;
+
+        }
+
+
+
+
+
+        .floating-card strong {
+
+            display: block;
+
+
+
+            font-family: "Sora", sans-serif;
+
+
+
+            font-size: .95rem;
+
+
+
+            margin-bottom: 3px;
+
+        }
+
+
+
+
+
+        .floating-card small {
+
+            color: var(--muted);
+
+        }
+
+
+
+
+
+        .card-one {
+
+            top: 90px;
+
+            right: 20px;
+
+
+
+            animation: floatOne 4s ease-in-out infinite;
+
+        }
+
+
+
+
+
+        .card-two {
+
+            left: 0;
+
+            bottom: 140px;
+
+
+
+            animation: floatTwo 4.5s ease-in-out infinite;
+
+        }
+
+
+
+
+
+        .mini-colors {
+
+            display: flex;
+
+
+
+            gap: 4px;
+
+
+
+            margin-bottom: 7px;
+
+        }
+
+
+
+
+
+        .mini-colors i {
+
+            width: 9px;
+
+            height: 9px;
+
+
+
+            border-radius: 2px;
+
+        }
+
+
+
+
+
+        /* =========================================================
+
+           FEATURES
+
+        ========================================================= */
+
+
+
+        .features {
+
             width: min(1180px, calc(100% - 40px));
 
-            margin: 0 auto 70px;
 
-            padding: 65px 40px;
 
-            text-align: center;
+            margin: -20px auto 100px;
+
+
+
+            display: grid;
+
+
+
+            grid-template-columns:
+
+                repeat(3, 1fr);
+
+
+
+            gap: 18px;
+
+        }
+
+
+
+
+
+        .feature {
+
+            padding: 25px;
+
+
 
             border: 1px solid var(--border);
 
-            border-radius: 28px;
+
+
+            border-radius: var(--radius);
+
+
 
             background:
-                radial-gradient(
-                    circle at 50% 0%,
-                    rgba(79,156,255,.12),
-                    transparent 55%
-                ),
-                var(--panel);
+
+                linear-gradient(
+
+                    145deg,
+
+                    rgba(255,255,255,.045),
+
+                    rgba(255,255,255,.018)
+
+                );
+
+
+
+            transition:
+
+                transform .25s ease,
+
+                border-color .25s ease,
+
+                background .25s ease;
+
         }
 
 
-        .bottom-section h2 {
-            font-family: "Sora", sans-serif;
 
-            font-size: clamp(2rem, 4vw, 3rem);
 
-            letter-spacing: -.04em;
 
-            margin-bottom: 15px;
+        .feature:hover {
+
+            transform: translateY(-6px);
+
+
+
+            border-color:
+
+                rgba(79,156,255,.25);
+
+
+
+            background:
+
+                rgba(255,255,255,.055);
+
         }
 
 
-        .bottom-section p {
-            color: var(--muted);
-
-            max-width: 500px;
-
-            margin: 0 auto 28px;
-
-            line-height: 1.7;
-        }
 
 
-        /* =========================================================
-           FOOTER
-        ========================================================= */
 
-        footer {
-            width: min(1180px, calc(100% - 40px));
+        .feature-icon {
 
-            margin: 0 auto;
+            width: 45px;
 
-            padding: 25px 0 35px;
+            height: 45px;
 
-            border-top: 1px solid var(--border);
+
 
             display: flex;
 
-            justify-content: space-between;
+
+
+            align-items: center;
+
+            justify-content: center;
+
+
+
+            margin-bottom: 18px;
+
+
+
+            border-radius: 13px;
+
+
+
+            font-size: 1.25rem;
+
+
+
+            background: rgba(79,156,255,.1);
+
+
+
+            border: 1px solid rgba(79,156,255,.15);
+
+        }
+
+
+
+
+
+        .feature h3 {
+
+            font-family: "Sora", sans-serif;
+
+
+
+            font-size: 1rem;
+
+
+
+            margin-bottom: 8px;
+
+        }
+
+
+
+
+
+        .feature p {
 
             color: var(--muted);
 
-            font-size: .78rem;
+
+
+            font-size: .87rem;
+
+
+
+            line-height: 1.6;
+
         }
+
+
+
 
 
         /* =========================================================
-           ANIMATIONS
+
+           BOTTOM CTA
+
         ========================================================= */
+
+
+
+        .bottom-section {
+
+            width: min(1180px, calc(100% - 40px));
+
+
+
+            margin: 0 auto 70px;
+
+
+
+            padding: 65px 40px;
+
+
+
+            text-align: center;
+
+
+
+            border: 1px solid var(--border);
+
+
+
+            border-radius: 28px;
+
+
+
+            background:
+
+                radial-gradient(
+
+                    circle at 50% 0%,
+
+                    rgba(79,156,255,.12),
+
+                    transparent 55%
+
+                ),
+
+                var(--panel);
+
+        }
+
+
+
+
+
+        .bottom-section h2 {
+
+            font-family: "Sora", sans-serif;
+
+
+
+            font-size: clamp(2rem, 4vw, 3rem);
+
+
+
+            letter-spacing: -.04em;
+
+
+
+            margin-bottom: 15px;
+
+        }
+
+
+
+
+
+        .bottom-section p {
+
+            color: var(--muted);
+
+
+
+            max-width: 500px;
+
+
+
+            margin: 0 auto 28px;
+
+
+
+            line-height: 1.7;
+
+        }
+
+
+
+
+
+        /* =========================================================
+
+           FOOTER
+
+        ========================================================= */
+
+
+
+        footer {
+
+            width: min(1180px, calc(100% - 40px));
+
+
+
+            margin: 0 auto;
+
+
+
+            padding: 25px 0 35px;
+
+
+
+            border-top: 1px solid var(--border);
+
+
+
+            display: flex;
+
+
+
+            justify-content: space-between;
+
+
+
+            color: var(--muted);
+
+
+
+            font-size: .78rem;
+
+        }
+
+
+
+
+
+        /* =========================================================
+
+           ANIMATIONS
+
+        ========================================================= */
+
+
 
         @keyframes fadeUp {
 
+
+
             from {
+
                 opacity: 0;
+
                 transform: translateY(20px);
+
             }
+
+
 
             to {
+
                 opacity: 1;
+
                 transform: translateY(0);
+
             }
 
+
+
         }
+
+
+
 
 
         @keyframes cubeFloat {
 
+
+
             0%, 100% {
+
                 transform:
+
                     rotateX(-22deg)
+
                     rotateY(-34deg)
+
                     rotateZ(5deg)
+
                     translateY(0);
+
             }
+
+
 
             50% {
+
                 transform:
+
                     rotateX(-18deg)
+
                     rotateY(-28deg)
+
                     rotateZ(3deg)
+
                     translateY(-18px);
+
             }
 
+
+
         }
+
+
+
 
 
         @keyframes floatOne {
 
+
+
             0%, 100% {
+
                 transform: translateY(0);
+
             }
+
+
 
             50% {
+
                 transform: translateY(-12px);
+
             }
 
+
+
         }
+
+
+
 
 
         @keyframes floatTwo {
 
+
+
             0%, 100% {
+
                 transform: translateY(0);
+
             }
+
+
 
             50% {
+
                 transform: translateY(10px);
+
             }
 
+
+
         }
+
+
+
 
 
         @keyframes pulse {
 
+
+
             0%, 100% {
+
                 opacity: 1;
+
                 transform: scale(1);
+
             }
 
+
+
             50% {
+
                 opacity: .5;
+
                 transform: scale(.75);
+
             }
+
+
 
         }
 
 
+
+
+
         /* =========================================================
+
            RESPONSIVE
+
         ========================================================= */
+
+
 
         @media (max-width: 900px) {
 
+
+
             .hero {
+
                 grid-template-columns: 1fr;
+
+
 
                 text-align: center;
 
+
+
                 gap: 20px;
 
+
+
                 padding-top: 35px;
+
             }
+
+
+
 
 
             .hero-content {
+
                 display: flex;
+
+
 
                 flex-direction: column;
 
+
+
                 align-items: center;
+
             }
+
+
+
 
 
             .hero-description {
+
                 margin-left: auto;
+
                 margin-right: auto;
+
             }
+
+
+
 
 
             .cube-area {
+
                 min-height: 470px;
+
             }
+
+
+
 
 
             .features {
+
                 grid-template-columns: 1fr;
+
             }
 
 
+
+
+
             .nav-links a:not(.nav-login) {
+
                 display: none;
+
+            }
+
+
+
+        }
+
+
+
+
+
+        @media (max-width: 600px) {
+
+
+
+            nav {
+
+                width: calc(100% - 28px);
+
+            }
+
+
+
+
+
+            .hero,
+
+            .features,
+
+            .bottom-section,
+
+            footer {
+
+                width: calc(100% - 28px);
+
+            }
+
+
+
+
+
+            h1 {
+
+                font-size: 3rem;
+
+            }
+
+
+
+
+
+            .cube-area {
+
+                transform: scale(.78);
+
+
+
+                margin:
+
+                    -50px
+
+                    0
+
+                    -40px;
+
+            }
+
+
+
+
+
+            .card-one {
+
+                right: -5px;
+
+            }
+
+
+
+
+
+            .card-two {
+
+                left: -5px;
+
+            }
+
+
+
+
+
+            footer {
+
+                flex-direction: column;
+
+
+
+                gap: 8px;
+
+
+
+                text-align: center;
+
+            }
+
+
+
+        }
+
+        @media (max-width: 900px) {
+
+            .puzzle-arrow-btn.prev {
+                left: 18px;
+            }
+
+            .puzzle-arrow-btn.next {
+                right: 18px;
             }
 
         }
@@ -991,482 +2262,2086 @@
 
         @media (max-width: 600px) {
 
-            nav {
-                width: calc(100% - 28px);
+            .puzzle-carousel {
+                min-height: 400px;
             }
 
-
-            .hero,
-            .features,
-            .bottom-section,
-            footer {
-                width: calc(100% - 28px);
+            .puzzle-stage {
+                width: 310px;
+                height: 310px;
+                transform: scale(.9);
             }
 
-
-            h1 {
-                font-size: 3rem;
+            .puzzle-arrow-btn {
+                width: 39px;
+                height: 39px;
+                font-size: 1.45rem;
             }
 
-
-            .cube-area {
-                transform: scale(.78);
-
-                margin:
-                    -50px
-                    0
-                    -40px;
+            .puzzle-arrow-btn.prev {
+                left: -8px;
             }
 
-
-            .card-one {
-                right: -5px;
+            .puzzle-arrow-btn.next {
+                right: -8px;
             }
 
-
-            .card-two {
-                left: -5px;
-            }
-
-
-            footer {
-                flex-direction: column;
-
-                gap: 8px;
-
-                text-align: center;
+            .puzzle-dots {
+                bottom: 5px;
             }
 
         }
+
+
+
+
+
+
 
 
         @media (prefers-reduced-motion: reduce) {
 
+
+
             *,
+
             *::before,
+
             *::after {
+
                 animation: none !important;
+
+
 
                 scroll-behavior: auto !important;
 
+
+
                 transition: none !important;
+
             }
+
+
 
         }
 
+
+
     </style>
+
 </head>
+
+
+
 
 
 <body>
 
+
+
     <div class="background-grid"></div>
 
+
+
     <div class="glow glow-blue"></div>
+
     <div class="glow glow-red"></div>
 
 
+
+
+
     <!-- =========================================================
+
          NAVBAR
+
     ========================================================== -->
+
+
 
     <nav>
 
+
+
         <a href="/" class="logo">
+
+
 
             <div class="logo-cube"></div>
 
+
+
             easy<span>Rubik</span>
+
+
 
         </a>
 
 
+
+
+
         <div class="nav-links">
 
+
+
             <a href="#caracteristicas">
+
                 Características
+
             </a>
+
+
 
             <a href="#como-funciona">
+
                 ¿Cómo funciona?
+
             </a>
+
+
 
             <a
+
                 href="{% url 'login' %}"
+
                 class="nav-login"
+
             >
+
                 Iniciar sesión
+
             </a>
 
+
+
         </div>
+
+
 
     </nav>
 
 
+
+
+
     <!-- =========================================================
+
          HERO
+
     ========================================================== -->
+
+
 
     <main>
 
+
+
         <section class="hero">
+
+
 
             <div class="hero-content">
 
+
+
                 <div class="eyebrow">
+
+
 
                     <span class="eyebrow-dot"></span>
 
+
+
                     Aprende. Practica. Resuelve.
 
+
+
                 </div>
+
+
+
 
 
                 <h1>
 
+
+
                     El cubo
+
                     <span class="gradient">
+
                         nunca fue
+
                     </span>
+
                     tan fácil.
+
+
 
                 </h1>
 
 
+
+
+
                 <p class="hero-description">
 
+
+
                     Aprende a resolver cubos Rubik de forma
+
                     interactiva. Practica movimientos,
+
                     descubre algoritmos y mejora poco a poco
+
                     hasta dominar el cubo.
+
+
 
                 </p>
 
 
+
+
+
                 <div class="actions">
 
+
+
                     <a
+
                         href="{% url 'login' %}"
+
                         class="btn btn-primary"
+
                     >
+
+
 
                         Comenzar ahora
 
+
+
                         <span class="arrow">
+
                             →
+
                         </span>
 
+
+
                     </a>
+
+
+
 
 
                     <a
+
                         href="#caracteristicas"
+
                         class="btn btn-secondary"
+
                     >
+
+
 
                         Descubrir easyRubik
 
+
+
                     </a>
 
+
+
                 </div>
+
+
 
             </div>
 
 
+
+
+
+            
             <!-- =================================================
-                 CUBO 3D
+                 CARRUSEL DE PUZZLES
             ================================================== -->
 
             <div class="cube-area">
 
                 <div class="cube-glow"></div>
-
                 <div class="cube-platform"></div>
 
-
-                <!-- TARJETA SUPERIOR -->
-
+                <!-- TARJETA SUPERIOR DINÁMICA -->
                 <div class="floating-card card-one">
 
                     <div class="mini-colors">
-
                         <i style="background:#ef4444"></i>
                         <i style="background:#ffd92f"></i>
                         <i style="background:#3685f5"></i>
                         <i style="background:#22c875"></i>
                         <i style="background:#ff7a2f"></i>
-
                     </div>
 
-                    <strong>
-                        3×3×3
-                    </strong>
-
-                    <small>
-                        El clásico.
-                    </small>
+                    <strong id="homePuzzleTitle">3×3×3</strong>
+                    <small id="homePuzzleDescription">El clásico.</small>
 
                 </div>
-
 
                 <!-- TARJETA INFERIOR -->
-
                 <div class="floating-card card-two">
 
-                    <strong>
-                         Aprende jugando
-                    </strong>
-
-                    <small>
-                        Paso a paso y sin presión.
-                    </small>
+                    <strong>Aprende jugando</strong>
+                    <small>Paso a paso y sin presión.</small>
 
                 </div>
 
+                <!-- CARRUSEL -->
+                <div class="puzzle-carousel">
 
-                <!-- CUBO -->
+                    <button
+                        class="puzzle-arrow-btn prev"
+                        id="homePuzzlePrev"
+                        type="button"
+                        aria-label="Puzzle anterior"
+                    >‹</button>
 
-                <div class="rubik">
+                    <div
+                        class="puzzle-stage"
+                        id="homePuzzleStage"
+                        aria-live="polite"
+                    ></div>
 
+                    <button
+                        class="puzzle-arrow-btn next"
+                        id="homePuzzleNext"
+                        type="button"
+                        aria-label="Puzzle siguiente"
+                    >›</button>
 
-                    <!-- FRONT -->
-
-                    <div class="face front">
-
-                        <div class="green"></div>
-                        <div class="green"></div>
-                        <div class="white"></div>
-
-                        <div class="green"></div>
-                        <div class="green"></div>
-                        <div class="red"></div>
-
-                        <div class="yellow"></div>
-                        <div class="green"></div>
-                        <div class="red"></div>
-
-                    </div>
-
-
-                    <!-- RIGHT -->
-
-                    <div class="face right">
-
-                        <div class="red"></div>
-                        <div class="red"></div>
-                        <div class="yellow"></div>
-
-                        <div class="red"></div>
-                        <div class="red"></div>
-                        <div class="yellow"></div>
-
-                        <div class="orange"></div>
-                        <div class="orange"></div>
-                        <div class="yellow"></div>
-
-                    </div>
-
-
-                    <!-- TOP -->
-
-                    <div class="face top">
-
-                        <div class="white"></div>
-                        <div class="white"></div>
-                        <div class="blue"></div>
-
-                        <div class="white"></div>
-                        <div class="yellow"></div>
-                        <div class="blue"></div>
-
-                        <div class="orange"></div>
-                        <div class="orange"></div>
-                        <div class="blue"></div>
-
-                    </div>
-
-
-                    <!-- BACK -->
-
-                    <div class="face back">
-
-                        <div class="blue"></div>
-                        <div class="blue"></div>
-                        <div class="white"></div>
-
-                        <div class="blue"></div>
-                        <div class="blue"></div>
-                        <div class="green"></div>
-
-                        <div class="yellow"></div>
-                        <div class="green"></div>
-                        <div class="green"></div>
-
-                    </div>
-
-
-                    <!-- LEFT -->
-
-                    <div class="face left">
-
-                        <div class="orange"></div>
-                        <div class="orange"></div>
-                        <div class="white"></div>
-
-                        <div class="orange"></div>
-                        <div class="orange"></div>
-                        <div class="white"></div>
-
-                        <div class="red"></div>
-                        <div class="yellow"></div>
-                        <div class="white"></div>
-
-                    </div>
-
-
-                    <!-- BOTTOM -->
-
-                    <div class="face bottom">
-
-                        <div class="yellow"></div>
-                        <div class="yellow"></div>
-                        <div class="green"></div>
-
-                        <div class="yellow"></div>
-                        <div class="yellow"></div>
-                        <div class="green"></div>
-
-                        <div class="orange"></div>
-                        <div class="red"></div>
-                        <div class="green"></div>
-
-                    </div>
+                    <div
+                        class="puzzle-dots"
+                        id="homePuzzleDots"
+                        aria-label="Seleccionar puzzle"
+                    ></div>
 
                 </div>
 
             </div>
 
+
+
+
         </section>
 
 
+
+
+
         <!-- =====================================================
+
              FEATURES
+
         ====================================================== -->
 
+
+
         <section
+
             class="features"
+
             id="caracteristicas"
+
         >
 
+
+
             <div class="feature">
 
+
+
                 <div class="feature-icon">
+
                     🧩
+
                 </div>
 
+
+
                 <h3>
+
                     Aprende paso a paso
+
                 </h3>
 
+
+
                 <p>
+
                     Sigue instrucciones claras y descubre
+
                     cómo funciona cada movimiento del cubo.
+
                 </p>
+
+
 
             </div>
 
 
+
+
+
             <div class="feature">
 
+
+
                 <div class="feature-icon">
+
                     🎮
+
                 </div>
 
+
+
                 <h3>
+
                     Practica de forma interactiva
+
                 </h3>
 
+
+
                 <p>
+
                     Manipula el cubo directamente en pantalla
+
                     y experimenta con diferentes movimientos.
+
                 </p>
 
+
+
             </div>
+
+
+
 
 
             <div class="feature">
 
+
+
                 <div class="feature-icon">
+
                     🏆
+
                 </div>
 
+
+
                 <h3>
+
                     Supera nuevos desafíos
+
                 </h3>
 
+
+
                 <p>
+
                     Mejora tus tiempos, practica algoritmos
+
                     y prepárate para resolver cubos más grandes.
+
                 </p>
 
+
+
             </div>
+
+
 
         </section>
 
 
+
+
+
         <!-- =====================================================
+
              BOTTOM CTA
+
         ====================================================== -->
 
+
+
         <section
+
             class="bottom-section"
+
             id="como-funciona"
+
         >
+
+
 
             <h2>
+
                 ¿Listo para hacer tu primer movimiento?
+
             </h2>
 
+
+
             <p>
+
                 Entra a easyRubik y comienza a practicar.
+
                 Tu próximo cubo resuelto empieza aquí.
+
             </p>
 
 
+
+
+
             <a
+
                 href="{% url 'login' %}"
+
                 class="btn btn-primary"
+
             >
+
+
 
                  Empezar a aprender
 
+
+
                 <span class="arrow">
+
                     →
+
                 </span>
+
+
 
             </a>
 
+
+
         </section>
+
+
 
     </main>
 
 
+
+
+
     <!-- =========================================================
+
          FOOTER
+
     ========================================================== -->
+
+
 
     <footer>
 
-        <div>
-            © 2026 easyRubik
-        </div>
+
 
         <div>
-            Aprende jugando 
+
+            © 2026 easyRubik
+
         </div>
+
+
+
+        <div>
+
+            Aprende jugando&#x20;
+
+        </div>
+
+
 
     </footer>
 
+
+
+
+    <script>
+        (() => {
+            const stage = document.getElementById("homePuzzleStage");
+            const title = document.getElementById("homePuzzleTitle");
+            const description = document.getElementById("homePuzzleDescription");
+            const dots = document.getElementById("homePuzzleDots");
+            const previousButton = document.getElementById("homePuzzlePrev");
+            const nextButton = document.getElementById("homePuzzleNext");
+
+            if (!stage || !title || !description || !dots) {
+                return;
+            }
+
+            const faceDefinitions = [
+                ["front", "green"],
+                ["back", "blue"],
+                ["right", "red"],
+                ["left", "orange"],
+                ["top", "white"],
+                ["bottom", "yellow"]
+            ];
+
+            const puzzles = [
+                {
+                    type: "cube",
+                    size: 3,
+                    title: "3×3×3",
+                    description: "El clásico."
+                },
+                {
+                    type: "cube",
+                    size: 4,
+                    title: "4×4×4",
+                    description: "Más piezas. Más desafío."
+                },
+                {
+                    type: "cube",
+                    size: 5,
+                    title: "5×5×5",
+                    description: "Sube de nivel."
+                },
+                {
+                    type: "cube",
+                    size: 6,
+                    title: "6×6×6",
+                    description: "Para quienes quieren más."
+                },
+                {
+                    type: "mirror",
+                    size: 3,
+                    title: "Mirror 3×3×3",
+                    description: "Resuelve por forma."
+                },
+                {
+                    type: "megaminx",
+                    title: "Megaminx",
+                    description: "Doce caras por descubrir."
+                },
+                {
+                    type: "pyraminx",
+                    title: "Pyraminx",
+                    description: "Triangular y veloz."
+                }
+            ];
+
+            let currentIndex = 0;
+            let autoTimer = null;
+            let changing = false;
+
+            function createCube(size, mirror = false) {
+                const cube = document.createElement("div");
+
+                cube.className =
+                    "rubik-carousel-cube" +
+                    (mirror ? " mirror-cube" : "");
+
+                faceDefinitions.forEach(([faceName, color]) => {
+                    const face = document.createElement("div");
+
+                    face.className =
+                        `carousel-face carousel-${faceName} n${size}`;
+
+                    face.style.setProperty("--n", size);
+
+                    const stickerCount = size * size;
+
+                    for (let i = 0; i < stickerCount; i += 1) {
+                        const sticker = document.createElement("div");
+
+                        sticker.className = mirror
+                            ? "carousel-sticker"
+                            : `carousel-sticker sticker-${color}`;
+
+                        face.appendChild(sticker);
+                    }
+
+                    cube.appendChild(face);
+                });
+
+                return cube;
+            }
+
+
+            /* =====================================================
+               MINI RENDER 3D PARA PUZZLES ESPECIALES
+
+               No carga los motores completos de los simuladores.
+               Usa una versión liviana de su geometría para el Home.
+            ===================================================== */
+
+            const reducedMotion =
+                window.matchMedia &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+            const vecAdd = (a, b) => [
+                a[0] + b[0],
+                a[1] + b[1],
+                a[2] + b[2]
+            ];
+
+            const vecSub = (a, b) => [
+                a[0] - b[0],
+                a[1] - b[1],
+                a[2] - b[2]
+            ];
+
+            const vecMul = (a, s) => [
+                a[0] * s,
+                a[1] * s,
+                a[2] * s
+            ];
+
+            const vecDot = (a, b) =>
+                a[0] * b[0] +
+                a[1] * b[1] +
+                a[2] * b[2];
+
+            const vecCross = (a, b) => [
+                a[1] * b[2] - a[2] * b[1],
+                a[2] * b[0] - a[0] * b[2],
+                a[0] * b[1] - a[1] * b[0]
+            ];
+
+            const vecLength = (a) =>
+                Math.hypot(a[0], a[1], a[2]);
+
+            const vecUnit = (a) => {
+                const length = vecLength(a) || 1;
+                return [
+                    a[0] / length,
+                    a[1] / length,
+                    a[2] / length
+                ];
+            };
+
+            const vecMean = (points) => {
+                const sum = points.reduce(
+                    (acc, point) => vecAdd(acc, point),
+                    [0, 0, 0]
+                );
+
+                return vecMul(sum, 1 / points.length);
+            };
+
+            function rotatePreviewPoint(point, rx, ry, rz = 0) {
+                let [x, y, z] = point;
+
+                let c = Math.cos(ry);
+                let s = Math.sin(ry);
+
+                [x, z] = [
+                    x * c + z * s,
+                    -x * s + z * c
+                ];
+
+                c = Math.cos(rx);
+                s = Math.sin(rx);
+
+                [y, z] = [
+                    y * c - z * s,
+                    y * s + z * c
+                ];
+
+                if (rz) {
+                    c = Math.cos(rz);
+                    s = Math.sin(rz);
+
+                    [x, y] = [
+                        x * c - y * s,
+                        x * s + y * c
+                    ];
+                }
+
+                return [x, y, z];
+            }
+
+            function projectPreviewPoint(point, canvas, options = {}) {
+                const camera = options.camera || 6.5;
+                const focal = options.focal || 720;
+                const denominator = Math.max(.7, camera - point[2]);
+                const scale = focal / denominator;
+
+                return {
+                    x: canvas.width / 2 + point[0] * scale,
+                    y: canvas.height / 2 - point[1] * scale,
+                    z: point[2],
+                    scale
+                };
+            }
+
+            function shadeHex(hex, factor) {
+                const source = hex.replace("#", "");
+                const number = parseInt(source, 16);
+
+                const r = Math.max(
+                    0,
+                    Math.min(
+                        255,
+                        Math.round(((number >> 16) & 255) * factor)
+                    )
+                );
+
+                const g = Math.max(
+                    0,
+                    Math.min(
+                        255,
+                        Math.round(((number >> 8) & 255) * factor)
+                    )
+                );
+
+                const b = Math.max(
+                    0,
+                    Math.min(
+                        255,
+                        Math.round((number & 255) * factor)
+                    )
+                );
+
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+
+            function drawPolygon(ctx, points, fill, stroke, lineWidth = 2) {
+                if (!points.length) {
+                    return;
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, points[0].y);
+
+                for (let i = 1; i < points.length; i += 1) {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
+
+                ctx.closePath();
+
+                if (fill) {
+                    ctx.fillStyle = fill;
+                    ctx.fill();
+                }
+
+                if (stroke) {
+                    ctx.strokeStyle = stroke;
+                    ctx.lineWidth = lineWidth;
+                    ctx.lineJoin = "round";
+                    ctx.stroke();
+                }
+            }
+
+            /* -------------------------
+               MIRROR
+               Los cortes vienen del motor real.
+            ------------------------- */
+
+            const MIRROR_CUT_X = [-0.88, -0.5, 0.5, 2.12];
+            const MIRROR_CUT_Y = [-1.23, -0.5, 0.5, 1.77];
+            const MIRROR_CUT_Z = [-1.91, -0.5, 0.5, 1.09];
+            const MIRROR_SEAM = 0.018;
+
+            const mirrorCenter = [
+                (MIRROR_CUT_X[0] + MIRROR_CUT_X[3]) / 2,
+                (MIRROR_CUT_Y[0] + MIRROR_CUT_Y[3]) / 2,
+                (MIRROR_CUT_Z[0] + MIRROR_CUT_Z[3]) / 2
+            ];
+
+            const mirrorFaceDefinitions = [
+                { indices: [0, 3, 2, 1], normal: [0, 0, -1] },
+                { indices: [4, 5, 6, 7], normal: [0, 0, 1] },
+                { indices: [0, 4, 7, 3], normal: [-1, 0, 0] },
+                { indices: [1, 2, 6, 5], normal: [1, 0, 0] },
+                { indices: [0, 1, 5, 4], normal: [0, -1, 0] },
+                { indices: [3, 7, 6, 2], normal: [0, 1, 0] }
+            ];
+
+            function buildMirrorPreviewFaces(rx, ry) {
+                const faces = [];
+
+                for (let xi = 0; xi < 3; xi += 1) {
+                    for (let yi = 0; yi < 3; yi += 1) {
+                        for (let zi = 0; zi < 3; zi += 1) {
+                            if (xi === 1 && yi === 1 && zi === 1) {
+                                continue;
+                            }
+
+                            const x0 =
+                                MIRROR_CUT_X[xi] -
+                                mirrorCenter[0] +
+                                MIRROR_SEAM;
+
+                            const x1 =
+                                MIRROR_CUT_X[xi + 1] -
+                                mirrorCenter[0] -
+                                MIRROR_SEAM;
+
+                            const y0 =
+                                MIRROR_CUT_Y[yi] -
+                                mirrorCenter[1] +
+                                MIRROR_SEAM;
+
+                            const y1 =
+                                MIRROR_CUT_Y[yi + 1] -
+                                mirrorCenter[1] -
+                                MIRROR_SEAM;
+
+                            const z0 =
+                                MIRROR_CUT_Z[zi] -
+                                mirrorCenter[2] +
+                                MIRROR_SEAM;
+
+                            const z1 =
+                                MIRROR_CUT_Z[zi + 1] -
+                                mirrorCenter[2] -
+                                MIRROR_SEAM;
+
+                            const vertices = [
+                                [x0, y0, z0],
+                                [x1, y0, z0],
+                                [x1, y1, z0],
+                                [x0, y1, z0],
+                                [x0, y0, z1],
+                                [x1, y0, z1],
+                                [x1, y1, z1],
+                                [x0, y1, z1]
+                            ];
+
+                            mirrorFaceDefinitions.forEach((face) => {
+                                const normal =
+                                    rotatePreviewPoint(
+                                        face.normal,
+                                        rx,
+                                        ry
+                                    );
+
+                                if (normal[2] <= .04) {
+                                    return;
+                                }
+
+                                const rotated =
+                                    face.indices.map((index) =>
+                                        rotatePreviewPoint(
+                                            vertices[index],
+                                            rx,
+                                            ry
+                                        )
+                                    );
+
+                                faces.push({
+                                    vertices: rotated,
+                                    normal,
+                                    depth:
+                                        rotated.reduce(
+                                            (sum, point) => sum + point[2],
+                                            0
+                                        ) / rotated.length
+                                });
+                            });
+                        }
+                    }
+                }
+
+                return faces.sort(
+                    (a, b) => a.depth - b.depth
+                );
+            }
+
+            function renderMirrorPreview(ctx, canvas, now) {
+                const spin = reducedMotion
+                    ? 0
+                    : Math.sin(now * .00022) * .18;
+
+                const rx = -.38;
+                const ry = -.72 + spin;
+                const faces = buildMirrorPreviewFaces(rx, ry);
+                const light = vecUnit([-.35, .8, 1]);
+
+                faces.forEach((face) => {
+                    const points =
+                        face.vertices.map((point) =>
+                            projectPreviewPoint(
+                                vecMul(point, 1.05),
+                                canvas,
+                                {
+                                    camera: 6.2,
+                                    focal: 760
+                                }
+                            )
+                        );
+
+                    const lightValue =
+                        Math.max(
+                            .12,
+                            vecDot(
+                                vecUnit(face.normal),
+                                light
+                            )
+                        );
+
+                    const brightness =
+                        .72 + lightValue * .46;
+
+                    const minX =
+                        Math.min(...points.map((point) => point.x));
+
+                    const maxX =
+                        Math.max(...points.map((point) => point.x));
+
+                    const minY =
+                        Math.min(...points.map((point) => point.y));
+
+                    const maxY =
+                        Math.max(...points.map((point) => point.y));
+
+                    const gradient =
+                        ctx.createLinearGradient(
+                            minX,
+                            minY,
+                            maxX,
+                            maxY
+                        );
+
+                    gradient.addColorStop(
+                        0,
+                        shadeHex("#f6f8fb", Math.min(1.12, brightness + .18))
+                    );
+
+                    gradient.addColorStop(
+                        .45,
+                        shadeHex("#b7beca", brightness)
+                    );
+
+                    gradient.addColorStop(
+                        1,
+                        shadeHex("#737c8b", Math.max(.58, brightness - .14))
+                    );
+
+                    drawPolygon(
+                        ctx,
+                        points,
+                        gradient,
+                        "rgba(12,15,22,.96)",
+                        3.2
+                    );
+
+                    ctx.save();
+                    ctx.globalAlpha = .28;
+                    drawPolygon(
+                        ctx,
+                        points,
+                        null,
+                        "rgba(255,255,255,.72)",
+                        .9
+                    );
+                    ctx.restore();
+                });
+            }
+
+            /* -------------------------
+               PYRAMINX
+               Tetraedro + subdivisión 3×3.
+            ------------------------- */
+
+            const PYR_VERTICES = {
+                A: [0, 1.5, 0],
+                B: [-1.35, -0.8, 0.9],
+                C: [1.35, -0.8, 0.9],
+                D: [0, -0.8, -1.2]
+            };
+
+            const PYR_CENTER = [0, -.225, .15];
+
+            const PYR_FACES = [
+                {
+                    vertices: [
+                        PYR_VERTICES.A,
+                        PYR_VERTICES.B,
+                        PYR_VERTICES.C
+                    ],
+                    color: "#35d47a"
+                },
+                {
+                    vertices: [
+                        PYR_VERTICES.A,
+                        PYR_VERTICES.C,
+                        PYR_VERTICES.D
+                    ],
+                    color: "#ff4d5a"
+                },
+                {
+                    vertices: [
+                        PYR_VERTICES.A,
+                        PYR_VERTICES.D,
+                        PYR_VERTICES.B
+                    ],
+                    color: "#4f9cff"
+                },
+                {
+                    vertices: [
+                        PYR_VERTICES.B,
+                        PYR_VERTICES.D,
+                        PYR_VERTICES.C
+                    ],
+                    color: "#ffd43b"
+                }
+            ];
+
+            function pyrPoint(a, b, c, i, j, n) {
+                const u = i / n;
+                const v = j / n;
+
+                return [
+                    a[0] +
+                        (b[0] - a[0]) * u +
+                        (c[0] - a[0]) * v,
+                    a[1] +
+                        (b[1] - a[1]) * u +
+                        (c[1] - a[1]) * v,
+                    a[2] +
+                        (b[2] - a[2]) * u +
+                        (c[2] - a[2]) * v
+                ];
+            }
+
+            function buildPyraminxCells(rx, ry) {
+                const cells = [];
+                const n = 3;
+
+                PYR_FACES.forEach((face) => {
+                    const [rawA, rawB, rawC] = face.vertices;
+
+                    const a = vecSub(rawA, PYR_CENTER);
+                    const b = vecSub(rawB, PYR_CENTER);
+                    const c = vecSub(rawC, PYR_CENTER);
+
+                    const faceNormal =
+                        vecUnit(
+                            vecCross(
+                                vecSub(b, a),
+                                vecSub(c, a)
+                            )
+                        );
+
+                    const rotatedNormal =
+                        rotatePreviewPoint(
+                            faceNormal,
+                            rx,
+                            ry
+                        );
+
+                    for (let i = 0; i < n; i += 1) {
+                        for (let j = 0; j < n - i; j += 1) {
+                            const up = [
+                                pyrPoint(a, b, c, i, j, n),
+                                pyrPoint(a, b, c, i + 1, j, n),
+                                pyrPoint(a, b, c, i, j + 1, n)
+                            ].map((point) =>
+                                rotatePreviewPoint(
+                                    point,
+                                    rx,
+                                    ry
+                                )
+                            );
+
+                            cells.push({
+                                vertices: up,
+                                color: face.color,
+                                normal: rotatedNormal,
+                                depth:
+                                    up.reduce(
+                                        (sum, point) => sum + point[2],
+                                        0
+                                    ) / 3
+                            });
+
+                            if (i + j <= n - 2) {
+                                const down = [
+                                    pyrPoint(a, b, c, i + 1, j, n),
+                                    pyrPoint(a, b, c, i + 1, j + 1, n),
+                                    pyrPoint(a, b, c, i, j + 1, n)
+                                ].map((point) =>
+                                    rotatePreviewPoint(
+                                        point,
+                                        rx,
+                                        ry
+                                    )
+                                );
+
+                                cells.push({
+                                    vertices: down,
+                                    color: face.color,
+                                    normal: rotatedNormal,
+                                    depth:
+                                        down.reduce(
+                                            (sum, point) => sum + point[2],
+                                            0
+                                        ) / 3
+                                });
+                            }
+                        }
+                    }
+                });
+
+                return cells.sort(
+                    (a, b) => a.depth - b.depth
+                );
+            }
+
+            function renderPyraminxPreview(ctx, canvas, now) {
+                const spin =
+                    reducedMotion
+                        ? 0
+                        : Math.sin(now * .0003) * .22;
+
+                const rx = -.24;
+                const ry = -.58 + spin;
+                const cells =
+                    buildPyraminxCells(rx, ry);
+
+                const light = vecUnit([-.25, .9, 1]);
+
+                cells.forEach((cell) => {
+                    const points =
+                        cell.vertices.map((point) =>
+                            projectPreviewPoint(
+                                vecMul(point, 1.12),
+                                canvas,
+                                {
+                                    camera: 5.8,
+                                    focal: 790
+                                }
+                            )
+                        );
+
+                    const lightValue =
+                        Math.max(
+                            .15,
+                            Math.abs(
+                                vecDot(
+                                    vecUnit(cell.normal),
+                                    light
+                                )
+                            )
+                        );
+
+                    const fill =
+                        shadeHex(
+                            cell.color,
+                            .72 + lightValue * .34
+                        );
+
+                    drawPolygon(
+                        ctx,
+                        points,
+                        fill,
+                        "#10141b",
+                        5
+                    );
+
+                    ctx.save();
+                    ctx.globalAlpha = .16;
+                    drawPolygon(
+                        ctx,
+                        points,
+                        null,
+                        "rgba(255,255,255,.65)",
+                        1
+                    );
+                    ctx.restore();
+                });
+            }
+
+            /* -------------------------
+               MEGAMINX
+               Dodecaedro + stickers reales.
+            ------------------------- */
+
+            const MEGA_EPS = 1e-7;
+            const MEGA_CUT = .77;
+            const MEGA_TURN = 2 * Math.PI / 5;
+
+            const MEGA_COLORS = [
+                "#f2f4f7",
+                "#57c990",
+                "#5ba7f4",
+                "#f1799b",
+                "#b296ed",
+                "#ffd45d",
+                "#ff923e",
+                "#4ed5dd",
+                "#cd4b59",
+                "#386ebb",
+                "#b2dc60",
+                "#c9cbd1"
+            ];
+
+            const MEGA_NORMALS = [[0, 1, 0]];
+
+            {
+                const ringY = 1 / Math.sqrt(5);
+                const ringR = 2 / Math.sqrt(5);
+
+                for (let i = 0; i < 5; i += 1) {
+                    MEGA_NORMALS.push([
+                        ringR * Math.sin(i * MEGA_TURN),
+                        ringY,
+                        ringR * Math.cos(i * MEGA_TURN)
+                    ]);
+                }
+
+                for (let i = 0; i < 5; i += 1) {
+                    MEGA_NORMALS.push([
+                        ringR * Math.sin(
+                            i * MEGA_TURN +
+                            MEGA_TURN / 2
+                        ),
+                        -ringY,
+                        ringR * Math.cos(
+                            i * MEGA_TURN +
+                            MEGA_TURN / 2
+                        )
+                    ]);
+                }
+
+                MEGA_NORMALS.push([0, -1, 0]);
+            }
+
+            function megaUnique(points) {
+                return points.filter(
+                    (point, index) =>
+                        points.findIndex(
+                            (other) =>
+                                vecLength(
+                                    vecSub(point, other)
+                                ) < MEGA_EPS
+                        ) === index
+                );
+            }
+
+            function megaOrdered(points, normal) {
+                const center = vecMean(points);
+                const u =
+                    vecUnit(
+                        vecSub(points[0], center)
+                    );
+
+                const v =
+                    vecCross(normal, u);
+
+                return points
+                    .slice()
+                    .sort((a, b) => {
+                        const da =
+                            vecSub(a, center);
+
+                        const db =
+                            vecSub(b, center);
+
+                        return (
+                            Math.atan2(
+                                vecDot(da, v),
+                                vecDot(da, u)
+                            ) -
+                            Math.atan2(
+                                vecDot(db, v),
+                                vecDot(db, u)
+                            )
+                        );
+                    });
+            }
+
+            function megaBasePolyhedron() {
+                const vertices = [];
+
+                for (let i = 0; i < 12; i += 1) {
+                    for (let j = i + 1; j < 12; j += 1) {
+                        for (let k = j + 1; k < 12; k += 1) {
+                            const a = MEGA_NORMALS[i];
+                            const b = MEGA_NORMALS[j];
+                            const c = MEGA_NORMALS[k];
+
+                            const denominator =
+                                vecDot(
+                                    a,
+                                    vecCross(b, c)
+                                );
+
+                            if (
+                                Math.abs(denominator) <
+                                MEGA_EPS
+                            ) {
+                                continue;
+                            }
+
+                            const point =
+                                vecMul(
+                                    vecAdd(
+                                        vecAdd(
+                                            vecCross(b, c),
+                                            vecCross(c, a)
+                                        ),
+                                        vecCross(a, b)
+                                    ),
+                                    1 / denominator
+                                );
+
+                            if (
+                                MEGA_NORMALS.every(
+                                    (normal) =>
+                                        vecDot(
+                                            normal,
+                                            point
+                                        ) <= 1 + MEGA_EPS
+                                )
+                            ) {
+                                vertices.push(point);
+                            }
+                        }
+                    }
+                }
+
+                return MEGA_NORMALS.map(
+                    (normal, face) => ({
+                        n: normal,
+                        face,
+                        vs: megaOrdered(
+                            megaUnique(
+                                vertices.filter(
+                                    (point) =>
+                                        Math.abs(
+                                            vecDot(
+                                                normal,
+                                                point
+                                            ) - 1
+                                        ) < MEGA_EPS
+                                )
+                            ),
+                            normal
+                        )
+                    })
+                );
+            }
+
+            function megaClip(polyhedron, normal, distance) {
+                const result = [];
+                const cap = [];
+
+                polyhedron.forEach((face) => {
+                    const vertices = [];
+
+                    for (
+                        let i = 0;
+                        i < face.vs.length;
+                        i += 1
+                    ) {
+                        const a = face.vs[i];
+                        const b =
+                            face.vs[
+                                (i + 1) %
+                                face.vs.length
+                            ];
+
+                        const da =
+                            vecDot(a, normal) -
+                            distance;
+
+                        const db =
+                            vecDot(b, normal) -
+                            distance;
+
+                        if (da <= MEGA_EPS) {
+                            vertices.push(a);
+                        }
+
+                        if ((da > MEGA_EPS) !== (db > MEGA_EPS)) {
+                            const point =
+                                vecAdd(
+                                    a,
+                                    vecMul(
+                                        vecSub(b, a),
+                                        da / (da - db)
+                                    )
+                                );
+
+                            vertices.push(point);
+                            cap.push(point);
+                        }
+                    }
+
+                    const clean =
+                        megaUnique(vertices);
+
+                    if (clean.length >= 3) {
+                        result.push({
+                            ...face,
+                            vs: clean
+                        });
+                    }
+                });
+
+                const rim = megaUnique(cap);
+
+                if (rim.length >= 3) {
+                    result.push({
+                        n: normal,
+                        face: -1,
+                        vs: megaOrdered(
+                            rim,
+                            normal
+                        )
+                    });
+                }
+
+                return result;
+            }
+
+            const MEGA_BASE =
+                megaBasePolyhedron();
+
+            function buildMegaStickerPreview() {
+                const masks = [];
+
+                for (let a = 0; a < 12; a += 1) {
+                    masks.push([a]);
+
+                    for (let b = a + 1; b < 12; b += 1) {
+                        if (
+                            vecDot(
+                                MEGA_NORMALS[a],
+                                MEGA_NORMALS[b]
+                            ) <= .44
+                        ) {
+                            continue;
+                        }
+
+                        masks.push([a, b]);
+
+                        for (
+                            let c = b + 1;
+                            c < 12;
+                            c += 1
+                        ) {
+                            if (
+                                vecDot(
+                                    MEGA_NORMALS[a],
+                                    MEGA_NORMALS[c]
+                                ) > .44 &&
+                                vecDot(
+                                    MEGA_NORMALS[b],
+                                    MEGA_NORMALS[c]
+                                ) > .44
+                            ) {
+                                masks.push([a, b, c]);
+                            }
+                        }
+                    }
+                }
+
+                const stickers = [];
+
+                masks.forEach((faces) => {
+                    let polyhedron = MEGA_BASE;
+
+                    for (
+                        let i = 0;
+                        i < 12;
+                        i += 1
+                    ) {
+                        const included =
+                            faces.includes(i);
+
+                        polyhedron =
+                            megaClip(
+                                polyhedron,
+                                vecMul(
+                                    MEGA_NORMALS[i],
+                                    included ? -1 : 1
+                                ),
+                                MEGA_CUT *
+                                    (
+                                        included
+                                            ? -1
+                                            : 1
+                                    )
+                            );
+                    }
+
+                    polyhedron
+                        .filter(
+                            (face) =>
+                                face.face >= 0
+                        )
+                        .forEach((face) => {
+                            const center =
+                                vecMean(face.vs);
+
+                            const vertices =
+                                face.vs.map(
+                                    (point) =>
+                                        vecAdd(
+                                            center,
+                                            vecMul(
+                                                vecSub(
+                                                    point,
+                                                    center
+                                                ),
+                                                .91
+                                            )
+                                        )
+                                );
+
+                            stickers.push({
+                                vertices,
+                                face: face.face,
+                                normal:
+                                    MEGA_NORMALS[
+                                        face.face
+                                    ]
+                            });
+                        });
+                });
+
+                return stickers;
+            }
+
+            const MEGA_STICKERS =
+                buildMegaStickerPreview();
+
+            function renderMegaminxPreview(ctx, canvas, now) {
+                const spin =
+                    reducedMotion
+                        ? 0
+                        : now * .00011;
+
+                const rx = -.36;
+                const ry = -.42 + spin;
+
+                const light = vecUnit([-.4, .85, 1]);
+
+                const baseFaces =
+                    MEGA_BASE
+                        .map((face) => {
+                            const normal =
+                                rotatePreviewPoint(
+                                    face.n,
+                                    rx,
+                                    ry
+                                );
+
+                            const vertices =
+                                face.vs.map(
+                                    (point) =>
+                                        rotatePreviewPoint(
+                                            vecMul(
+                                                point,
+                                                1.28
+                                            ),
+                                            rx,
+                                            ry
+                                        )
+                                );
+
+                            return {
+                                normal,
+                                vertices,
+                                depth:
+                                    vertices.reduce(
+                                        (sum, point) =>
+                                            sum + point[2],
+                                        0
+                                    ) /
+                                    vertices.length
+                            };
+                        })
+                        .filter(
+                            (face) =>
+                                face.normal[2] >
+                                .025
+                        )
+                        .sort(
+                            (a, b) =>
+                                a.depth - b.depth
+                        );
+
+                baseFaces.forEach((face) => {
+                    const points =
+                        face.vertices.map(
+                            (point) =>
+                                projectPreviewPoint(
+                                    point,
+                                    canvas,
+                                    {
+                                        camera: 6.15,
+                                        focal: 790
+                                    }
+                                )
+                        );
+
+                    drawPolygon(
+                        ctx,
+                        points,
+                        "#11161f",
+                        "rgba(5,7,11,.92)",
+                        3
+                    );
+                });
+
+                const visibleStickers =
+                    MEGA_STICKERS
+                        .map((sticker) => {
+                            const normal =
+                                rotatePreviewPoint(
+                                    sticker.normal,
+                                    rx,
+                                    ry
+                                );
+
+                            const vertices =
+                                sticker.vertices.map(
+                                    (point) =>
+                                        rotatePreviewPoint(
+                                            vecMul(
+                                                point,
+                                                1.28
+                                            ),
+                                            rx,
+                                            ry
+                                        )
+                                );
+
+                            return {
+                                ...sticker,
+                                normal,
+                                vertices,
+                                depth:
+                                    vertices.reduce(
+                                        (sum, point) =>
+                                            sum + point[2],
+                                        0
+                                    ) /
+                                    vertices.length
+                            };
+                        })
+                        .filter(
+                            (sticker) =>
+                                sticker.normal[2] >
+                                .025
+                        )
+                        .sort(
+                            (a, b) =>
+                                a.depth - b.depth
+                        );
+
+                visibleStickers.forEach(
+                    (sticker) => {
+                        const points =
+                            sticker.vertices.map(
+                                (point) =>
+                                    projectPreviewPoint(
+                                        point,
+                                        canvas,
+                                        {
+                                            camera: 6.15,
+                                            focal: 790
+                                        }
+                                    )
+                            );
+
+                        const lightValue =
+                            Math.max(
+                                .16,
+                                vecDot(
+                                    vecUnit(
+                                        sticker.normal
+                                    ),
+                                    light
+                                )
+                            );
+
+                        const fill =
+                            shadeHex(
+                                MEGA_COLORS[
+                                    sticker.face
+                                ],
+                                .76 +
+                                    lightValue *
+                                        .28
+                            );
+
+                        drawPolygon(
+                            ctx,
+                            points,
+                            fill,
+                            "#10141b",
+                            2.2
+                        );
+
+                        ctx.save();
+                        ctx.globalAlpha = .13;
+                        drawPolygon(
+                            ctx,
+                            points,
+                            null,
+                            "rgba(255,255,255,.7)",
+                            .75
+                        );
+                        ctx.restore();
+                    }
+                );
+            }
+
+            function createSpecialPuzzleCanvas(type) {
+                const canvas =
+                    document.createElement("canvas");
+
+                canvas.width = 640;
+                canvas.height = 640;
+
+                canvas.className =
+                    `home-puzzle-canvas ${type}-preview`;
+
+                const ctx =
+                    canvas.getContext(
+                        "2d",
+                        {
+                            alpha: true
+                        }
+                    );
+
+                let animationFrame = 0;
+
+                function frame(now) {
+                    if (!canvas.isConnected) {
+                        window.cancelAnimationFrame(
+                            animationFrame
+                        );
+                        return;
+                    }
+
+                    ctx.clearRect(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+                    ctx.save();
+
+                    if (type === "mirror") {
+                        renderMirrorPreview(
+                            ctx,
+                            canvas,
+                            now
+                        );
+                    } else if (type === "megaminx") {
+                        renderMegaminxPreview(
+                            ctx,
+                            canvas,
+                            now
+                        );
+                    } else {
+                        renderPyraminxPreview(
+                            ctx,
+                            canvas,
+                            now
+                        );
+                    }
+
+                    ctx.restore();
+
+                    animationFrame =
+                        window.requestAnimationFrame(
+                            frame
+                        );
+                }
+
+                animationFrame =
+                    window.requestAnimationFrame(
+                        frame
+                    );
+
+                return canvas;
+            }
+
+            function createPyraminx() {
+                return createSpecialPuzzleCanvas(
+                    "pyraminx"
+                );
+            }
+
+            function createMegaminx() {
+                return createSpecialPuzzleCanvas(
+                    "megaminx"
+                );
+            }
+
+            function createMirror() {
+                return createSpecialPuzzleCanvas(
+                    "mirror"
+                );
+            }
+
+            function buildPuzzle(config) {
+                const wrapper = document.createElement("div");
+                wrapper.className = "home-puzzle";
+
+                let visual;
+
+                if (config.type === "cube") {
+                    visual = createCube(config.size);
+                } else if (config.type === "mirror") {
+                    visual = createMirror();
+                } else if (config.type === "megaminx") {
+                    visual = createMegaminx();
+                } else {
+                    visual = createPyraminx();
+                }
+
+                wrapper.appendChild(visual);
+                return wrapper;
+            }
+
+            function updateDots() {
+                Array
+                    .from(dots.children)
+                    .forEach((dot, index) => {
+                        dot.classList.toggle(
+                            "active",
+                            index === currentIndex
+                        );
+
+                        dot.setAttribute(
+                            "aria-current",
+                            index === currentIndex
+                                ? "true"
+                                : "false"
+                        );
+                    });
+            }
+
+            function renderPuzzle(index, instant = false) {
+                currentIndex =
+                    (index + puzzles.length) % puzzles.length;
+
+                const config = puzzles[currentIndex];
+
+                title.textContent = config.title;
+                description.textContent = config.description;
+
+                stage.replaceChildren(
+                    buildPuzzle(config)
+                );
+
+                updateDots();
+
+                if (instant) {
+                    stage.classList.remove("is-changing");
+                }
+            }
+
+            function changePuzzle(index) {
+                if (changing) {
+                    return;
+                }
+
+                changing = true;
+                stage.classList.add("is-changing");
+
+                window.setTimeout(() => {
+                    renderPuzzle(index);
+                    stage.classList.remove("is-changing");
+
+                    window.setTimeout(() => {
+                        changing = false;
+                    }, 340);
+                }, 270);
+            }
+
+            function nextPuzzle() {
+                changePuzzle(currentIndex + 1);
+            }
+
+            function previousPuzzle() {
+                changePuzzle(currentIndex - 1);
+            }
+
+            function restartAuto() {
+                window.clearInterval(autoTimer);
+                autoTimer = window.setInterval(nextPuzzle, 4300);
+            }
+
+            puzzles.forEach((puzzle, index) => {
+                const dot = document.createElement("button");
+
+                dot.type = "button";
+                dot.className = "puzzle-dot";
+                dot.setAttribute(
+                    "aria-label",
+                    `Mostrar ${puzzle.title}`
+                );
+
+                dot.addEventListener("click", () => {
+                    if (index !== currentIndex) {
+                        changePuzzle(index);
+                    }
+
+                    restartAuto();
+                });
+
+                dots.appendChild(dot);
+            });
+
+            previousButton.addEventListener("click", () => {
+                previousPuzzle();
+                restartAuto();
+            });
+
+            nextButton.addEventListener("click", () => {
+                nextPuzzle();
+                restartAuto();
+            });
+
+            const carousel = stage.closest(".puzzle-carousel");
+
+            carousel.addEventListener("mouseenter", () => {
+                window.clearInterval(autoTimer);
+            });
+
+            carousel.addEventListener("mouseleave", () => {
+                restartAuto();
+            });
+
+            document.addEventListener("visibilitychange", () => {
+                if (document.hidden) {
+                    window.clearInterval(autoTimer);
+                } else {
+                    restartAuto();
+                }
+            });
+
+            renderPuzzle(0, true);
+            restartAuto();
+        })();
+    </script>
+
 </body>
+
+
 
 </html>

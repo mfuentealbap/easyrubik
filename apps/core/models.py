@@ -3,7 +3,9 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+
 from .modelos_pago import PagoPremium
+
 
 class Perfil(models.Model):
     SEXOS = [
@@ -25,45 +27,23 @@ class Perfil(models.Model):
         on_delete=models.CASCADE,
         related_name="perfil",
     )
-
-    nombre = models.CharField(
-        max_length=100,
-        blank=True,
-    )
-
-    apellido = models.CharField(
-        max_length=100,
-        blank=True,
-    )
-
-    email = models.EmailField(
-        blank=True,
-    )
-
+    nombre = models.CharField(max_length=100, blank=True)
+    apellido = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(blank=True)
     sexo = models.CharField(
         max_length=10,
         choices=SEXOS,
         blank=True,
         default="",
     )
-
     avatar = models.CharField(
         max_length=20,
         choices=AVATARES,
         default="cubo",
     )
-
-    puntaje_total = models.PositiveIntegerField(
-        default=0,
-    )
-
-    nivel = models.PositiveIntegerField(
-        default=1,
-    )
-
-    fecha_registro = models.DateTimeField(
-        auto_now_add=True,
-    )
+    puntaje_total = models.PositiveIntegerField(default=0)
+    nivel = models.PositiveIntegerField(default=1)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
 
     @property
     def nombre_jugador(self):
@@ -82,29 +62,12 @@ class Perfil(models.Model):
 
 
 class Cubo(models.Model):
-    nombre = models.CharField(
-        max_length=100,
-    )
-
-    tipo = models.CharField(
-        max_length=50,
-    )
-
-    tamaño = models.CharField(
-        max_length=20,
-    )
-
-    dificultad = models.CharField(
-        max_length=30,
-    )
-
-    descripcion = models.TextField(
-        blank=True,
-    )
-
-    activo = models.BooleanField(
-        default=True,
-    )
+    nombre = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=50)
+    tamaño = models.CharField(max_length=20)
+    dificultad = models.CharField(max_length=30)
+    descripcion = models.TextField(blank=True)
+    activo = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nombre
@@ -116,29 +79,18 @@ class Partida(models.Model):
         on_delete=models.CASCADE,
         related_name="partidas",
     )
-
     cubo = models.ForeignKey(
         Cubo,
         on_delete=models.CASCADE,
         related_name="partidas",
     )
-
     tiempo = models.DecimalField(
         max_digits=8,
         decimal_places=2,
     )
-
-    movimientos = models.PositiveIntegerField(
-        default=0,
-    )
-
-    puntaje = models.PositiveIntegerField(
-        default=0,
-    )
-
-    fecha = models.DateTimeField(
-        auto_now_add=True,
-    )
+    movimientos = models.PositiveIntegerField(default=0)
+    puntaje = models.PositiveIntegerField(default=0)
+    fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.usuario.username} - {self.cubo.nombre}"
@@ -160,19 +112,12 @@ class ExperienciaCubo(models.Model):
         on_delete=models.CASCADE,
         related_name="experiencias_cubos",
     )
-
     tipo = models.CharField(
         max_length=20,
         choices=TIPOS,
     )
-
-    experiencia = models.PositiveIntegerField(
-        default=0,
-    )
-
-    resto_practica_ms = models.PositiveIntegerField(
-        default=0,
-    )
+    experiencia = models.PositiveIntegerField(default=0)
+    resto_practica_ms = models.PositiveIntegerField(default=0)
 
     class Meta:
         constraints = [
@@ -232,22 +177,16 @@ class SesionPractica(models.Model):
         on_delete=models.CASCADE,
         related_name="sesion_practica",
     )
-
     token = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
     )
-
     tipo = models.CharField(
         max_length=20,
         choices=ExperienciaCubo.TIPOS,
     )
-
     ultimo_pulso = models.DateTimeField()
-
-    secuencia = models.PositiveIntegerField(
-        default=0,
-    )
+    secuencia = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return (
@@ -262,27 +201,20 @@ class Suscripcion(models.Model):
         on_delete=models.CASCADE,
         related_name="suscripcion",
     )
-
-    premium = models.BooleanField(
-        default=False,
-    )
-
+    premium = models.BooleanField(default=False)
     fecha_inicio = models.DateTimeField(
         null=True,
         blank=True,
     )
-
     fecha_fin = models.DateTimeField(
         null=True,
         blank=True,
     )
-
     proveedor = models.CharField(
         max_length=30,
         blank=True,
         default="",
     )
-
     id_suscripcion_externa = models.CharField(
         max_length=200,
         blank=True,
@@ -303,4 +235,43 @@ class Suscripcion(models.Model):
         estado = "Premium" if self.esta_activa else "Gratis"
         return f"{self.usuario.username} - {estado}"
 
-    
+
+class RecuperacionClave(models.Model):
+    clave = models.CharField(
+        max_length=64,
+        primary_key=True,
+    )
+    usuario = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    token_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+    )
+    codigo_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+    )
+    password_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+    )
+    expira = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    verificado = models.BooleanField(default=False)
+    consumido = models.BooleanField(default=False)
+    ventana = models.DateTimeField(default=timezone.now)
+    ultimo_envio = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    envios = models.PositiveIntegerField(default=0)
+    intentos = models.PositiveIntegerField(default=0)

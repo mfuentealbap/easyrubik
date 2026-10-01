@@ -1,12 +1,9 @@
 from django.urls import path
-from . import views, experiencia, pagos
+
+from . import views, experiencia, pagos, recuperacion
 
 
 urlpatterns = [
-
-    path("aprender/3x3/", views.curso_3x3, name="curso_3x3"),
-
-    path("aprender/", views.aprender, name="aprender"),
     # Inicio
     path("", views.home, name="home"),
 
@@ -15,31 +12,58 @@ urlpatterns = [
     path("registro/", views.registro_view, name="registro"),
     path("logout/", views.logout_view, name="logout"),
 
-    # Perfil y selector
+    # Recuperación de contraseña
+    path(
+        "recuperar/",
+        recuperacion.solicitar,
+        name="recuperar_clave",
+    ),
+    path(
+        "recuperar/codigo/",
+        recuperacion.verificar,
+        name="recuperar_codigo",
+    ),
+    path(
+        "recuperar/nueva/",
+        recuperacion.nueva,
+        name="recuperar_nueva",
+    ),
+
+    # Perfil, selector y modos
     path("perfil/", views.perfil_view, name="perfil"),
     path("selector/", views.selector, name="selector"),
-    path("premium/", views.premium, name="premium"),
+    path(
+        "ElegirModo/",
+        views.ElegirModo,
+        name="elegir_modo",
+    ),
 
-    # Iniciar el pago de Premium
+    # Aprendizaje
+    path("aprender/", views.aprender, name="aprender"),
+    path(
+        "aprender/3x3/",
+        views.curso_3x3,
+        name="curso_3x3",
+    ),
+
+    # Premium y pagos
+    path("premium/", views.premium, name="premium"),
     path(
         "premium/pagar/",
         pagos.iniciar,
         name="pago_iniciar",
     ),
-
-    # Consultar el resultado de una compra
     path(
         "premium/resultado/<uuid:orden_id>/",
         pagos.resultado,
         name="pago_resultado",
     ),
-
-    # Recibir confirmaciones de Mercado Pago
     path(
         "pagos/mercadopago/webhook/",
         pagos.webhook,
         name="mp_webhook",
     ),
+
     # Experiencia por práctica
     path(
         "experiencia/iniciar/",
@@ -88,18 +112,9 @@ urlpatterns = [
         views.mirror,
         name="mirror",
     ),
-
-    # Desafío
     path(
         "desafio/",
         views.desafio,
         name="desafio",
     ),
-
-    path(
-        "ElegirModo/", 
-        views.ElegirModo, 
-        name="elegir_modo"
-        )
-  
 ]

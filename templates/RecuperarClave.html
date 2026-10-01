@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="same-origin">
+<meta name="robots" content="noindex,nofollow">
+<title>Recuperar cuenta · easyRubik</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top left,#183455,transparent 55%),#090d16;color:#f4f7ff;font:16px/1.6 system-ui,sans-serif}
+.panel{width:100%;max-width:480px;padding:32px;border:1px solid #ffffff20;border-radius:24px;background:#141c2be8;box-shadow:0 25px 70px #0005}
+.brand{font-weight:800;color:#90c4ff;margin:0 0 24px}
+.step{display:inline-block;margin:0 0 12px;padding:5px 10px;border:1px solid #4d6687;border-radius:999px;color:#bcd9ff;font-size:12px;font-weight:700}
+h1{font-size:26px;line-height:1.25;margin:0 0 16px}
+p,.helptext{color:#adbbd1}
+.helptext{display:block;font-size:13px}
+label{display:block;margin:18px 0 7px;font-weight:600}
+input{width:100%;padding:14px;border:1px solid #43526b;border-radius:11px;background:#0d1523;color:white;font:inherit}
+button{width:100%;margin:22px 0 14px;padding:14px;border:0;border-radius:11px;background:#85baff;color:#0b1830;font:700 15px system-ui;cursor:pointer}
+a{color:#a8ceff}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #b7d9ff;outline-offset:3px}
+.error,.errorlist{color:#ffb4b4}
+.error{padding:12px;background:#ef444417;border:1px solid #ef44444a;border-radius:10px}
+.errorlist{padding-left:20px;font-size:14px}
+.note{font-size:13px}
+.links{display:flex;flex-wrap:wrap;gap:15px;margin-top:18px}
+@media(max-width:480px){.panel{padding:24px}body{padding:16px}}
+</style>
+</head>
+
+<body>
+<main class="panel">
+    <p class="brand">easyRubik · Tu cuenta</p>
+
+    {% if paso == "listo" %}
+        <h1>Contraseña actualizada</h1>
+
+        <p>
+            Ya puedes iniciar sesión con tu nueva contraseña.
+        </p>
+
+        <p>
+            Las sesiones anteriores dejarán de ser válidas.
+        </p>
+
+        <a href="{% url 'login' %}">
+            Ir a iniciar sesión →
+        </a>
+
+    {% else %}
+
+        {% if paso == "usuario" %}
+            <span class="step">Paso 1 de 4</span>
+            <h1>¿Cuál es tu usuario?</h1>
+
+            <p>
+                Escribe el nombre de usuario con el que juegas en easyRubik.
+                Primero identificaremos tu cuenta y después comprobaremos
+                el correo asociado.
+            </p>
+
+        {% elif paso == "correo" %}
+            <span class="step">Paso 2 de 4</span>
+            <h1>Confirma tu correo</h1>
+
+            <p>
+                Escribe el correo que registraste en esa cuenta.
+                Debe coincidir con el correo guardado en tu usuario
+                y en tu perfil de easyRubik.
+            </p>
+
+            <p class="note">
+                El código se enviará únicamente al correo guardado
+                en la base de datos, nunca a un correo diferente.
+            </p>
+
+        {% elif paso == "codigo" %}
+            <span class="step">Paso 3 de 4</span>
+            <h1>Revisa tu correo</h1>
+
+            <p>
+                Si los datos coincidieron, recibirás un código
+                de 6 dígitos en el correo registrado de esa cuenta.
+            </p>
+
+            <p class="note">
+                Caduca a los 10 minutos. Revisa también spam
+                y utiliza este mismo navegador.
+            </p>
+
+        {% else %}
+            <span class="step">Paso 4 de 4</span>
+            <h1>Elige tu nueva contraseña</h1>
+
+            <p>
+                Escríbela dos veces para confirmar el cambio.
+            </p>
+        {% endif %}
+
+        {% if error %}
+            <p class="error" role="alert">{{ error }}</p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            {% for field in form %}
+                {{ field.label_tag }}
+                {{ field }}
+                {{ field.errors }}
+
+                {% if field.help_text %}
+                    <div class="helptext">
+                        {{ field.help_text }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <button type="submit">
+                {% if paso == "usuario" %}
+                    Continuar
+                {% elif paso == "correo" %}
+                    Comparar y enviar código
+                {% elif paso == "codigo" %}
+                    Verificar código
+                {% else %}
+                    Guardar contraseña
+                {% endif %}
+            </button>
+        </form>
+
+        {% if paso == "codigo" %}
+            <p class="note">
+                Puedes solicitar otro después de 60 segundos,
+                hasta 3 envíos por hora.
+                Hay un máximo de 5 intentos de código por hora.
+            </p>
+        {% endif %}
+
+        <div class="links">
+            <a href="{% url 'login' %}">
+                ← Volver al login
+            </a>
+
+            {% if paso == "correo" %}
+                <a href="{% url 'recuperar_clave' %}?reiniciar=1">
+                    Usar otro usuario
+                </a>
+            {% elif paso == "codigo" %}
+                <a href="{% url 'recuperar_clave' %}">
+                    Solicitar otro código
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</main>
+</body>
+</html>

@@ -287,15 +287,28 @@ MEDIA_ROOT = BASE_DIR / "media"
 # CORREO — SALIDA A CONSOLA
 # =========================================================
 
+# =========================================================
+# CORREO — SMTP GMAIL
+# =========================================================
+
 MAILERS = {
     "default": {
-        "BACKEND": (
-            "django.core.mail.backends.console.EmailBackend"
-        ),
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": "smtp.gmail.com",
+            "port": 587,
+            "username": os.environ.get("EASYRUBIK_EMAIL"),
+            "password": os.environ.get("EASYRUBIK_EMAIL_PASSWORD"),
+            "use_tls": True,
+            "timeout": 10,
+        },
     },
 }
 
-
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "EASYRUBIK_EMAIL",
+    "easyRubik"
+)
 # =========================================================
 # MERCADO PAGO — PREMIUM
 # =========================================================
