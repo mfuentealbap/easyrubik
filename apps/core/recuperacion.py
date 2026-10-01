@@ -1,8 +1,11 @@
+import json
 import logging
 import os
 import secrets
 
 from datetime import timedelta
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 from django import forms
 from django.conf import settings
@@ -122,33 +125,80 @@ def correo_registrado_del_usuario(usuario):
 
 
 def configuracion_correo():
+    """
+    Local:
+        - Usa Gmail/SMTP configurado en Django.
+    Railway:
+        - Usa Resend por HTTPS para evitar el bloqueo de SMTP.
+    """
+    en_railway = bool(os.environ.get("RAILWAY_ENVIRONMENT_ID"))
+
     modo = os.environ.get(
         "RECUPERACION_MODO",
-        "smtp",
+        "resend" if en_railway else "smtp",
     ).strip().lower()
 
+    # Consola solo para desarrollo local.
     if (
         modo == "consola"
         and settings.DEBUG
-        and not os.environ.get("RAILWAY_ENVIRONMENT_ID")
+        and not en_railway
     ):
-        return "consola", ""
+        return {
+            "modo": "consola",
+            "remitente": "",
+            "api_key": "",
+        }
 
-    remitente = str(
-        getattr(settings, "DEFAULT_FROM_EMAIL", "") or ""
-    ).strip()
+    if modo == "smtp":
+        remitente = str(
+            getattr(settings, "DEFAULT_FROM_EMAIL", "") or ""
+        ).strip()
 
-    if not remitente:
-        raise RuntimeError(
-            "Falta configurar DEFAULT_FROM_EMAIL."
-        )
+        if not remitente:
+            raise RuntimeError(
+                "Falta configurar DEFAULT_FROM_EMAIL."
+            )
 
-    return "smtp", remitente
+        return {
+            "modo": "smtp",
+            "remitente": remitente,
+            "api_key": "",
+        }
+
+    if modo == "resend":
+        api_key = os.environ.get(
+            "RESEND_API_KEY",
+            "",
+        ).strip()
+
+        remitente = os.environ.get(
+            "RECUPERACION_REMITENTE",
+            "",
+        ).strip()
+
+        if not api_key or not remitente:
+            raise RuntimeError(
+                "Falta configurar RESEND_API_KEY o "
+                "RECUPERACION_REMITENTE."
+            )
+
+        return {
+            "modo": "resend",
+            "remitente": remitente,
+            "api_key": api_key,
+        }
+
+    raise RuntimeError(
+        "RECUPERACION_MODO debe ser smtp, resend o consola."
+    )
 
 
 @sensitive_variables()
 def enviar_codigo(email, codigo, identificador):
-    modo, remitente = configuracion_correo()
+    config = configuracion_correo()
+    modo = config["modo"]
+    remitente = config["remitente"]
 
     texto = (
         f"Tu código de recuperación de easyRubik es: {codigo}\n\n"
@@ -168,7 +218,15 @@ def enviar_codigo(email, codigo, identificador):
             [email],
             connection=EmailBackend(),
         ).send(fail_silently=False)
-    else:
+
+        if enviados != 1:
+            raise RuntimeError(
+                "El backend de consola no confirmó el envío."
+            )
+
+        return
+
+    if modo == "smtp":
         enviados = EmailMessage(
             subject="Recupera tu cuenta de easyRubik",
             body=texto,
@@ -176,9 +234,51 @@ def enviar_codigo(email, codigo, identificador):
             to=[email],
         ).send(fail_silently=False)
 
-    if enviados != 1:
+        if enviados != 1:
+            raise RuntimeError(
+                "El servidor SMTP no confirmó el envío."
+            )
+
+        return
+
+    # Railway / producción: Resend mediante HTTPS.
+    payload = json.dumps(
+        {
+            "from": remitente,
+            "to": [email],
+            "subject": "Recupera tu cuenta de easyRubik",
+            "text": texto,
+        }
+    ).encode("utf-8")
+
+    peticion = Request(
+        "https://api.resend.com/emails",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {config['api_key']}",
+            "Content-Type": "application/json",
+            "User-Agent": "easyRubik/1.0",
+            "Idempotency-Key": identificador,
+        },
+        method="POST",
+    )
+
+    try:
+        with urlopen(
+            peticion,
+            timeout=10,
+        ) as respuesta:
+            contenido = json.loads(
+                respuesta.read().decode("utf-8")
+            )
+    except (HTTPError, URLError, OSError) as exc:
         raise RuntimeError(
-            "El servidor de correo no confirmó el envío."
+            "El proveedor de correo no pudo enviar el mensaje."
+        ) from exc
+
+    if not contenido.get("id"):
+        raise RuntimeError(
+            "El proveedor de correo no confirmó el envío."
         )
 
 
