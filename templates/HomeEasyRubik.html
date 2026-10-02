@@ -2327,6 +2327,227 @@
 
 
 
+        /* =========================================================
+           DOCENTES
+        ========================================================= */
+
+        .docente-button {
+            cursor: pointer;
+            border-color: rgba(53,212,122,.24);
+            background: rgba(53,212,122,.065);
+        }
+
+        .docente-button:hover {
+            border-color: rgba(53,212,122,.42);
+            background: rgba(53,212,122,.11);
+        }
+
+        .docente-dialog {
+            width: min(820px, calc(100% - 32px));
+            max-height: 86vh;
+            margin: auto;
+            padding: 0;
+            overflow: hidden;
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 24px;
+            background: #111722;
+            box-shadow: 0 30px 90px rgba(0,0,0,.55);
+        }
+
+        .docente-dialog::backdrop {
+            background: rgba(3,7,14,.78);
+            backdrop-filter: blur(8px);
+        }
+
+        .docente-dialog-content {
+            position: relative;
+            max-height: 86vh;
+            overflow-y: auto;
+            padding: 34px;
+            background:
+                radial-gradient(circle at 15% 0%, rgba(53,212,122,.11), transparent 35%),
+                radial-gradient(circle at 90% 15%, rgba(79,156,255,.11), transparent 35%),
+                #111722;
+        }
+
+        .docente-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 38px;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: rgba(255,255,255,.045);
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .docente-kicker {
+            display: inline-flex;
+            margin-bottom: 13px;
+            padding: 7px 11px;
+            border: 1px solid rgba(53,212,122,.22);
+            border-radius: 999px;
+            color: #7ee6a9;
+            background: rgba(53,212,122,.07);
+            font-size: .76rem;
+            font-weight: 700;
+        }
+
+        .docente-dialog h2 {
+            max-width: 650px;
+            margin: 0 45px 12px 0;
+            font-family: "Sora", sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            letter-spacing: -.04em;
+        }
+
+        .docente-intro {
+            max-width: 690px;
+            margin-bottom: 25px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .docente-levels {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .docente-level {
+            padding: 14px 15px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(255,255,255,.028);
+        }
+
+        .docente-level strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #f8fafc;
+            font-family: "Sora", sans-serif;
+            font-size: .88rem;
+        }
+
+        .docente-level span {
+            color: var(--muted);
+            font-size: .82rem;
+            line-height: 1.5;
+        }
+
+        .docente-benefits {
+            margin-top: 22px;
+            padding: 18px;
+            border: 1px solid rgba(79,156,255,.15);
+            border-radius: 16px;
+            background: rgba(79,156,255,.055);
+        }
+
+        .docente-benefits h3 {
+            margin-bottom: 8px;
+            font-family: "Sora", sans-serif;
+            font-size: 1rem;
+        }
+
+        .docente-benefits p,
+        .docente-note {
+            color: var(--muted);
+            font-size: .84rem;
+            line-height: 1.65;
+        }
+
+        .docente-note {
+            margin-top: 15px;
+            font-size: .75rem;
+        }
+
+
+        .docente-section {
+            margin-top: 18px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .docente-section h3 {
+            margin-bottom: 10px;
+            font-family: "Sora", sans-serif;
+            font-size: 1rem;
+        }
+
+        .docente-section p {
+            color: var(--muted);
+            font-size: .84rem;
+            line-height: 1.65;
+        }
+
+        .docente-list {
+            margin-top: 10px;
+            padding-left: 20px;
+            color: var(--muted);
+            font-size: .84rem;
+            line-height: 1.65;
+        }
+
+        .docente-list li + li {
+            margin-top: 6px;
+        }
+
+        .docente-plan {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 9px;
+            margin-top: 12px;
+        }
+
+        .docente-plan-step {
+            padding: 12px;
+            border: 1px solid rgba(79,156,255,.14);
+            border-radius: 13px;
+            background: rgba(79,156,255,.04);
+        }
+
+        .docente-plan-step strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #f8fafc;
+            font-family: "Sora", sans-serif;
+            font-size: .8rem;
+        }
+
+        .docente-plan-step span {
+            color: var(--muted);
+            font-size: .76rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 700px) {
+            .docente-plan {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .docente-plan {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .docente-dialog-content {
+                padding: 27px 20px;
+            }
+
+            .docente-levels {
+                grid-template-columns: 1fr;
+            }
+        }
+
     </style>
 
 </head>
@@ -2553,6 +2774,14 @@
 
                     </a>
 
+                    <button
+                        type="button"
+                        class="btn btn-secondary docente-button"
+                        onclick="document.getElementById('docenteDialog').showModal()"
+                    >
+                        🎓 ¿Eres docente?
+                    </button>
+
 
 
                 </div>
@@ -2640,6 +2869,147 @@
 
 
 
+
+
+
+        <!-- =====================================================
+             INFORMACIÓN PARA DOCENTES
+        ====================================================== -->
+
+        <dialog class="docente-dialog" id="docenteDialog">
+            <div class="docente-dialog-content">
+                <button
+                    class="docente-close"
+                    id="docenteClose"
+                    type="button"
+                    aria-label="Cerrar información para docentes"
+                >×</button>
+
+                <span class="docente-kicker">Educación · Chile</span>
+
+                <h2>easyRubik como recurso para aprender jugando</h2>
+
+                <p class="docente-intro">
+                    easyRubik puede utilizarse como recurso complementario para
+                    transformar el cubo Rubik en una experiencia de aprendizaje
+                    visual, progresiva e interactiva. La propuesta permite trabajar
+                    habilidades de razonamiento, observación, secuenciación,
+                    planificación y resolución de problemas a través de desafíos
+                    que el estudiante puede repetir a su propio ritmo.
+                </p>
+
+                <div class="docente-levels">
+                    <div class="docente-level"><strong>1° básico</strong><span>Reconocimiento de colores, ubicación, orientación y seguimiento de instrucciones simples.</span></div>
+                    <div class="docente-level"><strong>2° básico</strong><span>Patrones visuales, secuencias cortas, memoria de pasos y relaciones espaciales.</span></div>
+                    <div class="docente-level"><strong>3° básico</strong><span>Anticipar movimientos, observar cambios y comparar distintas estrategias.</span></div>
+                    <div class="docente-level"><strong>4° básico</strong><span>Resolver desafíos por etapas, describir procedimientos y aprender del error.</span></div>
+                    <div class="docente-level"><strong>5° básico</strong><span>Secuencias de movimientos, simetrías, planificación y organización de información.</span></div>
+                    <div class="docente-level"><strong>6° básico</strong><span>Algoritmos simples, prueba y error, explicación de estrategias y trabajo en equipo.</span></div>
+                    <div class="docente-level"><strong>7° básico</strong><span>Pensamiento lógico, notación de movimientos, patrones y optimización de soluciones.</span></div>
+                    <div class="docente-level"><strong>8° básico</strong><span>Desafíos colaborativos, autonomía, análisis de soluciones y toma de decisiones.</span></div>
+                    <div class="docente-level"><strong>1° medio</strong><span>Pensamiento algorítmico, representación ordenada de procedimientos y estrategias.</span></div>
+                    <div class="docente-level"><strong>2° medio</strong><span>Comparación de métodos, eficiencia, planificación y evaluación de resultados.</span></div>
+                    <div class="docente-level"><strong>3° medio</strong><span>Proyectos, registro de tiempos, interpretación de resultados y mejora continua.</span></div>
+                    <div class="docente-level"><strong>4° medio</strong><span>Resolución avanzada, tutoría entre pares, liderazgo y proyectos de pensamiento computacional.</span></div>
+                </div>
+
+                <div class="docente-benefits">
+                    <h3>¿Por qué puede aportar en educación?</h3>
+                    <p>
+                        El cubo obliga a observar, formular una estrategia, ejecutar
+                        una secuencia y revisar el resultado. Ese ciclo permite que
+                        el estudiante experimente con decisiones concretas y vea de
+                        inmediato qué ocurre cuando cambia un paso.
+                    </p>
+                </div>
+
+                <div class="docente-section">
+                    <h3>Habilidades que se pueden estimular</h3>
+                    <ul class="docente-list">
+                        <li>Razonamiento lógico y pensamiento paso a paso.</li>
+                        <li>Orientación espacial y reconocimiento de patrones.</li>
+                        <li>Atención, memoria de trabajo y seguimiento de secuencias.</li>
+                        <li>Perseverancia, tolerancia al error y búsqueda de nuevas estrategias.</li>
+                        <li>Comunicación de procedimientos: explicar qué hice, por qué y qué cambiaría.</li>
+                        <li>Colaboración entre pares mediante desafíos y resolución compartida.</li>
+                    </ul>
+                </div>
+
+                <div class="docente-section">
+                    <h3>Ideas de actividades para el aula o taller</h3>
+                    <ul class="docente-list">
+                        <li><strong>Predice el movimiento:</strong> antes de girar una cara, el estudiante anticipa qué piezas cambiarán.</li>
+                        <li><strong>Encuentra el patrón:</strong> observar una configuración e identificar colores, posiciones o simetrías.</li>
+                        <li><strong>Explícale a un compañero:</strong> resolver un paso y luego enseñarlo usando sus propias palabras.</li>
+                        <li><strong>Desafío por equipos:</strong> completar una etapa del cubo repartiendo roles de observación, ejecución y registro.</li>
+                        <li><strong>Mejora tu estrategia:</strong> repetir una secuencia y comparar qué método fue más claro o eficiente.</li>
+                        <li><strong>Registro de progreso:</strong> anotar intentos, dificultades, tiempos o etapas completadas para observar avances.</li>
+                    </ul>
+                </div>
+
+                <div class="docente-section">
+                    <h3>Ejemplo de uso en una clase de 45 minutos</h3>
+                    <div class="docente-plan">
+                        <div class="docente-plan-step">
+                            <strong>5 min · Inicio</strong>
+                            <span>Presentar el desafío y activar conocimientos previos.</span>
+                        </div>
+                        <div class="docente-plan-step">
+                            <strong>10 min · Explorar</strong>
+                            <span>Manipular el simulador y observar qué cambia con cada giro.</span>
+                        </div>
+                        <div class="docente-plan-step">
+                            <strong>20 min · Resolver</strong>
+                            <span>Completar una etapa concreta de forma individual o en parejas.</span>
+                        </div>
+                        <div class="docente-plan-step">
+                            <strong>10 min · Reflexionar</strong>
+                            <span>Compartir estrategias, errores y aprendizajes del desafío.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="docente-section">
+                    <h3>Evaluación formativa sencilla</h3>
+                    <p>
+                        El foco no tiene que estar solamente en resolver el cubo o
+                        hacerlo rápido. El docente también puede observar si el
+                        estudiante identifica patrones, sigue una secuencia, explica
+                        su estrategia, corrige errores, pide ayuda cuando la necesita
+                        y logra justificar por qué realizó determinados movimientos.
+                    </p>
+                </div>
+
+                <div class="docente-section">
+                    <h3>Uso inclusivo y a distintos ritmos</h3>
+                    <p>
+                        No todos los estudiantes necesitan completar el mismo desafío.
+                        Se pueden proponer metas por etapas: reconocer una cara,
+                        repetir una secuencia, completar una cruz, resolver una capa
+                        o simplemente explicar qué movimiento produjo un cambio.
+                        Esto permite adaptar la actividad al nivel y ritmo de cada grupo.
+                    </p>
+                </div>
+
+                <div class="docente-section">
+                    <h3>¿Dónde podría utilizarse?</h3>
+                    <ul class="docente-list">
+                        <li>Clases con actividades de lógica, resolución de problemas o pensamiento computacional.</li>
+                        <li>Talleres de matemática recreativa, tecnología o programación.</li>
+                        <li>Actividades de inicio o cierre de clase.</li>
+                        <li>Trabajo por estaciones o rincones de aprendizaje.</li>
+                        <li>Desafíos extracurriculares, clubes de cubos o semanas temáticas.</li>
+                    </ul>
+                </div>
+
+                <p class="docente-note">
+                    easyRubik es un recurso educativo complementario. Las propuestas
+                    anteriores son ideas de uso pedagógico y no corresponden a material
+                    oficial del MINEDUC ni sustituyen los objetivos, planificaciones o
+                    evaluaciones definidos por cada establecimiento y docente.
+                </p>
+            </div>
+        </dialog>
 
         <!-- =====================================================
 
@@ -4337,6 +4707,30 @@
 
             renderPuzzle(0, true);
             restartAuto();
+        })();
+    </script>
+
+
+    <script>
+        (() => {
+            const docenteDialog = document.getElementById("docenteDialog");
+            const docenteClose = document.getElementById("docenteClose");
+
+            if (!docenteDialog || !docenteClose) {
+                return;
+            }
+
+            // Cerrar con la X.
+            docenteClose.addEventListener("click", () => {
+                docenteDialog.close();
+            });
+
+            // Cerrar al hacer clic fuera del contenido del popup.
+            docenteDialog.addEventListener("click", (event) => {
+                if (event.target === docenteDialog) {
+                    docenteDialog.close();
+                }
+            });
         })();
     </script>
 
